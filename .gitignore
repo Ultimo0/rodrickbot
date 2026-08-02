@@ -1,0 +1,26 @@
+node_modules/
+
+# Secrets et configuration locale — ne jamais commit
+.env
+
+# Session WhatsApp (Baileys) — contient les clés de connexion au compte,
+# aussi sensible qu'un mot de passe. Si ça fuite, quelqu'un peut se
+# connecter à la place du bot.
+auth_info/
+
+# Données générées au runtime (avertissements, éléments !save, réglages
+# de groupe, etc.) — propres à chaque déploiement, pas du code source.
+saved_items.json
+saved_media/
+lock_schedules.json
+state.json
+group_settings.json
+warnings.json
+
+# Fichiers temporaires / logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
