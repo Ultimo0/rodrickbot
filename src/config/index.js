@@ -28,6 +28,10 @@ export const config = {
   telemetryApiKey: process.env.TELEMETRY_API_KEY || '',
   instanceId: process.env.INSTANCE_ID || '',
   instanceOwner: process.env.INSTANCE_OWNER || 'Inconnu',
+
+  // Clé API Mistral (https://console.mistral.ai/) — utilisée par la commande !ia
+  mistralApiKey: process.env.MISTRAL_API_KEY || '',
+  mistralModel: process.env.MISTRAL_MODEL || 'mistral-small-latest',
 };
 
 export function isAdmin(jid) {
