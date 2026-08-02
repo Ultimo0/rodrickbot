@@ -8,6 +8,10 @@ let state = {
   // Si true: seul l'admin (défini dans ADMIN_JIDS) peut utiliser le bot,
   // peu importe la commande ou le chat (privé ou groupe).
   lockdownMode: false,
+  // Nombre d'exécutions par commande, cumulatif et persisté (contrairement
+  // à processedMessageCount ci-dessous) — sert aux statistiques envoyées
+  // au dashboard de suivi (voir core/telemetry.js).
+  commandStats: {},
 };
 
 function loadState() {
@@ -27,6 +31,44 @@ function saveState() {
     logger.error({ err }, 'Impossible d\'écrire state.json');
   }
 }
+
+// Écriture différée pour les changements fréquents (ex: commandStats à
+// chaque commande) : on marque juste "à sauvegarder" et un intervalle
+// écrit réellement sur le disque au plus une fois toutes les 30s, au
+// lieu de réécrire le fichier à chaque exécution de commande.
+let dirty = false;
+let flushIntervalHandle = null;
+
+function scheduleSave() {
+  dirty = true;
+  if (!flushIntervalHandle) {
+    flushIntervalHandle = setInterval(() => {
+      if (dirty) {
+        saveState();
+        dirty = false;
+      }
+    }, 30 * 1000);
+    flushIntervalHandle.unref?.(); // ne doit pas empêcher le process de s'arrêter proprement
+  }
+}
+
+function flushPendingSave() {
+  if (dirty) {
+    saveState();
+    dirty = false;
+  }
+}
+
+// Ne jamais perdre les derniers compteurs si le bot est arrêté/redémarré
+// entre deux flushs automatiques (ex: redéploiement, `pm2 restart`, Ctrl+C).
+process.on('SIGINT', () => {
+  flushPendingSave();
+  process.exit(0);
+});
+process.on('SIGTERM', () => {
+  flushPendingSave();
+  process.exit(0);
+});
 
 loadState();
 
@@ -50,4 +92,15 @@ export function incrementMessageCount() {
 
 export function getMessageCount() {
   return processedMessageCount;
+}
+
+/** Incrémente le compteur d'usage d'une commande (par son nom canonique). */
+export function incrementCommandCount(name) {
+  state.commandStats[name] = (state.commandStats[name] || 0) + 1;
+  scheduleSave();
+}
+
+/** Copie des statistiques d'usage par commande: { nomCommande: nombreDExecutions }. */
+export function getCommandStats() {
+  return { ...state.commandStats };
 }

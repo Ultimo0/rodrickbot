@@ -2,7 +2,8 @@ import { readFileSync } from 'fs';
 import path from 'path';
 import { config } from '../config/index.js';
 import { logger } from '../utils/logger.js';
-import { isLockdownMode, getMessageCount } from './state.js';
+import { isLockdownMode, getMessageCount, getCommandStats } from './state.js';
+import { setRemotelyDisabled, isRemotelyDisabled } from './remoteControl.js';
 
 const pkg = JSON.parse(readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8'));
 
@@ -27,6 +28,7 @@ async function sendHeartbeat() {
         version: pkg.version,
         uptimeSeconds: Math.round(process.uptime()),
         messageCount: getMessageCount(),
+        commandStats: getCommandStats(),
         mode: isLockdownMode() ? 'Privé' : 'Public',
         prefix: config.prefix,
         nodeVersion: process.version,
@@ -35,6 +37,20 @@ async function sendHeartbeat() {
 
     if (!res.ok) {
       logger.warn(`Télémétrie: le dashboard a répondu ${res.status}`);
+      return;
+    }
+
+    const data = await res.json().catch(() => null);
+    if (data && typeof data.enabled === 'boolean') {
+      const shouldBeDisabled = !data.enabled;
+      if (shouldBeDisabled !== isRemotelyDisabled()) {
+        setRemotelyDisabled(shouldBeDisabled);
+        logger.warn(
+          shouldBeDisabled
+            ? 'Cette copie a été désactivée à distance depuis le dashboard — elle ne répond plus aux commandes.'
+            : 'Cette copie a été réactivée à distance depuis le dashboard.'
+        );
+      }
     }
   } catch (err) {
     // On ne veut jamais faire planter le bot pour un problème réseau côté

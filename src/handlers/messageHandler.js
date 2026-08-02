@@ -3,7 +3,8 @@ import { logger } from '../utils/logger.js';
 import { extractText, isGroup, parseCommand, toQuoteBlock } from '../utils/helpers.js';
 import { runMiddlewares } from '../middlewares/index.js';
 import { attachReplyHelpers } from '../utils/reply.js';
-import { isLockdownMode, incrementMessageCount } from '../core/state.js';
+import { isLockdownMode, incrementMessageCount, incrementCommandCount } from '../core/state.js';
+import { isRemotelyDisabled } from '../core/remoteControl.js';
 import { handleAntilink } from '../utils/antilink.js';
 import { handleDownloadReply } from '../utils/downloadReply.js';
 
@@ -23,6 +24,11 @@ export function createMessageHandler(sock, commands) {
 
 async function handleSingleMessage(sock, commands, msg) {
   if (!msg.message) return;
+
+  // Interrupteur à distance (voir core/telemetry.js) : si cette copie a été
+  // désactivée depuis le dashboard, elle ne traite plus RIEN — ni
+  // commandes, ni antilink, ni téléchargements en attente.
+  if (isRemotelyDisabled()) return;
 
   const isSelfTest = msg.key.fromMe && config.allowSelfTest && !isGroup(msg.key.remoteJid);
   if (msg.key.fromMe && !isSelfTest) return;
@@ -81,6 +87,7 @@ async function handleSingleMessage(sock, commands, msg) {
   }
 
   incrementMessageCount();
+  incrementCommandCount(command.name);
   logger.info(`Commande exécutée: ${parsed.command} par ${sender}`);
   await command.execute(ctx);
 }
