@@ -7,6 +7,7 @@ import { isLockdownMode, incrementMessageCount, incrementCommandCount } from '..
 import { isRemotelyDisabled } from '../core/remoteControl.js';
 import { handleAntilink } from '../utils/antilink.js';
 import { handleDownloadReply } from '../utils/downloadReply.js';
+import { isInstanceConfigured } from '../core/instance.js';
 
 export function createMessageHandler(sock, commands) {
   return async ({ messages, type }) => {
@@ -64,6 +65,15 @@ async function handleSingleMessage(sock, commands, msg) {
     },
   };
   attachReplyHelpers(ctx);
+
+  if (!isInstanceConfigured() && command.name !== 'setup') {
+    await ctx.error(
+      "⚠️ Ce bot n'est pas encore configuré.\n\n" +
+      "Exécute d'abord :\n!setup <identifiant> <propriétaire>\n\n" +
+      "Exemple : !setup boutique-jean Jean Dupont"
+    );
+    return;
+  }
 
   if (isLockdownMode() && !ctx.isAdmin) {
     logger.debug(`Commande ignorée (mode privé strict actif): ${sender}`);

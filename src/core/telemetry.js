@@ -4,6 +4,7 @@ import { config } from '../config/index.js';
 import { logger } from '../utils/logger.js';
 import { isLockdownMode, getMessageCount, getCommandStats } from './state.js';
 import { setRemotelyDisabled, isRemotelyDisabled } from './remoteControl.js';
+import { getInstance } from './instance.js';
 
 const pkg = JSON.parse(readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8'));
 
@@ -12,7 +13,8 @@ const HEARTBEAT_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 let intervalHandle = null;
 
 async function sendHeartbeat() {
-  const { telemetryUrl, telemetryApiKey, instanceId, instanceOwner } = config;
+  const { telemetryUrl, telemetryApiKey } = config;
+  const { instanceId, instanceOwner } = getInstance();
 
   try {
     const res = await fetch(`${telemetryUrl.replace(/\/$/, '')}/api/heartbeat`, {
@@ -53,28 +55,21 @@ async function sendHeartbeat() {
       }
     }
   } catch (err) {
-    // On ne veut jamais faire planter le bot pour un problème réseau côté
-    // dashboard — on log juste un avertissement et on réessaiera au
-    // prochain intervalle.
     logger.warn({ err }, 'Télémétrie: envoi du heartbeat impossible');
   }
 }
 
-/**
- * Démarre l'envoi périodique d'un "heartbeat" vers le dashboard centralisé
- * (voir dashboard-server/). Ne fait rien si TELEMETRY_URL n'est pas
- * configuré — fonctionnalité entièrement optionnelle et sans effet sur le
- * reste du bot si elle n'est pas activée.
- */
 export function startTelemetry() {
   if (!config.telemetryUrl) {
     logger.debug('Télémétrie désactivée (TELEMETRY_URL non défini).');
     return;
   }
 
-  if (!config.telemetryApiKey || !config.instanceId) {
+  const { instanceId, instanceOwner } = getInstance();
+
+  if (!config.telemetryApiKey || !instanceId) {
     logger.warn(
-      'TELEMETRY_URL est défini mais TELEMETRY_API_KEY ou INSTANCE_ID est manquant — télémétrie désactivée.'
+      'TELEMETRY_URL est défini mais TELEMETRY_API_KEY ou instanceId (voir !setup) est manquant — télémétrie désactivée.'
     );
     return;
   }
@@ -83,5 +78,5 @@ export function startTelemetry() {
 
   sendHeartbeat();
   intervalHandle = setInterval(sendHeartbeat, HEARTBEAT_INTERVAL_MS);
-  logger.info(`Télémétrie activée (instance: ${config.instanceId}, propriétaire: ${config.instanceOwner}).`);
+  logger.info(`Télémétrie activée (instance: ${instanceId}, propriétaire: ${instanceOwner}).`);
 }
