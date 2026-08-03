@@ -1,5 +1,15 @@
 import 'dotenv/config';
-import settings from './settings.json' with { type: 'json' };
+import { readFileSync } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Lecture "classique" (fs + JSON.parse) plutôt que la syntaxe récente
+// `import settings.json with { type: 'json' }` : cette dernière casse le
+// parseur utilisé par javascript-obfuscator (voir scripts/build.js).
+// readFileSync fonctionne partout, obfusqué ou non.
+const settings = JSON.parse(readFileSync(path.join(__dirname, 'settings.json'), 'utf-8'));
 
 /**
  * Configuration centralisée du bot.

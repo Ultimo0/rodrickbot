@@ -1,10 +1,12 @@
 import { readdirSync } from 'fs';
 import path from 'path';
-import { pathToFileURL } from 'url';
+import { pathToFileURL, fileURLToPath } from 'url';
 import { logger } from '../utils/logger.js';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 /**
- * Charge dynamiquement toutes les commandes présentes dans src/commands/.
+ * Charge dynamiquement toutes les commandes présentes dans commands/.
  * Chaque fichier doit faire un "export default" d'un objet de la forme:
  * {
  *   name: 'ping',            // nom de la commande (sans préfixe)
@@ -25,7 +27,7 @@ import { logger } from '../utils/logger.js';
  */
 export async function loadCommands() {
   const commands = new Map();
-  const commandsDir = path.join(process.cwd(), 'src', 'commands');
+  const commandsDir = path.join(__dirname, '..', 'commands');
   const files = readdirSync(commandsDir).filter((f) => f.endsWith('.js'));
 
   for (const file of files) {
