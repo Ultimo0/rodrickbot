@@ -2,6 +2,7 @@ import { Jimp, JimpMime } from 'jimp';
 import { existsSync } from 'fs';
 import path from 'path';
 import { logger } from './logger.js';
+import { config } from '../config/index.js';
 
 const ASSETS_DIR = path.join(process.cwd(), 'assets');
 const LOGO_CANDIDATES = ['logo.png', 'logo.jpg', 'logo.jpeg', 'logo.webp'];
@@ -68,21 +69,46 @@ async function loadBanner() {
 }
 
 /**
- * Envoie un message contenant le texte (menu, etc.) suivi du lien de la
- * chaîne WhatsApp. Si `asImage` est vrai et qu'un logo existe dans
- * assets/, le texte est envoyé comme légende d'une image ; sinon (ou en
- * l'absence de logo) le message reste un texte simple, comme avant.
+ * Envoie le lien de la chaîne WhatsApp comme message à part, avec un aperçu
+ * de lien explicite. C'est ce qui permet à WhatsApp de reconnaître le lien
+ * de chaîne et d'afficher le bouton natif "Voir la chaîne" au lieu du lien
+ * brut — ça ne marche pas s'il est noyé dans une légende d'image ou collé
+ * à d'autre texte.
+ */
+async function sendChannelLink(ctx) {
+  const thumbnail = await loadThumbnail();
+
+  await ctx.sock.sendMessage(
+    ctx.chatId,
+    {
+      text: CHANNEL_URL,
+      linkPreview: {
+        'matched-text': CHANNEL_URL,
+        title: config.botName ? `${config.botName} — Chaîne officielle` : 'Chaîne WhatsApp officielle',
+        ...(thumbnail ? { jpegThumbnail: thumbnail } : {}),
+      },
+    },
+    { quoted: ctx.msg }
+  );
+}
+
+/**
+ * Envoie un message contenant le texte (menu, etc.), puis le lien de la
+ * chaîne WhatsApp dans un second message séparé (pour le bouton natif
+ * "Voir la chaîne" — voir sendChannelLink). Si `asImage` est vrai et
+ * qu'un logo existe dans assets/, le texte est envoyé comme légende d'une
+ * image ; sinon (ou en l'absence de logo) le message reste un texte simple.
  */
 export async function sendWithChannelCard(ctx, text, { asImage = false } = {}) {
-  const fullText = `${text}\n\n🔗 Chaîne WhatsApp: ${CHANNEL_URL}`;
-
   if (asImage) {
     const banner = await loadBanner();
     if (banner) {
-      await ctx.sock.sendMessage(ctx.chatId, { image: banner, caption: fullText }, { quoted: ctx.msg });
+      await ctx.sock.sendMessage(ctx.chatId, { image: banner, caption: text }, { quoted: ctx.msg });
+      await sendChannelLink(ctx);
       return;
     }
   }
 
-  await ctx.sock.sendMessage(ctx.chatId, { text: fullText }, { quoted: ctx.msg });
+  await ctx.sock.sendMessage(ctx.chatId, { text }, { quoted: ctx.msg });
+  await sendChannelLink(ctx);
 }
