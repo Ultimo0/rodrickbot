@@ -19,6 +19,7 @@ export function getMediaType(message) {
   if (m.imageMessage) return 'image';
   if (m.videoMessage) return 'video';
   if (m.audioMessage) return 'audio';
+  if (m.stickerMessage) return 'sticker';
   return null;
 }
 
