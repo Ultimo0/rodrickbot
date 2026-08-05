@@ -8,7 +8,7 @@ export default {
   aliases: ['textfromimage', 'extraire'],
   description:
     "Extrait le texte visible d'une image. Réponds à une image avec !ocr, ou envoie l'image directement avec !ocr en légende.",
-  category: 'Média',
+  category: 'Intelligence Artificielle',
   adminOnly: false,
   privateOnly: false,
   execute: async (ctx) => {
@@ -51,7 +51,9 @@ export default {
         await ctx.error('Aucun texte détecté sur cette image.');
         return;
       }
-      await ctx.reply({ text });
+      // Envoi direct (sans ctx.reply) : ctx.reply préfixe chaque ligne par
+      // "> " (citation WhatsApp), illisible sur un texte extrait long.
+      await ctx.sock.sendMessage(ctx.chatId, { text }, { quoted: ctx.msg });
       await ctx.success();
     } catch (err) {
       logger.warn({ err }, "Erreur lors de l'extraction du texte");

@@ -1,0 +1,70 @@
+/**
+ * Registre des outils réutilisables par l'agent.
+ *
+ * L’objectif est d’exposer les capacités existantes du bot sous forme
+ * d’outils cohérents, sans dupliquer la logique métier déjà présente
+ * dans les commandes et les utilitaires.
+ */
+
+import { askMistral, correctText, summarizeText, translateText } from '../utils/mistral.js';
+import { downloadMediaMessage } from '@whiskeysockets/baileys';
+import { logger } from '../utils/logger.js';
+import { playTool } from './tools/playTool.js';
+import { stickerTool } from './tools/stickerTool.js';
+import { ocrTool } from './tools/ocrTool.js';
+import { translateTool } from './tools/translateTool.js';
+import { downloadTool } from './tools/downloadTool.js';
+import { weatherTool } from './tools/weatherTool.js';
+import { searchTool } from './tools/searchTool.js';
+import { ttsTool } from './tools/ttsTool.js';
+import { summarizeTool } from './tools/summarizeTool.js';
+import { correctTool } from './tools/correctTool.js';
+import { debugTool } from './tools/debugTool.js';
+import { proRewriteTool } from './tools/proRewriteTool.js';
+
+const tools = new Map();
+
+function registerTool(tool) {
+  tools.set(tool.name, tool);
+}
+
+registerTool(playTool);
+registerTool(stickerTool);
+registerTool(ocrTool);
+// Suppression des doublons - les outils sont maintenant définis dans leurs modules
+// avec la résolution automatique de la source de texte
+registerTool(translateTool);
+registerTool(downloadTool);
+registerTool(weatherTool);
+registerTool(searchTool);
+registerTool(ttsTool);
+registerTool(summarizeTool);
+registerTool(correctTool);
+registerTool(debugTool);
+registerTool(proRewriteTool);
+registerTool({
+  name: 'ask_general',
+  description: 'Pose une question générale à l’IA Mistral.',
+  params: [{ name: 'question', type: 'string', required: true }],
+  execute: async ({ question, text }) => {
+    const payload = (question || text || '').trim();
+    if (!payload) throw new Error('Question vide.');
+    return askMistral(payload);
+  },
+});
+
+
+
+export function getToolRegistry() {
+  return [...tools.values()];
+}
+
+export async function executeTool(name, args = {}, context = {}) {
+  const tool = tools.get(name);
+  if (!tool) {
+    throw new Error(`Outil inconnu: ${name}`);
+  }
+
+  return tool.execute({ ...args, ...context });
+}
+

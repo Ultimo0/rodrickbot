@@ -46,3 +46,34 @@ export async function extractAudioMp3(buffer) {
     await Promise.allSettled([unlink(inputPath), unlink(outputPath)]);
   }
 }
+
+/**
+ * Normalise un audio en voice note WhatsApp compatible : OGG + Opus.
+ * Le flux de `!save`/`!get` garde le stockage principal immuable ; on
+ * convertit seulement le buffer ré-expédié pour satisfaire le contrat
+ * `ptt = true` côté Baileys/WhatsApp.
+ */
+export async function audioToVoiceNote(buffer) {
+  const id = randomUUID();
+  const inputPath = join(tmpdir(), `${id}-in`);
+  const outputPath = join(tmpdir(), `${id}-out.ogg`);
+
+  await writeFile(inputPath, buffer);
+
+  try {
+    await new Promise((resolve, reject) => {
+      ffmpeg(inputPath)
+        .on('error', reject)
+        .on('end', resolve)
+        .noVideo()
+        .audioCodec('libopus')
+        .audioBitrate('64k')
+        .toFormat('ogg')
+        .save(outputPath);
+    });
+
+    return await readFile(outputPath);
+  } finally {
+    await Promise.allSettled([unlink(inputPath), unlink(outputPath)]);
+  }
+}

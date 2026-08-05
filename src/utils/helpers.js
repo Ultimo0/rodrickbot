@@ -5,11 +5,13 @@
 export function extractText(msg) {
   const m = msg.message;
   if (!m) return '';
+  const doc = m.documentWithCaptionMessage?.message?.documentMessage || m.documentMessage;
   return (
     m.conversation ||
     m.extendedTextMessage?.text ||
     m.imageMessage?.caption ||
     m.videoMessage?.caption ||
+    doc?.caption ||
     // Quand l'utilisateur tape sur une ligne du menu interactif, WhatsApp
     // renvoie l'ID de la ligne choisie (ex: "!ping") comme s'il l'avait tapé.
     m.listResponseMessage?.singleSelectReply?.selectedRowId ||

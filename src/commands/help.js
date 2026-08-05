@@ -19,6 +19,7 @@ const CATEGORY_MENU = [
   { key: 'media', icon: '🖼', label: 'Média', category: 'Média' },
   { key: 'telechargement', icon: '📥', label: 'Téléchargement', category: 'Téléchargement' },
   { key: 'moderation', icon: '🚨', label: 'Modération', category: 'Modération' },
+  { key: 'ia', icon: '🤖', label: 'Intelligence Artificielle', category: 'Intelligence Artificielle' },
 ];
 
 function footerLines() {

@@ -1,4 +1,4 @@
-import { Jimp, JimpMime } from 'jimp';
+import sharp from 'sharp';
 import { existsSync } from 'fs';
 import path from 'path';
 import { logger } from './logger.js';
@@ -34,9 +34,10 @@ async function loadThumbnail() {
   }
 
   try {
-    const image = await Jimp.read(logoPath);
-    image.cover({ w: THUMBNAIL_SIZE, h: THUMBNAIL_SIZE });
-    cachedThumbnail = await image.getBuffer(JimpMime.jpeg);
+    cachedThumbnail = await sharp(logoPath)
+      .resize(THUMBNAIL_SIZE, THUMBNAIL_SIZE, { fit: 'cover' })
+      .jpeg()
+      .toBuffer();
   } catch (err) {
     logger.warn({ err }, 'Erreur lors du traitement du logo — carte envoyée sans miniature');
     cachedThumbnail = null;
@@ -58,9 +59,10 @@ async function loadBanner() {
   }
 
   try {
-    const image = await Jimp.read(logoPath);
-    image.scaleToFit({ w: BANNER_MAX_SIZE, h: BANNER_MAX_SIZE });
-    cachedBanner = await image.getBuffer(JimpMime.jpeg);
+    cachedBanner = await sharp(logoPath)
+      .resize(BANNER_MAX_SIZE, BANNER_MAX_SIZE, { fit: 'inside' })
+      .jpeg()
+      .toBuffer();
   } catch (err) {
     logger.warn({ err }, 'Erreur lors du traitement de la bannière — menu envoyé sans image');
     cachedBanner = null;

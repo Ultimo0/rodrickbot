@@ -12,13 +12,29 @@ const history = new Map(); // jid -> timestamps[]
 
 export function antiSpamMiddleware(ctx) {
   const now = Date.now();
-  const timestamps = (history.get(ctx.sender) || []).filter((t) => now - t < WINDOW_MS);
+  const hasHistory = history.has(ctx.sender);
 
-  if (timestamps.length >= MAX_REQUESTS) {
+  // Filtre les horodatages récents UNIQUEMENT si l'utilisateur a un historique.
+  const recentTimestamps = hasHistory
+    ? history.get(ctx.sender).filter((t) => now - t < WINDOW_MS)
+    : [];
+
+  // Si un utilisateur avait un historique mais que tous les horodatages ont expiré,
+  // on le supprime de la Map pour libérer la mémoire.
+  if (hasHistory && recentTimestamps.length === 0) {
+    history.delete(ctx.sender);
+  }
+
+  // Contrôle anti-spam
+  if (recentTimestamps.length >= MAX_REQUESTS) {
+    // Met à jour l'historique avec la liste filtrée pour que l'utilisateur
+    // soit débloqué après la fenêtre de temps, puis bloque.
+    history.set(ctx.sender, recentTimestamps);
     return false;
   }
 
-  timestamps.push(now);
-  history.set(ctx.sender, timestamps);
+  // L'utilisateur est autorisé, on ajoute le nouvel horodatage.
+  recentTimestamps.push(now);
+  history.set(ctx.sender, recentTimestamps);
   return true;
 }

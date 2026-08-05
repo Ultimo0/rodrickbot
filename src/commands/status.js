@@ -1,18 +1,6 @@
 import { config } from '../config/index.js';
 import { isLockdownMode, getMessageCount } from '../core/state.js';
-
-function formatUptime(seconds) {
-  const d = Math.floor(seconds / 86400);
-  const h = Math.floor((seconds % 86400) / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.floor(seconds % 60);
-  const parts = [];
-  if (d) parts.push(`${d}j`);
-  if (h) parts.push(`${h}h`);
-  if (m) parts.push(`${m}min`);
-  parts.push(`${s}s`);
-  return parts.join(' ');
-}
+import { formatUptime } from '../utils/helpers.js';
 
 export default {
   name: 'status',

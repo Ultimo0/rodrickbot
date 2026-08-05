@@ -8,6 +8,7 @@ import { isRemotelyDisabled } from '../core/remoteControl.js';
 import { handleAntilink } from '../utils/antilink.js';
 import { handleDownloadReply } from '../utils/downloadReply.js';
 import { isInstanceConfigured } from '../core/instance.js';
+import { runAgentTurn } from '../agent/index.js';
 
 export function createMessageHandler(sock, commands) {
   return async ({ messages, type }) => {
@@ -26,9 +27,7 @@ export function createMessageHandler(sock, commands) {
 async function handleSingleMessage(sock, commands, msg) {
   if (!msg.message) return;
 
-  // Interrupteur à distance (voir core/telemetry.js) : si cette copie a été
-  // désactivée depuis le dashboard, elle ne traite plus RIEN — ni
-  // commandes, ni antilink, ni téléchargements en attente.
+  // Interrupteur à distance
   if (isRemotelyDisabled()) return;
 
   const isSelfTest = msg.key.fromMe && config.allowSelfTest && !isGroup(msg.key.remoteJid);
@@ -36,13 +35,28 @@ async function handleSingleMessage(sock, commands, msg) {
 
   const chatId = msg.key.remoteJid;
   const sender = isGroup(chatId) ? msg.key.participant : chatId;
+  
+  // LOG TEMPORAIRE POUR DIAGNOSTIQUER LES MESSAGES CITÉS
+  if (msg.message.extendedTextMessage?.contextInfo?.quotedMessage ||
+      msg.message.contextInfo?.quotedMessage) {
+    console.log('=== MESSAGE AVEC CITATION DÉTECTÉ ===');
+    console.log('Message complet:', JSON.stringify(msg, null, 2));
+  }
+  
   const text = extractText(msg);
 
   if (await handleAntilink(sock, msg, chatId, sender, text)) return;
   if (await handleDownloadReply(sock, chatId, sender, text, msg)) return;
 
   const parsed = parseCommand(text, config.prefix);
-  if (!parsed) return;
+  if (!parsed) {
+    const agentHandled = await runAgentTurn(sock, msg, chatId, sender, text, commands);
+    if (agentHandled) {
+      incrementMessageCount();
+      logger.info(`Agent IA exécuté pour ${sender}`);
+    }
+    return;
+  }
 
   const command = commands.get(parsed.command);
   if (!command) return;
@@ -101,3 +115,4 @@ async function handleSingleMessage(sock, commands, msg) {
   logger.info(`Commande exécutée: ${parsed.command} par ${sender}`);
   await command.execute(ctx);
 }
+

@@ -46,6 +46,7 @@ export async function handleSaveCommand(ctx, sourceType) {
         buffer,
         mimetype: mediaObj?.mimetype,
         caption: mediaObj?.caption,
+        ptt: Boolean(mediaObj?.ptt),
         savedBy: ctx.sender,
         sourceType,
       });

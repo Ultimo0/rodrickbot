@@ -44,7 +44,19 @@ function normalize(name) {
 function extensionFor(mediaType, mimetype) {
   if (mediaType === 'image') return mimetype?.includes('png') ? 'png' : 'jpg';
   if (mediaType === 'video') return 'mp4';
-  if (mediaType === 'audio') return mimetype?.includes('mp4') ? 'm4a' : 'ogg';
+  if (mediaType === 'audio') {
+    // Les audios WhatsApp vocaux sont le plus souvent au format Opus/OGG.
+    // Les audios transférés peuvent être MP3, M4A ou OGG. On doit donc
+    // conserver l’extension compatible avec le vrai MIME type, pas forcer
+    // l’extension OGG pour tout audio.
+    const type = String(mimetype || '').toLowerCase();
+    if (type.includes('mpeg') || type.includes('mp3')) return 'mp3';
+    if (type.includes('mp4') || type.includes('m4a')) return 'm4a';
+    if (type.includes('ogg')) return 'ogg';
+    if (type.includes('aac')) return 'aac';
+    if (type.includes('amr')) return 'amr';
+    return 'ogg';
+  }
   return 'bin';
 }
 
@@ -74,7 +86,7 @@ export function saveTextItem(name, { text, savedBy, sourceType }) {
 }
 
 /** Enregistre un média (image/vidéo/audio) sous `name`. */
-export function saveMediaItem(name, { mediaType, buffer, mimetype, caption, savedBy, sourceType }) {
+export function saveMediaItem(name, { mediaType, buffer, mimetype, caption, savedBy, sourceType, ptt = false }) {
   const key = normalize(name);
   const ext = extensionFor(mediaType, mimetype);
   const fileName = `${key}_${Date.now()}.${ext}`;
@@ -86,6 +98,7 @@ export function saveMediaItem(name, { mediaType, buffer, mimetype, caption, save
     mediaPath: path.join('saved_media', fileName),
     mimetype: mimetype || null,
     caption: caption || '',
+    ptt: Boolean(ptt),
     savedAt: new Date().toISOString(),
     savedBy,
     sourceType,
