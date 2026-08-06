@@ -21,9 +21,6 @@ export const proRewriteTool = {
     
     if (!textToRewrite) {
       const errorMsg = 'Aucun texte à réécrire. Fournissez un texte, répondez à un message ou assurez-vous que la session contient du texte.';
-      if (ctx.msg) {
-        console.error('Structure du message reçu lors de l\'échec:', JSON.stringify(ctx.msg, null, 2));
-      }
       throw new Error(errorMsg);
     }
 
