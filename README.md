@@ -61,6 +61,21 @@ src/
 └── utils/ # helpers (extraction de texte, formatage, logo...)
 assets/
 └── logo.png # logo utilisé dans les cartes de branding
+tests/ # tests unitaires (node:test), un fichier par module
+
+## Tests
+
+Les tests unitaires utilisent le lanceur intégré de Node (`node:test`), sans dépendance supplémentaire :
+
+```bash
+npm test              # lance tous les tests
+npm run test:coverage # idem, avec rapport de couverture
+```
+
+Un fichier de test par module, nommé `tests/<module>.test.js`. Les modules qui persistent
+des données dans `process.cwd()` (`core/groupSettings.js`, `core/warnStore.js`) sont importés
+dynamiquement après un `process.chdir()` vers un dossier temporaire, afin de ne jamais toucher
+aux fichiers de données réels.
 
 ## Créer une nouvelle commande
 
