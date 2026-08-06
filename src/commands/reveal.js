@@ -27,7 +27,7 @@ export default {
   name: 'reveal',
   aliases: ['rv', 'see', 'viewonce', 'vo'],
   description: 'Révèle un message "Vue unique" (photo, vidéo, audio) en répondant au message.',
-  category: 'Utilitaires',
+  category: 'Média',
   adminOnly: false,
   privateOnly: false,
 

@@ -5,7 +5,7 @@ export default {
   name: 'ping',
   aliases: ['p'],
   description: 'Vérifie la disponibilité du bot et affiche la latence.',
-  category: 'Utilitaires',
+  category: 'Diagnostic',
   execute: async (ctx) => {
     const sentAt = Number(ctx.msg.messageTimestamp) * 1000;
     const latency = Date.now() - sentAt;

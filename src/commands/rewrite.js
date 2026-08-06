@@ -10,7 +10,7 @@ export default {
   name: 'rewrite',
   aliases: ['pro', 'professionnel', 'réécris'],
   description: 'Réécrit un texte de manière professionnelle (contourne l\'Agent IA)',
-  category: 'Utilitaires',
+  category: 'Intelligence Artificielle',
   privateOnly: false,
   execute: async (ctx) => {
     const textToRewrite = resolveTextSource(ctx);
@@ -33,4 +33,3 @@ export default {
     }
   }
 };
-

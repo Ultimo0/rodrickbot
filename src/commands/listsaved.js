@@ -4,7 +4,7 @@ export default {
   name: 'listsaved',
   aliases: ['savedlist'],
   description: 'Liste les noms de tous les éléments enregistrés (via !save ou !statut).',
-  category: 'Archivage',
+  category: 'Sauvegardes',
   adminOnly: true,
   privateOnly: false,
   execute: async (ctx) => {

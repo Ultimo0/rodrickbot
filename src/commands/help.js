@@ -13,12 +13,12 @@ const pkg = JSON.parse(readFileSync(path.join(process.cwd(), 'package.json'), 'u
 const CATEGORY_MENU = [
   { key: 'groupe', icon: '👥', label: 'Gestion du groupe', category: 'Gestion de groupe' },
   { key: 'admin', icon: '🛡', label: 'Administration', category: 'Administration' },
-  { key: 'archivage', icon: '📦', label: 'Archivage', category: 'Archivage' },
-  { key: 'utilitaires', icon: '🛠', label: 'Utilitaires', category: 'Utilitaires' },
+  { key: 'moderation', icon: '🚨', label: 'Modération', category: 'Modération' },
   { key: 'diagnostic', icon: '📊', label: 'Diagnostic', category: 'Diagnostic' },
+  { key: 'utilitaires', icon: '🛠', label: 'Utilitaires', category: 'Utilitaires' },
   { key: 'media', icon: '🖼', label: 'Média', category: 'Média' },
   { key: 'telechargement', icon: '📥', label: 'Téléchargement', category: 'Téléchargement' },
-  { key: 'moderation', icon: '🚨', label: 'Modération', category: 'Modération' },
+  { key: 'sauvegardes', icon: '📁', label: 'Sauvegardes', category: 'Sauvegardes' },
   { key: 'ia', icon: '🤖', label: 'Intelligence Artificielle', category: 'Intelligence Artificielle' },
 ];
 
