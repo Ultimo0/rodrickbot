@@ -1,13 +1,5 @@
 import { resolveTargetJids } from '../utils/groupTarget.js';
-import { parseDuration, formatDuration } from '../utils/duration.js';
-
-function extractDuration(args) {
-  for (const arg of args) {
-    const ms = parseDuration(arg);
-    if (ms !== null) return ms;
-  }
-  return null;
-}
+import { extractDuration, formatDuration } from '../utils/duration.js';
 
 export default {
   name: 'demote',
@@ -17,10 +9,7 @@ export default {
   adminOnly: true,
   privateOnly: false,
   execute: async (ctx) => {
-    if (!ctx.isGroup) {
-      await ctx.error('Cette commande fonctionne uniquement dans un groupe.');
-      return;
-    }
+    if (!(await ctx.requireGroup())) return;
 
     const targets = resolveTargetJids(ctx);
     if (!targets.length) {

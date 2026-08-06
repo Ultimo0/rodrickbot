@@ -7,10 +7,7 @@ export default {
   adminOnly: true,
   privateOnly: false,
   execute: async (ctx) => {
-    if (!ctx.isGroup) {
-      await ctx.error('Cette commande fonctionne uniquement dans un groupe.');
-      return;
-    }
+    if (!(await ctx.requireGroup())) return;
 
     if (!ctx.args.length) {
       await ctx.error('Usage: !add <numero> [numero...] (ex: !add 33612345678)');

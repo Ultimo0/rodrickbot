@@ -8,10 +8,7 @@ export default {
   adminOnly: true,
   privateOnly: false,
   execute: async (ctx) => {
-    if (!ctx.isGroup) {
-      await ctx.error('Cette commande fonctionne uniquement dans un groupe.');
-      return;
-    }
+    if (!(await ctx.requireGroup())) return;
 
     const targets = resolveTargetJids(ctx);
     if (!targets.length) {

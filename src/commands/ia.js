@@ -19,9 +19,7 @@ export default {
 
     try {
       const answer = await askMistral(question);
-      // Envoi direct (sans ctx.reply) : ctx.reply préfixe chaque ligne par
-      // "> " (citation WhatsApp), illisible sur une réponse longue.
-      await ctx.sock.sendMessage(ctx.chatId, { text: answer }, { quoted: ctx.msg });
+      await ctx.replyRaw({ text: answer });
       await ctx.success();
     } catch (err) {
       await ctx.error(`Impossible d'obtenir une réponse : ${err.message}`);

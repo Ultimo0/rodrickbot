@@ -35,3 +35,17 @@ export function formatDuration(ms) {
   if (ms % UNITS.min === 0) return `${ms / UNITS.min} min`;
   return `${ms / UNITS.s} s`;
 }
+
+/**
+ * Renvoie la première durée (en ms) trouvable parmi une liste d'arguments,
+ * ou null si aucun argument n'est une durée valide. Pratique pour les
+ * commandes où la durée est optionnelle et positionnellement libre
+ * (ex: !promote/!demote <cible> [durée]).
+ */
+export function extractDuration(args) {
+  for (const arg of args) {
+    const ms = parseDuration(arg);
+    if (ms !== null) return ms;
+  }
+  return null;
+}
