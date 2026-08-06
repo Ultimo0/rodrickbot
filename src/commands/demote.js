@@ -1,5 +1,6 @@
 import { resolveTargetJids } from '../utils/groupTarget.js';
 import { parseDuration, formatDuration } from '../utils/duration.js';
+import { logger } from '../utils/logger.js';
 
 function extractDuration(args) {
   for (const arg of args) {
@@ -49,6 +50,7 @@ export default {
           });
         } catch (err) {
           // Le membre a peut-être déjà été promu manuellement ou a quitté le groupe.
+          logger.warn({ err, chatId: ctx.chatId, targets }, 'Restauration automatique du statut admin impossible');
         }
       }, ms);
     } catch (err) {

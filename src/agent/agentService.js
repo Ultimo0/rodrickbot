@@ -212,7 +212,10 @@ export async function runAgentTurn(sock, msg, chatId, sender, text, commands = n
           sender,
           args: text.split(/\s+/).slice(1),
           commands,
-        }).catch(() => false);
+        }).catch((err) => {
+          logger.warn({ err, command: commandCandidate }, 'Bridge Agent: échec de la commande historique');
+          return false;
+        });
         if (handled) {
           appendSessionMessage(chatId, sender, 'user', text);
           appendSessionMessage(chatId, sender, 'assistant', '[commande historique exécutée via bridge Agent]');

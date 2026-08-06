@@ -30,12 +30,26 @@ export async function loadCommands() {
   const commandsDir = path.join(__dirname, '..', 'commands');
   const files = readdirSync(commandsDir).filter((f) => f.endsWith('.js'));
 
+  let failed = 0;
+
   for (const file of files) {
     const fileUrl = pathToFileURL(path.join(commandsDir, file)).href;
-    const module = await import(fileUrl);
+
+    let module;
+    try {
+      module = await import(fileUrl);
+    } catch (err) {
+      // Un seul fichier cassé (import manquant, erreur de syntaxe) ne doit
+      // pas empêcher tout le bot de démarrer.
+      failed += 1;
+      logger.error({ err, file }, `Commande ignorée (chargement impossible): ${file}`);
+      continue;
+    }
+
     const command = module.default;
 
     if (!command?.name || typeof command.execute !== 'function') {
+      failed += 1;
       logger.warn(`Commande ignorée (format invalide): ${file}`);
       continue;
     }
@@ -46,6 +60,14 @@ export async function loadCommands() {
     }
 
     logger.info(`Commande chargée: ${command.name}`);
+  }
+
+  if (failed) {
+    logger.warn(`${failed} commande(s) sur ${files.length} n'ont pas pu être chargées.`);
+  }
+
+  if (commands.size === 0) {
+    throw new Error(`Aucune commande n'a pu être chargée depuis ${commandsDir}.`);
   }
 
   return commands;

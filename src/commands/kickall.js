@@ -1,5 +1,6 @@
 import { normalizeJid, resolveSparedJids } from '../utils/groupTarget.js';
 import { config } from '../config/index.js';
+import { logger } from '../utils/logger.js';
 
 const CHUNK_SIZE = 20; // limite raisonnable par appel groupParticipantsUpdate
 
@@ -53,6 +54,7 @@ export default {
           removed += result.filter((r) => r.status === '200').length;
           failed += result.filter((r) => r.status !== '200').length;
         } catch (err) {
+          logger.warn({ err, chatId: ctx.chatId, size: batch.length }, 'kickall: lot non retiré');
           failed += batch.length;
         }
       }

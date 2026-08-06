@@ -4,6 +4,7 @@
  */
 
 import { askMistral } from '../../utils/mistral.js';
+import { logger } from '../../utils/logger.js';
 import { resolveTextSource } from '../utils/textSourceResolver.js';
 
 export const proRewriteTool = {
@@ -21,9 +22,7 @@ export const proRewriteTool = {
     
     if (!textToRewrite) {
       const errorMsg = 'Aucun texte à réécrire. Fournissez un texte, répondez à un message ou assurez-vous que la session contient du texte.';
-      if (ctx.msg) {
-        console.error('Structure du message reçu lors de l\'échec:', JSON.stringify(ctx.msg, null, 2));
-      }
+      logger.debug({ msg: ctx.msg }, 'rewrite_professional: aucune source de texte résolue');
       throw new Error(errorMsg);
     }
 
@@ -54,10 +53,11 @@ Réponds UNIQUEMENT avec la version réécrite, sans commentaires.
     try {
       const response = await askMistral(`${systemPrompt}\n\n${userPrompt}`);
       return response;
-    } catch (error) {
-      console.error('Erreur Mistral:', error);
-      // Fallback pour ne pas échouer silencieusement si Mistral est indisponible
-      return `(Version professionnelle non disponible)\n\n${textToRewrite}`;
+    } catch (err) {
+      // Fallback: on rend le texte d'origine, mais l'utilisateur doit savoir
+      // pourquoi il n'a pas été réécrit, et la cause doit rester dans les logs.
+      logger.error({ err }, 'rewrite_professional: appel Mistral échoué');
+      return `(Version professionnelle non disponible : ${err.message})\n\n${textToRewrite}`;
     }
   },
 };

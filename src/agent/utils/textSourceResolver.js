@@ -9,6 +9,7 @@
  */
 
 import { getTextContent, getQuotedInfo } from '../../utils/quotedContent.js';
+import { logger } from '../../utils/logger.js';
 import { getSession } from '../sessionMemory.js';
 
 /**
@@ -63,8 +64,8 @@ export function resolveTextSource(ctx) {
     if (currentText?.trim()) {
       return currentText;
     }
-  } catch (error) {
-    console.warn('Impossible d\'extraire le texte du message actuel:', error.message);
+  } catch (err) {
+    logger.warn({ err }, 'Impossible d\'extraire le texte du message actuel');
   }
 
 
