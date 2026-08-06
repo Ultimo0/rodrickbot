@@ -41,7 +41,9 @@ function ensure(chatId) {
 }
 
 export function getGroupSettings(chatId) {
-  return settings[chatId] ? { ...DEFAULTS, ...settings[chatId] } : { ...DEFAULTS };
+  // Copie profonde : une copie superficielle partagerait les objets imbriqués
+  // (welcome/bye/antilink) avec DEFAULTS, donc entre tous les groupes.
+  return structuredClone({ ...DEFAULTS, ...settings[chatId] });
 }
 
 export function setWelcome(chatId, enabled, message = null) {

@@ -107,6 +107,7 @@ export function getSessionStats() {
 
 // Nettoyage proactif pour éviter les fuites de mémoire à long terme
 const PRUNE_INTERVAL_MS = 5 * 60 * 1000; // Toutes les 5 minutes
-setInterval(() => {
+const pruneIntervalHandle = setInterval(() => {
   pruneExpiredSessions();
 }, PRUNE_INTERVAL_MS);
+pruneIntervalHandle.unref?.(); // ne doit pas empêcher le process de s'arrêter proprement
