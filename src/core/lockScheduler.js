@@ -13,7 +13,12 @@ async function runAction(sock, chatId, action) {
   } catch (err) {
     logger.warn({ err, chatId }, "Impossible d'exécuter l'action programmée (lock/unlock)");
   } finally {
-    clearSchedule(chatId);
+    try {
+      clearSchedule(chatId);
+    } catch (err) {
+      // Une erreur ici remplacerait l'erreur d'origine si elle remontait.
+      logger.error({ err, chatId }, "Impossible de retirer l'action programmée du disque");
+    }
   }
 }
 

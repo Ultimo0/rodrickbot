@@ -1,6 +1,5 @@
-import { readFileSync, writeFileSync, existsSync } from 'fs';
 import path from 'path';
-import { logger } from '../utils/logger.js';
+import { readJsonFile, writeJsonFile } from '../utils/jsonStore.js';
 
 const DATA_FILE = path.join(process.cwd(), 'warnings.json');
 export const WARN_LIMIT = 3;
@@ -8,20 +7,12 @@ export const WARN_LIMIT = 3;
 let warnings = {}; // { [chatId]: { [jid]: count } }
 
 function load() {
-  if (!existsSync(DATA_FILE)) return;
-  try {
-    warnings = JSON.parse(readFileSync(DATA_FILE, 'utf-8'));
-  } catch (err) {
-    logger.warn({ err }, 'Impossible de lire warnings.json, valeurs par défaut utilisées');
-  }
+  warnings = readJsonFile(DATA_FILE, {}, 'warnings.json');
 }
 
+/** Lève une erreur si l'écriture échoue : l'appelant doit le signaler. */
 function persist() {
-  try {
-    writeFileSync(DATA_FILE, JSON.stringify(warnings, null, 2));
-  } catch (err) {
-    logger.error({ err }, "Impossible d'écrire warnings.json");
-  }
+  writeJsonFile(DATA_FILE, warnings, 'warnings.json');
 }
 
 load();

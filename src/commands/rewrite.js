@@ -4,6 +4,7 @@
  */
 
 import { proRewriteTool } from '../agent/tools/proRewriteTool.js';
+import { logger } from '../utils/logger.js';
 import { resolveTextSource } from '../agent/utils/textSourceResolver.js';
 
 export default {
@@ -27,9 +28,9 @@ export default {
 
       // Affichage propre sans citation
       await ctx.sock.sendMessage(ctx.chatId, { text: result }, { quoted: ctx.msg });
-    } catch (error) {
-      console.error('Erreur rewrite:', error);
-      await ctx.reply({ text: `❌ Erreur: ${error.message}` });
+    } catch (err) {
+      logger.error({ err, sender: ctx.sender }, 'Erreur pendant !rewrite');
+      await ctx.error(`❌ Erreur: ${err.message}`);
     }
   }
 };

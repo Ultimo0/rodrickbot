@@ -1,6 +1,6 @@
-import { readFileSync, writeFileSync, existsSync } from 'fs';
 import path from 'path';
 import { logger } from '../utils/logger.js';
+import { readJsonFile, writeJsonFile } from '../utils/jsonStore.js';
 
 const STATE_FILE = path.join(process.cwd(), 'state.json');
 
@@ -15,21 +15,12 @@ let state = {
 };
 
 function loadState() {
-  if (!existsSync(STATE_FILE)) return;
-  try {
-    const raw = readFileSync(STATE_FILE, 'utf-8');
-    state = { ...state, ...JSON.parse(raw) };
-  } catch (err) {
-    logger.warn({ err }, 'Impossible de lire state.json, valeurs par défaut utilisées');
-  }
+  state = { ...state, ...readJsonFile(STATE_FILE, {}, 'state.json') };
 }
 
+/** Lève une erreur si l'écriture échoue (l'appelant doit le signaler à l'utilisateur). */
 function saveState() {
-  try {
-    writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
-  } catch (err) {
-    logger.error({ err }, 'Impossible d\'écrire state.json');
-  }
+  writeJsonFile(STATE_FILE, state, 'state.json');
 }
 
 // Écriture différée pour les changements fréquents (ex: commandStats à
@@ -43,9 +34,15 @@ function scheduleSave() {
   dirty = true;
   if (!flushIntervalHandle) {
     flushIntervalHandle = setInterval(() => {
+      // Flush de fond: rien à qui remonter l'erreur, on la trace et on
+      // garde `dirty` à true pour retenter au prochain intervalle.
       if (dirty) {
-        saveState();
-        dirty = false;
+        try {
+          saveState();
+          dirty = false;
+        } catch (err) {
+          logger.error({ err }, 'Flush périodique de state.json échoué, nouvelle tentative dans 30s');
+        }
       }
     }, 30 * 1000);
     flushIntervalHandle.unref?.(); // ne doit pas empêcher le process de s'arrêter proprement
@@ -53,9 +50,12 @@ function scheduleSave() {
 }
 
 function flushPendingSave() {
-  if (dirty) {
+  if (!dirty) return;
+  try {
     saveState();
     dirty = false;
+  } catch (err) {
+    logger.error({ err }, 'Flush final de state.json échoué, les derniers compteurs sont perdus');
   }
 }
 

@@ -5,16 +5,27 @@
  * des bots qui ne font que répondre en texte brut.
  */
 
+import { logger } from './logger.js';
+
 const REACTIONS = {
   success: '✅',
   error: '❌',
   processing: '⏳',
 };
 
+/**
+ * La réaction est purement cosmétique : si WhatsApp la refuse (message
+ * trop ancien, supprimé...), on trace et on continue, sinon l'échec ferait
+ * disparaître la réponse texte qui suit — en particulier le message d'erreur.
+ */
 async function react(sock, msg, emoji) {
-  await sock.sendMessage(msg.key.remoteJid, {
-    react: { text: emoji, key: msg.key },
-  });
+  try {
+    await sock.sendMessage(msg.key.remoteJid, {
+      react: { text: emoji, key: msg.key },
+    });
+  } catch (err) {
+    logger.warn({ err, chatId: msg.key.remoteJid, emoji }, 'Impossible d\'envoyer la réaction');
+  }
 }
 
 /**

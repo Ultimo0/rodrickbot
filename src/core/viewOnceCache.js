@@ -17,20 +17,26 @@ const viewOnceMessages = new Map();
 const CACHE_DURATION_MS = 30 * 60 * 1000; // 30 minutes
 
 export function initViewOnceCache(sock) {
+  // Ce callback est appelé par Baileys sans await: une exception ici
+  // deviendrait un rejet non géré, invisible dans les logs.
   sock.ev.on('messages.upsert', async ({ messages, type }) => {
-    if (type !== 'notify') return;
-    for (const msg of messages) {
-      if (!msg.message) continue;
-      const mediaType = getMediaType(msg.message);
-      if (mediaType) {
-        const id = msg.key.id;
+    try {
+      if (type !== 'notify') return;
+      for (const msg of messages) {
+        if (!msg.message) continue;
+        const mediaType = getMediaType(msg.message);
+        const id = msg.key?.id;
+        if (!mediaType || !id) continue;
+
         viewOnceMessages.set(id, msg);
         logger.info(`[ViewOnceCache] ✅ Stocké (ID: ${id.slice(0, 10)}..., type: ${mediaType})`);
         setTimeout(() => {
           viewOnceMessages.delete(id);
           logger.debug(`[ViewOnceCache] ⏳ Expiré: ${id.slice(0, 10)}...`);
-        }, CACHE_DURATION_MS);
+        }, CACHE_DURATION_MS).unref?.();
       }
+    } catch (err) {
+      logger.warn({ err }, '[ViewOnceCache] Erreur pendant la mise en cache d\'un message');
     }
   });
 }

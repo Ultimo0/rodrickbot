@@ -1,26 +1,17 @@
-import { readFileSync, writeFileSync, existsSync } from 'fs';
 import path from 'path';
-import { logger } from '../utils/logger.js';
+import { readJsonFile, writeJsonFile } from '../utils/jsonStore.js';
 
 const DATA_FILE = path.join(process.cwd(), 'lock_schedules.json');
 
 let schedules = {};
 
 function load() {
-  if (!existsSync(DATA_FILE)) return;
-  try {
-    schedules = JSON.parse(readFileSync(DATA_FILE, 'utf-8'));
-  } catch (err) {
-    logger.warn({ err }, 'Impossible de lire lock_schedules.json, valeurs par défaut utilisées');
-  }
+  schedules = readJsonFile(DATA_FILE, {}, 'lock_schedules.json');
 }
 
+/** Lève une erreur si l'écriture échoue : l'appelant doit le signaler. */
 function persist() {
-  try {
-    writeFileSync(DATA_FILE, JSON.stringify(schedules, null, 2));
-  } catch (err) {
-    logger.error({ err }, "Impossible d'écrire lock_schedules.json");
-  }
+  writeJsonFile(DATA_FILE, schedules, 'lock_schedules.json');
 }
 
 load();

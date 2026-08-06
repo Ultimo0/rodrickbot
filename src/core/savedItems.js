@@ -1,6 +1,7 @@
-import { readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync, unlinkSync } from 'fs';
 import path from 'path';
 import { logger } from '../utils/logger.js';
+import { readJsonFile, writeJsonFile } from '../utils/jsonStore.js';
 
 /**
  * Stockage persistant "clé -> contenu" partagé par les commandes !save et
@@ -17,19 +18,27 @@ const MEDIA_DIR = path.join(process.cwd(), 'saved_media');
 let items = {};
 
 function load() {
-  if (!existsSync(DATA_FILE)) return;
-  try {
-    items = JSON.parse(readFileSync(DATA_FILE, 'utf-8'));
-  } catch (err) {
-    logger.warn({ err }, 'Impossible de lire saved_items.json, valeurs par défaut utilisées');
-  }
+  items = readJsonFile(DATA_FILE, {}, 'saved_items.json');
 }
 
+/** Lève une erreur si l'écriture échoue : !save ne doit pas annoncer un faux succès. */
 function persist() {
+  writeJsonFile(DATA_FILE, items, 'saved_items.json');
+}
+
+/**
+ * Applique une modification de `items` et la persiste. Si la persistance
+ * échoue, l'état en mémoire est restauré pour rester cohérent avec le
+ * disque, puis l'erreur est remontée à l'appelant.
+ */
+function commit(mutate) {
+  const snapshot = { ...items };
+  mutate();
   try {
-    writeFileSync(DATA_FILE, JSON.stringify(items, null, 2));
+    persist();
   } catch (err) {
-    logger.error({ err }, "Impossible d'écrire saved_items.json");
+    items = snapshot;
+    throw err;
   }
 }
 
@@ -75,14 +84,15 @@ export function listItemNames() {
 /** Enregistre un contenu texte sous `name`. */
 export function saveTextItem(name, { text, savedBy, sourceType }) {
   const key = normalize(name);
-  items[key] = {
-    type: 'text',
-    text,
-    savedAt: new Date().toISOString(),
-    savedBy,
-    sourceType, // 'save' ou 'statut' — juste indicatif, même stockage
-  };
-  persist();
+  commit(() => {
+    items[key] = {
+      type: 'text',
+      text,
+      savedAt: new Date().toISOString(),
+      savedBy,
+      sourceType, // 'save' ou 'statut' — juste indicatif, même stockage
+    };
+  });
 }
 
 /** Enregistre un média (image/vidéo/audio) sous `name`. */
@@ -93,17 +103,33 @@ export function saveMediaItem(name, { mediaType, buffer, mimetype, caption, save
   const filePath = path.join(MEDIA_DIR, fileName);
   writeFileSync(filePath, buffer);
 
-  items[key] = {
-    type: mediaType,
-    mediaPath: path.join('saved_media', fileName),
-    mimetype: mimetype || null,
-    caption: caption || '',
-    ptt: Boolean(ptt),
-    savedAt: new Date().toISOString(),
-    savedBy,
-    sourceType,
-  };
-  persist();
+  try {
+    commit(() => {
+      items[key] = {
+        type: mediaType,
+        mediaPath: path.join('saved_media', fileName),
+        mimetype: mimetype || null,
+        caption: caption || '',
+        ptt: Boolean(ptt),
+        savedAt: new Date().toISOString(),
+        savedBy,
+        sourceType,
+      };
+    });
+  } catch (err) {
+    // Le média est sur le disque mais n'est référencé nulle part: on évite
+    // de laisser un fichier orphelin avant de remonter l'erreur.
+    removeMediaFile(filePath, key);
+    throw err;
+  }
+}
+
+function removeMediaFile(fullPath, key) {
+  try {
+    if (existsSync(fullPath)) unlinkSync(fullPath);
+  } catch (err) {
+    logger.warn({ err }, `Impossible de supprimer le fichier média pour "${key}"`);
+  }
 }
 
 /** Supprime un élément (et son fichier média s'il y en a un). Renvoie false si absent. */
@@ -112,16 +138,15 @@ export function deleteItem(name) {
   const item = items[key];
   if (!item) return false;
 
+  // On retire d'abord l'entrée du catalogue: si la persistance échoue,
+  // l'erreur remonte et le fichier média n'a pas encore été supprimé.
+  commit(() => {
+    delete items[key];
+  });
+
   if (item.mediaPath) {
-    const fullPath = path.join(process.cwd(), item.mediaPath);
-    try {
-      if (existsSync(fullPath)) unlinkSync(fullPath);
-    } catch (err) {
-      logger.warn({ err }, `Impossible de supprimer le fichier média pour "${key}"`);
-    }
+    removeMediaFile(path.join(process.cwd(), item.mediaPath), key);
   }
 
-  delete items[key];
-  persist();
   return true;
 }

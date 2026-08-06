@@ -18,7 +18,10 @@ export function createMessageHandler(sock, commands) {
       try {
         await handleSingleMessage(sock, commands, msg);
       } catch (err) {
-        logger.error({ err }, 'Erreur lors du traitement d\'un message');
+        logger.error(
+          { err, chatId: msg.key?.remoteJid, messageId: msg.key?.id },
+          'Erreur lors du traitement d\'un message'
+        );
       }
     }
   };
@@ -35,14 +38,7 @@ async function handleSingleMessage(sock, commands, msg) {
 
   const chatId = msg.key.remoteJid;
   const sender = isGroup(chatId) ? msg.key.participant : chatId;
-  
-  // LOG TEMPORAIRE POUR DIAGNOSTIQUER LES MESSAGES CITÉS
-  if (msg.message.extendedTextMessage?.contextInfo?.quotedMessage ||
-      msg.message.contextInfo?.quotedMessage) {
-    console.log('=== MESSAGE AVEC CITATION DÉTECTÉ ===');
-    console.log('Message complet:', JSON.stringify(msg, null, 2));
-  }
-  
+
   const text = extractText(msg);
 
   if (await handleAntilink(sock, msg, chatId, sender, text)) return;
@@ -113,6 +109,23 @@ async function handleSingleMessage(sock, commands, msg) {
   incrementMessageCount();
   incrementCommandCount(command.name);
   logger.info(`Commande exécutée: ${parsed.command} par ${sender}`);
-  await command.execute(ctx);
+
+  try {
+    await command.execute(ctx);
+  } catch (err) {
+    // Sans ce relais, un échec de commande n'apparaît que dans les logs du
+    // serveur et l'utilisateur reste devant un message sans réponse.
+    logger.error({ err, command: command.name, sender, chatId }, 'Erreur pendant l\'exécution d\'une commande');
+    await notifyCommandFailure(ctx, command.name, err);
+  }
+}
+
+/** Signale l'échec à l'utilisateur; ne masque jamais l'erreur d'origine si l'envoi échoue aussi. */
+async function notifyCommandFailure(ctx, commandName, cause) {
+  try {
+    await ctx.error(`❌ La commande !${commandName} a échoué : ${cause.message}`);
+  } catch (err) {
+    logger.error({ err, command: commandName }, 'Impossible de signaler l\'échec de la commande à l\'utilisateur');
+  }
 }
 

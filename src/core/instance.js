@@ -1,6 +1,5 @@
-import { readFileSync, writeFileSync, existsSync } from 'fs';
 import path from 'path';
-import { logger } from '../utils/logger.js';
+import { readJsonFile, writeJsonFile } from '../utils/jsonStore.js';
 
 const INSTANCE_FILE = path.join(process.cwd(), 'instance.json');
 
@@ -10,21 +9,12 @@ let instance = {
 };
 
 function loadInstance() {
-  if (!existsSync(INSTANCE_FILE)) return;
-  try {
-    const raw = readFileSync(INSTANCE_FILE, 'utf-8');
-    instance = { ...instance, ...JSON.parse(raw) };
-  } catch (err) {
-    logger.warn({ err }, 'Impossible de lire instance.json, le bot sera considéré comme non configuré');
-  }
+  instance = { ...instance, ...readJsonFile(INSTANCE_FILE, {}, 'instance.json') };
 }
 
+/** Lève une erreur si l'écriture échoue : !setup doit répondre par un échec. */
 function saveInstance() {
-  try {
-    writeFileSync(INSTANCE_FILE, JSON.stringify(instance, null, 2));
-  } catch (err) {
-    logger.error({ err }, 'Impossible d\'écrire instance.json');
-  }
+  writeJsonFile(INSTANCE_FILE, instance, 'instance.json');
 }
 
 loadInstance();
@@ -47,6 +37,15 @@ export function setInstance(instanceId, instanceOwner) {
   if (isInstanceConfigured()) {
     throw new Error('Cette instance est déjà configurée et verrouillée.');
   }
+  const previous = instance;
   instance = { instanceId, instanceOwner };
-  saveInstance();
+
+  try {
+    saveInstance();
+  } catch (err) {
+    // Sans persistance, l'instance serait "configurée" en mémoire mais
+    // repartirait non configurée au redémarrage : on annule et on remonte.
+    instance = previous;
+    throw err;
+  }
 }

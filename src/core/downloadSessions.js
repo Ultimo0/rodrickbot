@@ -6,6 +6,8 @@
  * utiliser une fois le choix reçu (voir utils/downloadReply.js).
  */
 
+import { logger } from '../utils/logger.js';
+
 const pending = new Map();
 
 function key(chatId, sender) {
@@ -19,7 +21,13 @@ export function setPendingChoice(chatId, sender, data, timeoutMs, onTimeout) {
 
   const timer = setTimeout(() => {
     pending.delete(k);
-    onTimeout();
+    // `onTimeout` est souvent asynchrone (envoi WhatsApp) : sans ce relais,
+    // son rejet serait un rejet de promesse non géré.
+    Promise.resolve()
+      .then(onTimeout)
+      .catch((err) => {
+        logger.warn({ err, chatId, sender }, 'Erreur dans le callback d\'expiration d\'une session de téléchargement');
+      });
   }, timeoutMs);
 
   pending.set(k, { data, timer });

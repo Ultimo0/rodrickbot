@@ -1,5 +1,6 @@
 import { extractTikTokUrl, fetchTikTokData } from '../utils/tiktok.js';
 import { setPendingChoice } from '../core/downloadSessions.js';
+import { logger } from '../utils/logger.js';
 
 const CHOICE_TIMEOUT_MS = 30 * 1000;
 
@@ -35,8 +36,9 @@ export default {
     setPendingChoice(ctx.chatId, ctx.sender, { type: 'tiktok', ...data }, CHOICE_TIMEOUT_MS, async () => {
       try {
         await ctx.sock.sendMessage(ctx.chatId, { text: '> ⌛ Délai expiré, demande annulée.' }, { quoted: ctx.msg });
-      } catch {
-        // le chat n'existe peut-être plus, on ignore
+      } catch (err) {
+        // Le chat n'existe peut-être plus : rien à faire, mais on garde la trace.
+        logger.debug({ err, chatId: ctx.chatId }, 'Notification d\'expiration !tiktok non envoyée');
       }
     });
 

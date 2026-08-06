@@ -1,6 +1,6 @@
 import { isAdmin } from '../config/index.js';
 import { getGroupSettings } from '../core/groupSettings.js';
-import { addWarn, WARN_LIMIT } from '../core/warnStore.js';
+import { addWarn, getWarns, WARN_LIMIT } from '../core/warnStore.js';
 import { isGroupAdmin } from './groupMetadataCache.js';
 import { isGroup } from './helpers.js';
 import { logger } from './logger.js';
@@ -29,7 +29,16 @@ export async function handleAntilink(sock, msg, chatId, sender, text) {
   }
 
   const number = sender.split('@')[0].split(':')[0];
-  const count = addWarn(chatId, sender);
+
+  let count;
+  try {
+    count = addWarn(chatId, sender);
+  } catch (err) {
+    // L'avertissement est compté en mémoire mais pas persisté : on continue
+    // la modération plutôt que d'abandonner un message déjà supprimé.
+    logger.error({ err, chatId, sender }, 'Antilink: avertissement non persisté (perdu au redémarrage)');
+    count = getWarns(chatId, sender);
+  }
 
   if (count >= WARN_LIMIT) {
     try {

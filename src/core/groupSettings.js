@@ -1,6 +1,5 @@
-import { readFileSync, writeFileSync, existsSync } from 'fs';
 import path from 'path';
-import { logger } from '../utils/logger.js';
+import { readJsonFile, writeJsonFile } from '../utils/jsonStore.js';
 
 /** Paramètres persistants par groupe : welcome, bye, antilink. */
 
@@ -9,20 +8,12 @@ const DATA_FILE = path.join(process.cwd(), 'group_settings.json');
 let settings = {};
 
 function load() {
-  if (!existsSync(DATA_FILE)) return;
-  try {
-    settings = JSON.parse(readFileSync(DATA_FILE, 'utf-8'));
-  } catch (err) {
-    logger.warn({ err }, 'Impossible de lire group_settings.json, valeurs par défaut utilisées');
-  }
+  settings = readJsonFile(DATA_FILE, {}, 'group_settings.json');
 }
 
+/** Lève une erreur si l'écriture échoue : la commande appelante doit répondre par un échec. */
 function persist() {
-  try {
-    writeFileSync(DATA_FILE, JSON.stringify(settings, null, 2));
-  } catch (err) {
-    logger.error({ err }, "Impossible d'écrire group_settings.json");
-  }
+  writeJsonFile(DATA_FILE, settings, 'group_settings.json');
 }
 
 load();
