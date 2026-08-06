@@ -21,7 +21,6 @@ export async function fetchYoutubeData(url) {
   const info = await youtubedl(url, {
     dumpSingleJson: true,
     noWarnings: true,
-    noCheckCertificates: true,
     preferFreeFormats: true,
     noPlaylist: true,
   });
@@ -43,7 +42,6 @@ async function runDownload(url, extraArgs, extension) {
       output: outputPath,
       noPlaylist: true,
       noWarnings: true,
-      noCheckCertificates: true,
       ffmpegLocation: ffmpegPath,
       ...extraArgs,
     });

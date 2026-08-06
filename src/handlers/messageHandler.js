@@ -35,14 +35,7 @@ async function handleSingleMessage(sock, commands, msg) {
 
   const chatId = msg.key.remoteJid;
   const sender = isGroup(chatId) ? msg.key.participant : chatId;
-  
-  // LOG TEMPORAIRE POUR DIAGNOSTIQUER LES MESSAGES CITÉS
-  if (msg.message.extendedTextMessage?.contextInfo?.quotedMessage ||
-      msg.message.contextInfo?.quotedMessage) {
-    console.log('=== MESSAGE AVEC CITATION DÉTECTÉ ===');
-    console.log('Message complet:', JSON.stringify(msg, null, 2));
-  }
-  
+
   const text = extractText(msg);
 
   if (await handleAntilink(sock, msg, chatId, sender, text)) return;
