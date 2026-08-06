@@ -16,6 +16,7 @@ lock_schedules.json
 state.json
 group_settings.json
 warnings.json
+promotion_guard_warnings.json
 
 # Fichiers temporaires / logs
 *.log

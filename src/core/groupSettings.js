@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
 import path from 'path';
 import { logger } from '../utils/logger.js';
 
-/** Paramètres persistants par groupe : welcome, bye, antilink. */
+/** Paramètres persistants par groupe : welcome, bye, antilink, antipromote. */
 
 const DATA_FILE = path.join(process.cwd(), 'group_settings.json');
 
@@ -31,6 +31,7 @@ const DEFAULTS = {
   welcome: { enabled: false, message: null },
   bye: { enabled: false, message: null },
   antilink: { enabled: false },
+  antipromote: { enabled: false },
 };
 
 function ensure(chatId) {
@@ -61,5 +62,11 @@ export function setBye(chatId, enabled, message = null) {
 export function setAntilink(chatId, enabled) {
   const g = ensure(chatId);
   g.antilink = { enabled };
+  persist();
+}
+
+export function setAntipromote(chatId, enabled) {
+  const g = ensure(chatId);
+  g.antipromote = { enabled };
   persist();
 }

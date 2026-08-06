@@ -1,4 +1,5 @@
 import { getGroupSettings } from '../core/groupSettings.js';
+import { handlePromoteGuard } from '../utils/antipromote.js';
 import { logger } from '../utils/logger.js';
 
 function applyPlaceholders(template, { number, groupName }) {
@@ -6,8 +7,15 @@ function applyPlaceholders(template, { number, groupName }) {
 }
 
 export function createGroupParticipantsHandler(sock) {
-  return async ({ id: chatId, participants, action }) => {
+  return async ({ id: chatId, participants, action, author }) => {
     try {
+      // Géré à part : ce n'est pas welcome/bye, et on veut réagir même si
+      // welcome/bye sont désactivés pour ce groupe.
+      if (action === 'promote') {
+        await handlePromoteGuard(sock, chatId, author, participants);
+        return;
+      }
+
       if (action !== 'add' && action !== 'remove') return;
 
       const settings = getGroupSettings(chatId);
@@ -42,7 +50,7 @@ export function createGroupParticipantsHandler(sock) {
         await sock.sendMessage(chatId, { text, mentions: [jid] });
       }
     } catch (err) {
-      logger.warn({ err }, 'Erreur lors du traitement welcome/bye');
+      logger.warn({ err }, 'Erreur lors du traitement de group-participants.update');
     }
   };
 }
