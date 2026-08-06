@@ -1,7 +1,5 @@
 import { extractTikTokUrl, fetchTikTokData } from '../utils/tiktok.js';
-import { setPendingChoice } from '../core/downloadSessions.js';
-
-const CHOICE_TIMEOUT_MS = 30 * 1000;
+import { promptDownloadChoice } from '../utils/downloadChoice.js';
 
 export default {
   name: 'tiktok',
@@ -32,20 +30,6 @@ export default {
       return;
     }
 
-    setPendingChoice(ctx.chatId, ctx.sender, { type: 'tiktok', ...data }, CHOICE_TIMEOUT_MS, async () => {
-      try {
-        await ctx.sock.sendMessage(ctx.chatId, { text: '> ⌛ Délai expiré, demande annulée.' }, { quoted: ctx.msg });
-      } catch {
-        // le chat n'existe peut-être plus, on ignore
-      }
-    });
-
-    await ctx.reply({
-      text:
-        '🎬 Quel format voulez-vous télécharger ?\n\n' +
-        '1️⃣ Audio (MP3)\n' +
-        '2️⃣ Vidéo (MP4)\n\n' +
-        'Répondez avec 1 ou 2 (délai: 30 secondes)',
-    });
+    await promptDownloadChoice(ctx, { type: 'tiktok', ...data });
   },
 };

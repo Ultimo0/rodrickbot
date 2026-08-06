@@ -1,5 +1,6 @@
 import { resolveInputText } from '../utils/textInput.js';
 import { correctText } from '../utils/mistral.js';
+import { truncateText } from '../utils/helpers.js';
 import { logger } from '../utils/logger.js';
 
 const MAX_CHARS = 20000; // limite raisonnable pour rester dans la fenêtre de contexte du modèle
@@ -26,27 +27,21 @@ export default {
       return;
     }
 
-    let text = result.text.trim();
+    const trimmed = result.text.trim();
 
-    if (text.length < MIN_CHARS) {
+    if (trimmed.length < MIN_CHARS) {
       await ctx.error('Le texte fourni est trop court pour être corrigé.');
       return;
     }
 
-    let truncated = false;
-    if (text.length > MAX_CHARS) {
-      text = text.slice(0, MAX_CHARS);
-      truncated = true;
-    }
+    const { text, truncated } = truncateText(trimmed, MAX_CHARS);
 
     await ctx.processing();
 
     try {
       const corrected = await correctText(text);
       const prefix = `✅ *Texte corrigé*${truncated ? ' — texte tronqué avant correction' : ''}\n\n`;
-      // Envoi direct (sans ctx.reply) : ctx.reply préfixe chaque ligne par
-      // "> " (citation WhatsApp), illisible sur un texte long.
-      await ctx.sock.sendMessage(ctx.chatId, { text: prefix + corrected }, { quoted: ctx.msg });
+      await ctx.replyRaw({ text: prefix + corrected });
       await ctx.success();
     } catch (err) {
       logger.warn({ err }, 'Erreur lors de la correction');

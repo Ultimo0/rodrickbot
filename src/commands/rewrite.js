@@ -25,8 +25,7 @@ export default {
         text: textToRewrite, // S'assurer que le texte résolu est prioritaire
       });
 
-      // Affichage propre sans citation
-      await ctx.sock.sendMessage(ctx.chatId, { text: result }, { quoted: ctx.msg });
+      await ctx.replyRaw({ text: result });
     } catch (error) {
       console.error('Erreur rewrite:', error);
       await ctx.reply({ text: `❌ Erreur: ${error.message}` });

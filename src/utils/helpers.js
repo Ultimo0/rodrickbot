@@ -54,6 +54,16 @@ export function groupByCategory(commandList) {
   return groups;
 }
 
+/**
+ * Tronque un texte à `max` caractères. Renvoie le texte (éventuellement
+ * raccourci) et un drapeau `truncated`. Utilisé par les commandes IA pour
+ * rester dans la fenêtre de contexte du modèle.
+ */
+export function truncateText(text, max) {
+  if (text.length <= max) return { text, truncated: false };
+  return { text: text.slice(0, max), truncated: true };
+}
+
 /** Formate un nombre de secondes en durée lisible (ex: "2j 3h 14min 5s"). */
 export function formatUptime(seconds) {
   const d = Math.floor(seconds / 86400);

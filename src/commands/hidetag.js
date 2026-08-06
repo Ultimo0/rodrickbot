@@ -5,10 +5,7 @@ export default {
   adminOnly: true,
   privateOnly: false,
   execute: async (ctx) => {
-    if (!ctx.isGroup) {
-      await ctx.error('Cette commande fonctionne uniquement dans un groupe.');
-      return;
-    }
+    if (!(await ctx.requireGroup())) return;
 
     const quotedText = ctx.msg.message?.extendedTextMessage?.contextInfo?.quotedMessage?.conversation;
     const text = ctx.args.join(' ') || quotedText;
