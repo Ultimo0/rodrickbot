@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
 import path from 'path';
 import { logger } from '../utils/logger.js';
 
-/** Paramètres persistants par groupe : welcome, bye, antilink, antipromote, guardian. */
+/** Paramètres persistants par groupe : welcome, bye, antilink, antipromote, guardian, antispam. */
 
 const DATA_FILE = path.join(process.cwd(), 'group_settings.json');
 
@@ -33,6 +33,7 @@ const DEFAULTS = {
   antilink: { enabled: false },
   antipromote: { enabled: false },
   guardian: { enabled: false, snapshot: null },
+  antispam: { enabled: false, messageLimit: 5, windowSeconds: 8 },
 };
 
 function ensure(chatId) {
@@ -87,5 +88,17 @@ export function setGuardian(chatId, enabled) {
 export function setGuardianSnapshot(chatId, snapshot) {
   const g = ensure(chatId);
   g.guardian = { ...(g.guardian || DEFAULTS.guardian), snapshot };
+  persist();
+}
+
+export function setAntispam(chatId, enabled) {
+  const g = ensure(chatId);
+  g.antispam = { ...(g.antispam || DEFAULTS.antispam), enabled };
+  persist();
+}
+
+export function setAntispamConfig(chatId, messageLimit, windowSeconds) {
+  const g = ensure(chatId);
+  g.antispam = { ...(g.antispam || DEFAULTS.antispam), messageLimit, windowSeconds };
   persist();
 }

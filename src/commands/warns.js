@@ -3,6 +3,7 @@ import { getWarns, resetWarns, WARN_LIMIT } from '../core/warnStore.js';
 
 export default {
   name: 'warns',
+  aliases: ['warnings'],
   description:
     "Affiche les avertissements d'un membre, ou les réinitialise avec !warns reset @membre.",
   category: 'Modération',
