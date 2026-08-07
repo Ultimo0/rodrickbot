@@ -30,7 +30,13 @@ async function handleSingleMessage(sock, commands, msg) {
   // Interrupteur à distance
   if (isRemotelyDisabled()) return;
 
-  const isSelfTest = msg.key.fromMe && config.allowSelfTest && !isGroup(msg.key.remoteJid);
+  // fromMe = message envoyé depuis le compte du bot lui-même. Comme le bot
+  // tourne sur le compte personnel du propriétaire, ça inclut aussi bien ses
+  // messages de test en privé que ses propres commandes tapées en groupe —
+  // les deux doivent être traités (contrairement aux messages fromMe qui
+  // seraient de simples échos des propres envois du bot, filtrés plus loin
+  // par le fait qu'ils ne matchent pas le préfixe de commande).
+  const isSelfTest = msg.key.fromMe && config.allowSelfTest;
   if (msg.key.fromMe && !isSelfTest) return;
 
   const chatId = msg.key.remoteJid;
@@ -115,4 +121,3 @@ async function handleSingleMessage(sock, commands, msg) {
   logger.info(`Commande exécutée: ${parsed.command} par ${sender}`);
   await command.execute(ctx);
 }
-

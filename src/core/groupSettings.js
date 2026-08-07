@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
 import path from 'path';
 import { logger } from '../utils/logger.js';
 
-/** Paramètres persistants par groupe : welcome, bye, antilink, antipromote. */
+/** Paramètres persistants par groupe : welcome, bye, antilink, antipromote, guardian. */
 
 const DATA_FILE = path.join(process.cwd(), 'group_settings.json');
 
@@ -32,6 +32,7 @@ const DEFAULTS = {
   bye: { enabled: false, message: null },
   antilink: { enabled: false },
   antipromote: { enabled: false },
+  guardian: { enabled: false, snapshot: null },
 };
 
 function ensure(chatId) {
@@ -68,5 +69,23 @@ export function setAntilink(chatId, enabled) {
 export function setAntipromote(chatId, enabled) {
   const g = ensure(chatId);
   g.antipromote = { enabled };
+  persist();
+}
+
+/**
+ * `g.guardian` peut être absent sur un groupe créé avant l'ajout de cette
+ * fonctionnalité (ensure() ne rétro-remplit pas les clés manquantes) : on
+ * retombe sur DEFAULTS.guardian pour éviter une erreur en lisant une
+ * propriété d'`undefined`.
+ */
+export function setGuardian(chatId, enabled) {
+  const g = ensure(chatId);
+  g.guardian = { ...(g.guardian || DEFAULTS.guardian), enabled };
+  persist();
+}
+
+export function setGuardianSnapshot(chatId, snapshot) {
+  const g = ensure(chatId);
+  g.guardian = { ...(g.guardian || DEFAULTS.guardian), snapshot };
   persist();
 }
