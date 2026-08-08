@@ -1,0 +1,150 @@
+/**
+ * Thème "Classique" : sobre, simple, très lisible, compatible avec tous
+ * les appareils. Contrairement aux autres thèmes, aucune police Unicode
+ * stylisée n'est utilisée pour les titres (juste du gras WhatsApp *ainsi*)
+ * — c'est un choix délibéré pour maximiser la lisibilité et éviter les
+ * soucis de rendu sur les téléphones/polices exotiques.
+ */
+import { boxTop, boxBottom, hLine } from '../utils/boxDrawing.js';
+
+const BOX = { tl: '╭', tr: '╮', bl: '╰', br: '╯', h: '─' };
+const ACCENT = '🤖';
+
+function footer({ version, prefix, developerName }) {
+  return [hLine(19, BOX.h), `Version : ${version} · Préfixe : ${prefix}`, `Développeur : ${developerName}`].join(
+    '\n'
+  );
+}
+
+export default {
+  name: 'classique',
+  label: 'Classique',
+
+  renderMainMenu(data) {
+    const lines = [
+      boxTop(18, BOX),
+      `   ${ACCENT} *${data.botName.toUpperCase()}*`,
+      boxBottom(18, BOX),
+      '',
+      `👤 Utilisateur : ${data.senderName}`,
+      `📅 Date : ${data.dateStr}`,
+      `⏰ Heure : ${data.timeStr}`,
+      `⏱ Uptime : ${data.uptime}`,
+      `📶 Ping : ${data.ping} ms`,
+      `💾 RAM : ${data.ramMb} Mo`,
+      `🔒 Mode : ${data.mode}`,
+      `📊 Commandes : ${data.commandCount}`,
+      `🎨 Thème : ${ACCENT} ${data.themeLabel}`,
+      '',
+      boxTop(18, BOX),
+      `    📂 *CATÉGORIES*`,
+      boxBottom(18, BOX),
+      '',
+    ];
+
+    for (const cat of data.categories) {
+      lines.push(`${cat.icon} *${cat.label}* (${cat.count})`);
+    }
+
+    lines.push('', '💡 Accède à un sous-menu :');
+    for (const cat of data.categories) {
+      lines.push(`➜ ${data.prefix}menu ${cat.key}`);
+    }
+
+    lines.push('', footer(data.footer));
+    return lines.join('\n');
+  },
+
+  renderCategoryMenu(data) {
+    const lines = [
+      boxTop(19, BOX),
+      ` ${data.category.icon} *${data.category.label.toUpperCase()}*`,
+      boxBottom(19, BOX),
+      '',
+    ];
+
+    for (const cmd of data.commands) {
+      lines.push(`➜ ${data.prefix}${cmd.name}${cmd.tagsSuffix}`);
+      lines.push(`   ${cmd.description}`);
+      lines.push('');
+    }
+
+    if (!data.commands.length) {
+      lines.push('Aucune commande disponible dans cette catégorie pour le moment.', '');
+    }
+
+    lines.push(`Retour au menu : ${data.prefix}menu`, '', footer(data.footer));
+    return lines.join('\n');
+  },
+
+  renderCommandDetail(data) {
+    const lines = [
+      boxTop(19, BOX),
+      ` ➜ *${data.prefix}${data.cmd.name}*`,
+      boxBottom(19, BOX),
+      '',
+      `${data.cmd.description}${data.cmd.tagsSuffix}`,
+    ];
+
+    if (data.cmd.category) lines.push(`Catégorie : ${data.cmd.category}`);
+    if (data.cmd.aliases.length) lines.push(`Alias : ${data.cmd.aliases.join(', ')}`);
+    lines.push('', footer(data.footer));
+
+    return lines.join('\n');
+  },
+
+  renderStartup(data) {
+    const lines = [boxTop(19, BOX), `   ${ACCENT} *${data.botName}*`, boxBottom(19, BOX), ''];
+
+    if (data.configured) {
+      lines.push('▸ *Statut*', '  ✅ Configurée', '');
+      lines.push('▸ *Instance*', `  ${data.instanceId}`, '');
+      lines.push('▸ *Propriétaire*', `  ${data.instanceOwner}`);
+    } else {
+      lines.push('▸ *Statut*', '  ⚠️ Non configurée', '');
+      lines.push('▸ *A faire*', `  ${data.prefix}setup <identifiant> <propriétaire>`);
+    }
+
+    lines.push('', '▸ *Commandes chargées*', `  ${data.commandCount}`);
+    lines.push('', '▸ *Mode*', `  ${data.mode}`);
+    lines.push(hLine(22, BOX.h));
+    // Le marqueur "> " est volontairement fixe, non thémé, quel que soit
+    // le thème actif : c'est l'identité visuelle constante du bot.
+    lines.push(`> ${data.signature}`);
+
+    return lines.join('\n');
+  },
+
+  renderWelcome(data) {
+    return [
+      boxTop(20, BOX),
+      `${ACCENT}  WELCOME  ${ACCENT}`,
+      boxBottom(20, BOX),
+      '',
+      `👤 Utilisateur : *@${data.number}*`,
+      `🏡 Groupe : *${data.groupName}*`,
+      '',
+      '🎊 Toute la communauté te souhaite la bienvenue !',
+      '',
+      '📜 *Règles*',
+      '✅ Respect',
+      '✅ Bonne humeur',
+      '✅ Entraide',
+      '',
+      '🚀 Profite de ton séjour parmi nous !',
+    ].join('\n');
+  },
+
+  renderBye(data) {
+    return [
+      boxTop(18, BOX),
+      `${ACCENT} DÉPART D'UN MEMBRE`,
+      boxBottom(18, BOX),
+      '',
+      `👤 *@${data.number}* a quitté *${data.groupName}*.`,
+      '',
+      '🙏 Merci pour le temps passé avec nous.',
+      '🍀 Bonne chance pour la suite !',
+    ].join('\n');
+  },
+};

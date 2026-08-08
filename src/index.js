@@ -1,5 +1,6 @@
 import { startBaileysClient } from './core/client.js';
 import { loadCommands } from './core/pluginLoader.js';
+import { loadThemes } from './themes/engine.js';
 import { createMessageHandler } from './handlers/messageHandler.js';
 import { config } from './config/index.js';
 import { logger } from './utils/logger.js';
@@ -15,6 +16,7 @@ async function main() {
   logger.info(`Démarrage de ${config.botName}...`);
 
   const commands = await loadCommands();
+  await loadThemes();
   // Même filtre que getVisibleCommands() dans commands/help.js : !help ne se
   // liste pas lui-même dans le menu, donc on l'exclut aussi ici pour que ce
   // chiffre corresponde à celui affiché par !menu (sinon 43 vs 42 au démarrage).

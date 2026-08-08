@@ -33,8 +33,10 @@ export function parseCommand(text, prefix) {
 
 /**
  * Transforme un texte en bloc citation WhatsApp (chaque ligne préfixée
- * par "> "). Utilisé pour donner une identité visuelle cohérente à
- * toutes les réponses du bot — sauf le menu, qui a sa propre mise en page.
+ * par "> "). Marqueur volontairement FIXE, non thémé (identité visuelle
+ * constante du bot) — voir src/themes/ pour ce qui est thémé à la place.
+ * Utilisé pour donner une identité visuelle cohérente à toutes les
+ * réponses du bot — sauf le menu, qui a sa propre mise en page.
  */
 export function toQuoteBlock(text) {
   return text

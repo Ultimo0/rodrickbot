@@ -1,0 +1,129 @@
+/**
+ * Thème "Galaxy" : ambiance cosmique et onirique. Contrairement aux
+ * autres thèmes, pas de boîte rectangulaire — les titres sont encadrés
+ * par une ligne d'étoiles, et la police est la cursive "script" (même
+ * famille que le nom du développeur dans settings.json).
+ *
+ * Sert aussi de preuve concrète d'extensibilité du moteur : ce fichier a
+ * été ajouté sans toucher à engine.js ni à aucun autre thème.
+ */
+import { toScriptFont } from '../utils/fancyFont.js';
+
+const DIVIDER = '✦ ⋆ ｡ ⋆ ✦ ⋆ ｡ ⋆ ✦';
+const ACCENT = '🪐';
+const script = toScriptFont;
+
+function titleBlock(title) {
+  return [DIVIDER, `${ACCENT} ${script(title)}`, DIVIDER].join('\n');
+}
+
+function footer({ version, prefix, developerName }) {
+  return [DIVIDER, `🌠 Version ${version} · Préfixe ${prefix}`, `   Développeur : ${developerName}`].join('\n');
+}
+
+export default {
+  name: 'galaxy',
+  label: 'Galaxy',
+
+  renderMainMenu(data) {
+    const lines = [
+      titleBlock(data.botName.toUpperCase()),
+      '',
+      `🪐 Voyageur : ${data.senderName}`,
+      `🌍 Date : ${data.dateStr}`,
+      `🌙 Heure : ${data.timeStr}`,
+      `🌌 Uptime : ${data.uptime}`,
+      `📡 Ping : ${data.ping} ms`,
+      `💫 Mémoire : ${data.ramMb} Mo`,
+      `🔭 Mode : ${data.mode}`,
+      `🛰 Commandes : ${data.commandCount}`,
+      `✨ Thème : ${ACCENT} ${data.themeLabel}`,
+      '',
+      titleBlock('CONSTELLATIONS'),
+      '',
+    ];
+
+    for (const cat of data.categories) {
+      lines.push(`${cat.icon} ${script(cat.label)} · ${cat.count}`);
+    }
+
+    lines.push('', '🌠 Explore une galaxie :');
+    for (const cat of data.categories) {
+      lines.push(`➜ ${data.prefix}menu ${cat.key}`);
+    }
+
+    lines.push('', footer(data.footer));
+    return lines.join('\n');
+  },
+
+  renderCategoryMenu(data) {
+    const lines = [titleBlock(data.category.label.toUpperCase()), ''];
+
+    for (const cmd of data.commands) {
+      lines.push(`✦ ${data.prefix}${cmd.name}${cmd.tagsSuffix}`);
+      lines.push(`   ${cmd.description}`);
+      lines.push('');
+    }
+
+    if (!data.commands.length) {
+      lines.push('Aucune étoile dans cette constellation pour le moment.', '');
+    }
+
+    lines.push(`🌠 Retour au menu : ${data.prefix}menu`, '', footer(data.footer));
+    return lines.join('\n');
+  },
+
+  renderCommandDetail(data) {
+    const lines = [titleBlock(`${data.prefix}${data.cmd.name}`), '', `${data.cmd.description}${data.cmd.tagsSuffix}`];
+
+    if (data.cmd.category) lines.push(`Constellation : ${data.cmd.category}`);
+    if (data.cmd.aliases.length) lines.push(`Alias : ${data.cmd.aliases.join(', ')}`);
+    lines.push('', footer(data.footer));
+
+    return lines.join('\n');
+  },
+
+  renderStartup(data) {
+    const lines = [titleBlock(data.botName), ''];
+
+    if (data.configured) {
+      lines.push('🪐 Statut', '  ✅ En orbite', '');
+      lines.push('🛰 Instance', `  ${data.instanceId}`, '');
+      lines.push('🌍 Propriétaire', `  ${data.instanceOwner}`);
+    } else {
+      lines.push('🪐 Statut', '  ⚠️ Hors orbite (non configurée)', '');
+      lines.push('🌠 A faire', `  ${data.prefix}setup <identifiant> <propriétaire>`);
+    }
+
+    lines.push('', '✨ Commandes chargées', `  ${data.commandCount}`);
+    lines.push('', '🌙 Mode', `  ${data.mode}`);
+    lines.push(DIVIDER);
+    // Marqueur "> " volontairement fixe, non thémé — identité visuelle
+    // constante du bot, quel que soit le thème actif.
+    lines.push(`> ${script(data.signature)}`);
+
+    return lines.join('\n');
+  },
+
+  renderWelcome(data) {
+    return [
+      titleBlock('NOUVELLE ÉTOILE'),
+      '',
+      `🪐 @${data.number} vient d'entrer dans l'orbite de *${data.groupName}*.`,
+      '',
+      '✨ Que ton passage illumine cette galaxie.',
+      '🌠 Bienvenue parmi les étoiles !',
+    ].join('\n');
+  },
+
+  renderBye(data) {
+    return [
+      titleBlock('ÉTOILE FILANTE'),
+      '',
+      `🌠 @${data.number} quitte l'orbite de *${data.groupName}*.`,
+      '',
+      '🌙 Merci pour la lumière que tu as apportée.',
+      '✦ Bon vent parmi les étoiles ✦',
+    ].join('\n');
+  },
+};

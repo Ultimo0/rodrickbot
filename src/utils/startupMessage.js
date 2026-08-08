@@ -1,52 +1,26 @@
 import { config } from '../config/index.js';
 import { isInstanceConfigured, getInstance } from '../core/instance.js';
 import { isLockdownMode } from '../core/state.js';
-import { toScriptFont } from './fancyFont.js';
+import { getCurrentTheme } from '../themes/engine.js';
 import { logger } from './logger.js';
 
 const OWNER_SIGNATURE = 'Rodrigue Njaka';
-const SEPARATOR = '┈'.repeat(22);
 
 /** Construit le texte du message de démarrage envoyé en privé sur WhatsApp. */
 export function buildStartupMessage(commandCount) {
-  const botNameFancy = toScriptFont(config.botName);
-  const signatureFancy = toScriptFont(OWNER_SIGNATURE);
+  const theme = getCurrentTheme();
+  const instance = isInstanceConfigured() ? getInstance() : null;
 
-  const lines = [
-    '╭───────────────────╮',
-    `   👾 ${botNameFancy}`,
-    '╰───────────────────╯',
-    '',
-  ];
-
-  if (isInstanceConfigured()) {
-    const { instanceId, instanceOwner } = getInstance();
-    lines.push('▸ *Statut*');
-    lines.push('  ✅ Configurée');
-    lines.push('');
-    lines.push('▸ *Instance*');
-    lines.push(`  ${instanceId}`);
-    lines.push('');
-    lines.push('▸ *Propriétaire*');
-    lines.push(`  ${instanceOwner}`);
-  } else {
-    lines.push('▸ *Statut*');
-    lines.push('  ⚠️ Non configurée');
-    lines.push('');
-    lines.push('▸ *À faire*');
-    lines.push(`  ${config.prefix}setup <identifiant> <propriétaire>`);
-  }
-
-  lines.push('');
-  lines.push('▸ *Commandes chargées*');
-  lines.push(`  ${commandCount}`);
-  lines.push('');
-  lines.push('▸ *Mode*');
-  lines.push(`  ${isLockdownMode() ? 'Privé' : 'Public'}`);
-  lines.push(SEPARATOR);
-  lines.push(`> ${signatureFancy}`);
-
-  return lines.join('\n');
+  return theme.renderStartup({
+    botName: config.botName,
+    signature: OWNER_SIGNATURE,
+    configured: isInstanceConfigured(),
+    instanceId: instance?.instanceId,
+    instanceOwner: instance?.instanceOwner,
+    prefix: config.prefix,
+    commandCount,
+    mode: isLockdownMode() ? 'Privé' : 'Public',
+  });
 }
 
 /**

@@ -4,6 +4,7 @@ import { config } from '../config/index.js';
 import { groupByCategory, formatUptime } from '../utils/helpers.js';
 import { isLockdownMode } from '../core/state.js';
 import { sendWithChannelCard } from '../utils/channelCard.js';
+import { getCurrentTheme } from '../themes/engine.js';
 
 const pkg = JSON.parse(readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8'));
 
@@ -22,12 +23,8 @@ const CATEGORY_MENU = [
   { key: 'ia', icon: '🤖', label: 'Intelligence Artificielle', category: 'Intelligence Artificielle' },
 ];
 
-function footerLines() {
-  return [
-    '┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈',
-    `Version: ${pkg.version} · Préfixe: ${config.prefix}`,
-    `Développeur: ${config.developerName}`,
-  ];
+function footerData() {
+  return { version: pkg.version, prefix: config.prefix, developerName: config.developerName };
 }
 
 function commandTagsSuffix(cmd) {
@@ -47,7 +44,7 @@ function getVisibleCommands(ctx) {
   return uniqueCommands.filter((cmd) => cmd.name !== 'help' && (!cmd.adminOnly || ctx.isAdmin));
 }
 
-/** Menu principal : infos du bot + liste des catégories. */
+/** Menu principal : infos du bot + liste des catégories. Le thème actif décide entièrement de la mise en forme. */
 async function sendMainMenu(ctx, visibleCommands) {
   const senderName = ctx.msg.pushName || ctx.sender.split('@')[0];
   const now = new Date();
@@ -60,86 +57,71 @@ async function sendMainMenu(ctx, visibleCommands) {
   const mode = isLockdownMode() ? 'Privé' : 'Public';
 
   const grouped = groupByCategory(visibleCommands);
+  const theme = getCurrentTheme();
 
-  const lines = [
-    '╭━━━━━━━━━━━━━━━━━━╮',
-    `   🤖 *${config.botName.toUpperCase()}*`,
-    '╰━━━━━━━━━━━━━━━━━━╯',
-    '',
-    `👤 Utilisateur : ${senderName}`,
-    `📅 Date : ${dateStr}`,
-    `⏰ Heure : ${timeStr}`,
-    `⏱ Uptime : ${formatUptime(process.uptime())}`,
-    `📶 Ping : ${ping} ms`,
-    `💾 RAM : ${ramMb} Mo`,
-    `🔒 Mode : ${mode}`,
-    `📊 Commandes : ${visibleCommands.length}`,
-    '',
-    '┏━━━━━━━━━━━━━━━━━━┓',
-    '    📂 *CATÉGORIES*',
-    '┗━━━━━━━━━━━━━━━━━━┛',
-    '',
-  ];
+  const categories = CATEGORY_MENU.map((entry) => ({
+    key: entry.key,
+    icon: entry.icon,
+    label: entry.label,
+    count: grouped.get(entry.category)?.length || 0,
+  })).filter((entry) => entry.count > 0);
 
-  for (const entry of CATEGORY_MENU) {
-    const count = grouped.get(entry.category)?.length || 0;
-    if (count === 0) continue;
-    lines.push(`${entry.icon} ${entry.label} (${count})`);
-  }
+  const text = theme.renderMainMenu({
+    botName: config.botName,
+    senderName,
+    dateStr,
+    timeStr,
+    uptime: formatUptime(process.uptime()),
+    ping,
+    ramMb,
+    mode,
+    commandCount: visibleCommands.length,
+    themeLabel: theme.label,
+    categories,
+    prefix: config.prefix,
+    footer: footerData(),
+  });
 
-  lines.push('', '💡 Accède à un sous-menu :');
-  for (const entry of CATEGORY_MENU) {
-    const count = grouped.get(entry.category)?.length || 0;
-    if (count === 0) continue;
-    lines.push(`➜ ${config.prefix}menu ${entry.key}`);
-  }
-
-  lines.push('', ...footerLines());
-
-  await sendWithChannelCard(ctx, lines.join('\n'), { asImage: true });
+  await sendWithChannelCard(ctx, text, { asImage: true });
 }
 
 /** Sous-menu : uniquement les commandes de la catégorie demandée. */
 async function sendCategoryMenu(ctx, entry, visibleCommands) {
   const grouped = groupByCategory(visibleCommands);
   const cmds = grouped.get(entry.category) || [];
+  const theme = getCurrentTheme();
 
-  const lines = [
-    '╭━━━━━━━━━━━━━━━━━━━╮',
-    ` ${entry.icon} *${entry.label.toUpperCase()}*`,
-    '╰━━━━━━━━━━━━━━━━━━━╯',
-    '',
-  ];
+  const text = theme.renderCategoryMenu({
+    category: { icon: entry.icon, label: entry.label },
+    commands: cmds.map((cmd) => ({
+      name: cmd.name,
+      description: withPrefix(cmd.description),
+      tagsSuffix: commandTagsSuffix(cmd),
+    })),
+    prefix: config.prefix,
+    footer: footerData(),
+  });
 
-  for (const cmd of cmds) {
-    lines.push(`➜ ${config.prefix}${cmd.name}${commandTagsSuffix(cmd)}`);
-    lines.push(`   ${withPrefix(cmd.description)}`);
-    lines.push('');
-  }
-
-  if (!cmds.length) {
-    lines.push('Aucune commande disponible dans cette catégorie pour le moment.', '');
-  }
-
-  lines.push(`Retour au menu : ${config.prefix}menu`, '', ...footerLines());
-
-  await sendWithChannelCard(ctx, lines.join('\n'));
+  await sendWithChannelCard(ctx, text);
 }
 
 /** Détail d'une commande précise (comportement historique de !help <commande>). */
 async function sendCommandDetail(ctx, cmd) {
-  const lines = [
-    '╭━━━━━━━━━━━━━━━━━━━╮',
-    ` ➜ *${config.prefix}${cmd.name}*`,
-    '╰━━━━━━━━━━━━━━━━━━━╯',
-    '',
-    `${withPrefix(cmd.description)}${commandTagsSuffix(cmd)}`,
-  ];
-  if (cmd.category) lines.push(`Catégorie : ${cmd.category}`);
-  if (cmd.aliases?.length) lines.push(`Alias : ${cmd.aliases.join(', ')}`);
-  lines.push('', ...footerLines());
+  const theme = getCurrentTheme();
 
-  await sendWithChannelCard(ctx, lines.join('\n'));
+  const text = theme.renderCommandDetail({
+    prefix: config.prefix,
+    cmd: {
+      name: cmd.name,
+      description: withPrefix(cmd.description),
+      tagsSuffix: commandTagsSuffix(cmd),
+      category: cmd.category || null,
+      aliases: cmd.aliases || [],
+    },
+    footer: footerData(),
+  });
+
+  await sendWithChannelCard(ctx, text);
 }
 
 export default {

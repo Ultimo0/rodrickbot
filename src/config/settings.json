@@ -2,6 +2,7 @@
   "botName": "RodrickBOT",
   "developerName": "𝓡𝓸𝓭𝓻𝓲𝓰𝓾𝓮 𝓝𝓳𝓪𝓴𝓪",
   "prefix": "/",
+  "theme": "royal",
   "logLevel": "info",
   "authMethod": "code",
   "allowSelfTest": true,

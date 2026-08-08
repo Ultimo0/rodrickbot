@@ -5,6 +5,31 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/), versionneme
 
 ## [Unreleased]
 
+## [1.14.2]
+### Added
+- `scripts/save-release.js` (`npm run save-release`) : sauvegarde locale d'une version stable dans `releases/v<version>/` (lu depuis `package.json`). Copie `src/`, `assets/`, `scripts/`, `tests/`, `package.json`, `CHANGELOG.md`, `README.md`, `.gitignore` — exclut `node_modules`, `.git`, `.env`, `auth_info/`, et tous les fichiers de données runtime. Refuse d'écraser une version déjà sauvegardée sauf avec `--force`. Purement local : `releases/` est ajouté à `.gitignore`, ce n'est ni un mécanisme de publication ni un remplacement des tags Git.
+
+## [1.14.1]
+### Changed
+- `royal` est maintenant le thème par défaut (au lieu de `classique`), aussi bien dans `src/config/settings.json` que dans `utils/theme.js` (`DEFAULT_THEME`).
+- Le style du thème actif s'étend désormais aux libellés/sections dans le **corps** des messages (pas seulement le grand titre en tête) : `!menu` (labels de catégories, "Version", "CATÉGORIES"), le message de démarrage ("Statut", "Instance", "Propriétaire", "Commandes chargées", "Mode"), et les gabarits welcome/bye par défaut ("Règles"). Le séparateur de pied de page (`themedSeparator`) suit aussi le style de bordure du thème actif.
+- `!menu` affiche maintenant le thème actif (`🎨 Thème : 👑 Royal`).
+
+### Fixed
+- Le marqueur de citation (`> `) est redevenu **fixe**, non thémé (retiré du champ `quote` de chaque thème, supprimé de `utils/theme.js`) — `toQuoteBlock` (`utils/helpers.js`) et le message de démarrage l'utilisent en dur, comme avant l'introduction des thèmes. Au passage, une référence résiduelle à `theme.quote` (supprimé) dans `utils/startupMessage.js` aurait fait planter la signature du message de démarrage ; corrigée avant d'être livrée.
+
+## [1.14.0]
+### Added
+- Système de thèmes visuels : `!theme list` / `!theme <nom>` (admin, effet immédiat, persisté dans `settings.json` — même principe que `!prefix`). 4 thèmes livrés : `classique` (défaut, identique au rendu existant), `royal`, `neon`, `mono` — chacun définit une police Unicode de titre, un style de bordure, un marqueur de citation et un emoji d'accent.
+- `src/utils/theme.js` : registre des thèmes + `getCurrentTheme`/`setTheme`/`listThemeNames`/`boxTop`/`boxBottom`/`themedTitle`.
+- `src/utils/fancyFont.js` : 3 nouvelles polices Unicode (`toBoldFont`, `toSansBoldFont`, `toMonospaceFont`), toutes basées sur des plages continues du bloc Mathematical Alphanumeric Symbols (contrairement à double-struck/fraktur qui ont des exceptions) pour rester simples et sans bug.
+- Application **partout**, sans dupliquer la logique dans chaque commande :
+  - `utils/helpers.js` (`toQuoteBlock`) — le marqueur de citation du thème remplace le `"> "` en dur, donc toutes les réponses via `ctx.reply`/`ctx.success`/`ctx.error` en héritent automatiquement.
+  - `commands/help.js` (menu principal, sous-menus, détail de commande).
+  - `utils/startupMessage.js` (message de démarrage).
+  - `handlers/groupParticipantsHandler.js` (gabarits par défaut welcome/bye — uniquement quand le groupe n'a pas défini son propre message personnalisé).
+- `theme: "classique"` ajouté à `src/config/settings.json`.
+
 ## [1.13.1]
 ### Changed
 - Toutes les descriptions de commandes (`!menu`) référençaient le préfixe en dur (`!nom`), ce qui devenait incohérent depuis l'ajout de `!prefix` (préfixe modifiable à la volée). Chaque référence a été remplacée par un placeholder `{prefix}`, substitué par le préfixe courant au moment de l'affichage (`withPrefix()` dans `commands/help.js`) — donc toujours exact, même après un changement de préfixe.
