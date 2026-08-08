@@ -3,7 +3,7 @@ import { scheduleAutoAction } from '../core/lockScheduler.js';
 
 export default {
   name: 'lock',
-  description: 'Verrouille le groupe : seuls les admins du groupe peuvent écrire. Usage: !lock [durée] (ex: !lock 10min)',
+  description: 'Verrouille le groupe : seuls les admins du groupe peuvent écrire. Usage: {prefix}lock [durée] (ex: {prefix}lock 10min)',
   category: 'Gestion de groupe',
   adminOnly: true,
   privateOnly: false,

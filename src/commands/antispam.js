@@ -6,8 +6,8 @@ export default {
   name: 'antispam',
   description:
     'Supprime les messages en rafale (5 messages en moins de 8s par défaut), avertit, et expulse au ' +
-    "3e avertissement (compteur partagé avec !warn/!warns/l'antilink). " +
-    'Usage: !antispam on|off|status|config <limite> <secondes>|reset @membre',
+    "3e avertissement (compteur partagé avec {prefix}warn/{prefix}warns/l'antilink). " +
+    'Usage: {prefix}antispam on|off|status|config <limite> <secondes>|reset @membre',
   category: 'Modération',
   adminOnly: true,
   privateOnly: false,

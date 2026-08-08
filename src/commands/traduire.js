@@ -9,7 +9,7 @@ export default {
   aliases: ['translate', 'trad'],
   description:
     "Traduit un texte dans la langue demandée, en détectant automatiquement la langue d'origine. " +
-    'Usage: !traduire <langue> <texte>, ou réponds à un message/document (.txt/.md/.csv/.json/.pdf/.docx) avec !traduire <langue>.',
+    'Usage: {prefix}traduire <langue> <texte>, ou réponds à un message/document (.txt/.md/.csv/.json/.pdf/.docx) avec {prefix}traduire <langue>.',
   category: 'Intelligence Artificielle',
   adminOnly: false,
   privateOnly: false,

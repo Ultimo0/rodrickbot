@@ -1,19 +1,19 @@
-import { extractYoutubeUrl, fetchYoutubeData } from '../utils/youtube.js';
+import { extractFacebookUrl, fetchFacebookData } from '../utils/facebook.js';
 import { setPendingChoice } from '../core/downloadSessions.js';
 
 const CHOICE_TIMEOUT_MS = 30 * 1000;
 
 export default {
-  name: 'youtube',
-  aliases: ['yt'],
-  description: 'Télécharge une vidéo YouTube en audio ou vidéo. Usage: {prefix}youtube <lien>',
+  name: 'facebook',
+  aliases: ['fb'],
+  description: 'Télécharge une vidéo Facebook en audio ou vidéo. Usage: {prefix}facebook <lien>',
   category: 'Téléchargement',
   adminOnly: false,
   privateOnly: false,
   execute: async (ctx) => {
-    const url = extractYoutubeUrl(ctx.args.join(' '));
+    const url = extractFacebookUrl(ctx.args.join(' '));
     if (!url) {
-      await ctx.error('Indique un lien YouTube valide. Usage: !youtube <lien>');
+      await ctx.error('Indique un lien Facebook valide. Usage: !facebook <lien>');
       return;
     }
 
@@ -21,14 +21,14 @@ export default {
 
     let title;
     try {
-      const result = await fetchYoutubeData(url);
+      const result = await fetchFacebookData(url);
       title = result.title;
     } catch (err) {
       await ctx.error(`Impossible de récupérer cette vidéo : ${err.message}`);
       return;
     }
 
-    setPendingChoice(ctx.chatId, ctx.sender, { type: 'youtube', title, url }, CHOICE_TIMEOUT_MS, async () => {
+    setPendingChoice(ctx.chatId, ctx.sender, { type: 'facebook', title, url }, CHOICE_TIMEOUT_MS, async () => {
       try {
         await ctx.sock.sendMessage(ctx.chatId, { text: '> ⌛ Délai expiré, demande annulée.' }, { quoted: ctx.msg });
       } catch {

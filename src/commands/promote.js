@@ -12,7 +12,7 @@ function extractDuration(args) {
 export default {
   name: 'promote',
   description:
-    "Donne le statut admin du groupe, temporairement ou non. Usage: !promote en répondant à leur message, en les mentionnant, ou !promote <numero>, avec en plus une durée optionnelle (ex: !promote 10min, !promote 30s, !promote 2h).",
+    "Donne le statut admin du groupe, temporairement ou non. Usage: {prefix}promote en répondant à leur message, en les mentionnant, ou {prefix}promote <numero>, avec en plus une durée optionnelle (ex: {prefix}promote 10min, {prefix}promote 30s, {prefix}promote 2h).",
   category: 'Gestion de groupe',
   adminOnly: true,
   privateOnly: false,

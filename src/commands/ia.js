@@ -3,7 +3,7 @@ import { askMistral } from '../utils/mistral.js';
 export default {
   name: 'ia',
   aliases: ['ai', 'ask'],
-  description: 'Pose une question à l\'IA (Mistral). Usage: !ia <question>',
+  description: 'Pose une question à l\'IA (Mistral). Usage: {prefix}ia <question>',
   category: 'Intelligence Artificielle',
   adminOnly: false,
   privateOnly: false,

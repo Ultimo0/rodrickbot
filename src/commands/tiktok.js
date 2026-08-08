@@ -6,7 +6,7 @@ const CHOICE_TIMEOUT_MS = 30 * 1000;
 export default {
   name: 'tiktok',
   aliases: ['tt'],
-  description: 'Télécharge une vidéo TikTok en audio ou vidéo. Usage: !tiktok <lien>',
+  description: 'Télécharge une vidéo TikTok en audio ou vidéo. Usage: {prefix}tiktok <lien>',
   category: 'Téléchargement',
   adminOnly: false,
   privateOnly: false,

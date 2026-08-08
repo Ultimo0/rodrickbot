@@ -4,7 +4,7 @@ import { addWarn, getWarns, WARN_LIMIT } from '../core/warnStore.js';
 export default {
   name: 'warn',
   description:
-    'Avertit un membre (mention, réponse, ou numéro). 3 avertissements = expulsion automatique. Usage: !warn @membre [raison]',
+    'Avertit un membre (mention, réponse, ou numéro). 3 avertissements = expulsion automatique. Usage: {prefix}warn @membre [raison]',
   category: 'Modération',
   adminOnly: true,
   privateOnly: false,

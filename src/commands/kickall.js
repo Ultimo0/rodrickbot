@@ -12,7 +12,7 @@ function chunk(array, size) {
 export default {
   name: 'kickall',
   description:
-    "Retire tous les membres du groupe (sauf le bot et les admins). Épargne d'autres membres en les mentionnant, en répondant à leur message, ou via !kickall <numero...>",
+    "Retire tous les membres du groupe (sauf le bot et les admins). Épargne d'autres membres en les mentionnant, en répondant à leur message, ou via {prefix}kickall <numero...>",
   category: 'Gestion de groupe',
   adminOnly: true,
   privateOnly: false,

@@ -1,6 +1,6 @@
 export default {
   name: 'echo',
-  description: 'Répète le texte fourni. Exemple: !echo bonjour le monde',
+  description: 'Répète le texte fourni. Exemple: {prefix}echo bonjour le monde',
   category: 'Utilitaires',
   execute: async (ctx) => {
     if (ctx.args.length === 0) {

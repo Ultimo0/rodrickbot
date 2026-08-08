@@ -2,7 +2,7 @@ import { numberToJid } from '../utils/groupTarget.js';
 
 export default {
   name: 'add',
-  description: 'Ajoute un ou plusieurs membres au groupe. Usage: !add <numero> [numero...]',
+  description: 'Ajoute un ou plusieurs membres au groupe. Usage: {prefix}add <numero> [numero...]',
   category: 'Gestion de groupe',
   adminOnly: true,
   privateOnly: false,

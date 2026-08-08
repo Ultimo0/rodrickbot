@@ -37,6 +37,11 @@ function commandTagsSuffix(cmd) {
   return tags.length ? ` _(${tags.join(', ')})_` : '';
 }
 
+/** Remplace le placeholder {prefix} par le préfixe courant dans une description. */
+function withPrefix(text) {
+  return (text || '').replaceAll('{prefix}', config.prefix);
+}
+
 function getVisibleCommands(ctx) {
   const uniqueCommands = [...new Set(ctx.commands.values())];
   return uniqueCommands.filter((cmd) => cmd.name !== 'help' && (!cmd.adminOnly || ctx.isAdmin));
@@ -108,7 +113,7 @@ async function sendCategoryMenu(ctx, entry, visibleCommands) {
 
   for (const cmd of cmds) {
     lines.push(`➜ ${config.prefix}${cmd.name}${commandTagsSuffix(cmd)}`);
-    lines.push(`   ${cmd.description}`);
+    lines.push(`   ${withPrefix(cmd.description)}`);
     lines.push('');
   }
 
@@ -128,7 +133,7 @@ async function sendCommandDetail(ctx, cmd) {
     ` ➜ *${config.prefix}${cmd.name}*`,
     '╰━━━━━━━━━━━━━━━━━━━╯',
     '',
-    `${cmd.description}${commandTagsSuffix(cmd)}`,
+    `${withPrefix(cmd.description)}${commandTagsSuffix(cmd)}`,
   ];
   if (cmd.category) lines.push(`Catégorie : ${cmd.category}`);
   if (cmd.aliases?.length) lines.push(`Alias : ${cmd.aliases.join(', ')}`);
@@ -141,7 +146,7 @@ export default {
   name: 'help',
   aliases: ['aide', 'menu'],
   description:
-    "Affiche le menu principal (catégories), un sous-menu (!menu <categorie>), ou le détail d'une commande (!menu <commande>).",
+    "Affiche le menu principal (catégories), un sous-menu ({prefix}menu <categorie>), ou le détail d'une commande ({prefix}menu <commande>).",
   privateOnly: false,
   execute: async (ctx) => {
     const visibleCommands = getVisibleCommands(ctx);

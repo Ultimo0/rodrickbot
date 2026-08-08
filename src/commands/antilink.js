@@ -3,7 +3,7 @@ import { getGroupSettings, setAntilink } from '../core/groupSettings.js';
 export default {
   name: 'antilink',
   description:
-    'Supprime automatiquement les liens postés par les non-admins et avertit leur auteur. Usage: !antilink on|off',
+    'Supprime automatiquement les liens postés par les non-admins et avertit leur auteur. Usage: {prefix}antilink on|off',
   category: 'Gestion de groupe',
   adminOnly: true,
   privateOnly: false,

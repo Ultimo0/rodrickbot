@@ -6,7 +6,7 @@ export default {
   description:
     "Protège le groupe contre les modifications non autorisées (nom, description, photo, lien " +
     "d'invitation, réglages) : restaure automatiquement l'état enregistré et avertit l'auteur. " +
-    'Usage: !guardian on|off|status',
+    'Usage: {prefix}guardian on|off|status',
   category: 'Gestion de groupe',
   adminOnly: true,
   privateOnly: false,

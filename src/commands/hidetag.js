@@ -1,6 +1,6 @@
 export default {
   name: 'hidetag',
-  description: "Notifie tous les membres du groupe sans afficher la liste de mentions. Usage: !hidetag <message> (ou en répondant à un message)",
+  description: "Notifie tous les membres du groupe sans afficher la liste de mentions. Usage: {prefix}hidetag <message> (ou en répondant à un message)",
   category: 'Gestion de groupe',
   adminOnly: true,
   privateOnly: false,

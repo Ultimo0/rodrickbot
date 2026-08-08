@@ -1,6 +1,7 @@
 import { getPendingChoice, clearPendingChoice } from '../core/downloadSessions.js';
 import { downloadBuffer } from './tiktok.js';
 import { downloadYoutubeAudio, downloadYoutubeVideo } from './youtube.js';
+import { downloadFacebookAudio, downloadFacebookVideo } from './facebook.js';
 import { logger } from './logger.js';
 
 const AUDIO_PATTERN = /^(1|audio|mp3|musique)$/i;
@@ -65,6 +66,26 @@ async function handleYoutubeChoice(sock, chatId, msg, choice, data) {
   }
 }
 
+async function handleFacebookChoice(sock, chatId, msg, choice, data) {
+  const fileName = sanitizeFileName(data.title);
+
+  if (choice === 'audio') {
+    const buffer = await downloadFacebookAudio(data.url);
+    await sock.sendMessage(
+      chatId,
+      { audio: buffer, mimetype: 'audio/mpeg', fileName: `${fileName}.mp3` },
+      { quoted: msg }
+    );
+  } else {
+    const buffer = await downloadFacebookVideo(data.url);
+    await sock.sendMessage(
+      chatId,
+      { video: buffer, mimetype: 'video/mp4', caption: data.title || '' },
+      { quoted: msg }
+    );
+  }
+}
+
 /**
  * Traite la réponse de l'utilisateur ("1"/"2"/"audio"/"vidéo") à une
  * session de téléchargement en attente (TikTok ou YouTube). Retourne
@@ -86,6 +107,8 @@ export async function handleDownloadReply(sock, chatId, sender, text, msg) {
       await handleTiktokChoice(sock, chatId, msg, choice, data);
     } else if (data.type === 'youtube') {
       await handleYoutubeChoice(sock, chatId, msg, choice, data);
+    } else if (data.type === 'facebook') {
+      await handleFacebookChoice(sock, chatId, msg, choice, data);
     }
   } catch (err) {
     logger.warn({ err }, `Erreur lors du téléchargement (${data.type})`);

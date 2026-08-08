@@ -3,7 +3,7 @@ import { listItemNames } from '../core/savedItems.js';
 export default {
   name: 'listsaved',
   aliases: ['savedlist'],
-  description: 'Liste les noms de tous les éléments enregistrés (via !save ou !statut).',
+  description: 'Liste les noms de tous les éléments enregistrés (via {prefix}save ou {prefix}statut).',
   category: 'Sauvegardes',
   adminOnly: true,
   privateOnly: false,

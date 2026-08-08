@@ -7,7 +7,7 @@ export default {
   name: 'ocr',
   aliases: ['textfromimage', 'extraire'],
   description:
-    "Extrait le texte visible d'une image. Réponds à une image avec !ocr, ou envoie l'image directement avec !ocr en légende.",
+    "Extrait le texte visible d'une image. Réponds à une image avec {prefix}ocr, ou envoie l'image directement avec {prefix}ocr en légende.",
   category: 'Intelligence Artificielle',
   adminOnly: false,
   privateOnly: false,

@@ -7,7 +7,7 @@ export default {
   name: 'toimg',
   aliases: ['img'],
   description:
-    'Convertit un sticker en image. Réponds à un sticker avec !toimg, ou envoie le sticker directement avec !toimg en légende.',
+    'Convertit un sticker en image. Réponds à un sticker avec {prefix}toimg, ou envoie le sticker directement avec {prefix}toimg en légende.',
   category: 'Média',
   adminOnly: false,
   privateOnly: false,

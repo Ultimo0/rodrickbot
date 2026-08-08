@@ -34,7 +34,7 @@ export async function fetchYoutubeData(url) {
   return { title: info.title || 'youtube', url };
 }
 
-async function runDownload(url, extraArgs, extension) {
+export async function runDownload(url, extraArgs, extension) {
   const id = randomUUID();
   const outputPath = join(tmpdir(), `${id}.${extension}`);
 

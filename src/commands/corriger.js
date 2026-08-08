@@ -9,7 +9,7 @@ export default {
   name: 'corriger',
   aliases: ['correct', 'fix'],
   description:
-    "Corrige automatiquement l'orthographe, la grammaire, la ponctuation et le style d'un texte, sans en changer le sens. Usage: !corriger <texte>, ou réponds à un message/document (.txt/.md/.csv/.json/.pdf/.docx) avec !corriger.",
+    "Corrige automatiquement l'orthographe, la grammaire, la ponctuation et le style d'un texte, sans en changer le sens. Usage: {prefix}corriger <texte>, ou réponds à un message/document (.txt/.md/.csv/.json/.pdf/.docx) avec {prefix}corriger.",
   category: 'Intelligence Artificielle',
   adminOnly: false,
   privateOnly: false,

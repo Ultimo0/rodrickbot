@@ -12,7 +12,7 @@ function extractDuration(args) {
 export default {
   name: 'demote',
   description:
-    "Retire le statut admin du groupe, temporairement ou non. Usage: !demote en répondant à leur message, en les mentionnant, ou !demote <numero>, avec en plus une durée optionnelle (ex: !demote 10min, !demote 30s, !demote 2h).",
+    "Retire le statut admin du groupe, temporairement ou non. Usage: {prefix}demote en répondant à leur message, en les mentionnant, ou {prefix}demote <numero>, avec en plus une durée optionnelle (ex: {prefix}demote 10min, {prefix}demote 30s, {prefix}demote 2h).",
   category: 'Gestion de groupe',
   adminOnly: true,
   privateOnly: false,

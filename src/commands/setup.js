@@ -3,7 +3,7 @@ import { startTelemetry } from '../core/telemetry.js';
 
 export default {
   name: 'setup',
-  description: "Configure cette instance du bot (obligatoire, une seule fois). Usage: !setup <identifiant> <propriétaire>",
+  description: "Configure cette instance du bot (obligatoire, une seule fois). Usage: {prefix}setup <identifiant> <propriétaire>",
   category: 'Utilitaires',
   // Cette commande doit rester accessible même avant toute configuration
   // et même en groupe: elle est délibérément exemptée du filtre

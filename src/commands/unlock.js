@@ -3,7 +3,7 @@ import { scheduleAutoAction } from '../core/lockScheduler.js';
 
 export default {
   name: 'unlock',
-  description: 'Déverrouille le groupe : tous les membres peuvent à nouveau écrire. Usage: !unlock [durée] (ex: !unlock 10min)',
+  description: 'Déverrouille le groupe : tous les membres peuvent à nouveau écrire. Usage: {prefix}unlock [durée] (ex: {prefix}unlock 10min)',
   category: 'Gestion de groupe',
   adminOnly: true,
   privateOnly: false,

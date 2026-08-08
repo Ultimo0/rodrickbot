@@ -6,7 +6,7 @@ import { audioToVoiceNote } from '../utils/mediaConvert.js';
 export default {
   name: 'get',
   aliases: ['show'],
-  description: 'Récupère un élément enregistré (via !save ou !statut). Usage: !get <nom> [note] — ajoute "note" pour envoyer une vidéo au format note vidéo (ronde).',
+  description: 'Récupère un élément enregistré (via {prefix}save ou {prefix}statut). Usage: {prefix}get <nom> [note] — ajoute "note" pour envoyer une vidéo au format note vidéo (ronde).',
   category: 'Sauvegardes',
   adminOnly: true,
   privateOnly: false,

@@ -5,7 +5,7 @@ export default {
   name: 'warns',
   aliases: ['warnings'],
   description:
-    "Affiche les avertissements d'un membre, ou les réinitialise avec !warns reset @membre.",
+    "Affiche les avertissements d'un membre, ou les réinitialise avec {prefix}warns reset @membre.",
   category: 'Modération',
   adminOnly: true,
   privateOnly: false,

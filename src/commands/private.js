@@ -2,7 +2,7 @@ import { isLockdownMode, setLockdownMode } from '../core/state.js';
 
 export default {
   name: 'private',
-  description: 'Active/désactive le mode privé strict (bot utilisable uniquement par l\'admin). Usage: !private on|off|status',
+  description: 'Active/désactive le mode privé strict (bot utilisable uniquement par l\'admin). Usage: {prefix}private on|off|status',
   adminOnly: true,
   privateOnly: false, // l'admin doit pouvoir basculer ce mode même depuis un groupe
   category: 'Administration',

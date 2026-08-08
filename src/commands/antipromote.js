@@ -6,7 +6,7 @@ export default {
   description:
     "Empêche les administrateurs du groupe (autres que les admins du bot) de nommer quelqu'un administrateur : " +
     "la promotion est annulée immédiatement et l'auteur est averti, jusqu'à être lui-même rétrogradé au " +
-    "3e avertissement. Usage: !antipromote on|off",
+    "3e avertissement. Usage: {prefix}antipromote on|off",
   category: 'Gestion de groupe',
   adminOnly: true,
   privateOnly: false,

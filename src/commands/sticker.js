@@ -7,7 +7,7 @@ export default {
   name: 'sticker',
   aliases: ['s', 'stiker'],
   description:
-    'Transforme une image ou une courte vidéo en sticker. Réponds à un média avec !sticker, ou envoie le média directement avec !sticker en légende.',
+    'Transforme une image ou une courte vidéo en sticker. Réponds à un média avec {prefix}sticker, ou envoie le média directement avec {prefix}sticker en légende.',
   category: 'Média',
   adminOnly: false,
   privateOnly: false,

@@ -3,7 +3,7 @@ import { getGroupSettings, setBye } from '../core/groupSettings.js';
 export default {
   name: 'bye',
   description:
-    'Active/désactive le message de départ. Usage: !bye on|off [message]. Placeholders: {user} {group}',
+    'Active/désactive le message de départ. Usage: {prefix}bye on|off [message]. Placeholders: {user} {group}',
   category: 'Gestion de groupe',
   adminOnly: true,
   privateOnly: false,

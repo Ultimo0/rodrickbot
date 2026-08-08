@@ -57,7 +57,7 @@ export default {
   name: 'resume',
   aliases: ['summary', 'resumer'],
   description:
-    'Résume un texte, un long message cité ou un document (.txt/.md/.csv/.json/.pdf/.docx). Usage: !resume [court|moyen|détaillé] <texte>, ou réponds à un message/document avec !resume [taille].',
+    'Résume un texte, un long message cité ou un document (.txt/.md/.csv/.json/.pdf/.docx). Usage: {prefix}resume [court|moyen|détaillé] <texte>, ou réponds à un message/document avec {prefix}resume [taille].',
   category: 'Intelligence Artificielle',
   adminOnly: false,
   privateOnly: false,

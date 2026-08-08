@@ -3,7 +3,7 @@ import { resolveTargetJids } from '../utils/groupTarget.js';
 export default {
   name: 'kick',
   aliases: ['remove'],
-  description: "Retire un ou plusieurs membres du groupe. Usage: !kick en répondant à leur message, en les mentionnant, ou !kick <numero>",
+  description: "Retire un ou plusieurs membres du groupe. Usage: {prefix}kick en répondant à leur message, en les mentionnant, ou {prefix}kick <numero>",
   category: 'Gestion de groupe',
   adminOnly: true,
   privateOnly: false,

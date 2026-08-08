@@ -2,7 +2,7 @@ import { deleteItem, hasItem } from '../core/savedItems.js';
 
 export default {
   name: 'dell',
-  description: 'Supprime un élément enregistré (via !save ou !statut). Usage: !dell <nom>',
+  description: 'Supprime un élément enregistré (via {prefix}save ou {prefix}statut). Usage: {prefix}dell <nom>',
   category: 'Sauvegardes',
   adminOnly: true,
   privateOnly: false,

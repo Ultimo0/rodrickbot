@@ -3,7 +3,7 @@ import { getGroupSettings, setWelcome } from '../core/groupSettings.js';
 export default {
   name: 'welcome',
   description:
-    'Active/désactive le message de bienvenue. Usage: !welcome on|off [message]. Placeholders: {user} {group}',
+    'Active/désactive le message de bienvenue. Usage: {prefix}welcome on|off [message]. Placeholders: {user} {group}',
   category: 'Gestion de groupe',
   adminOnly: true,
   privateOnly: false,

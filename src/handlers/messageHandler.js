@@ -121,3 +121,4 @@ async function handleSingleMessage(sock, commands, msg) {
   logger.info(`Commande exécutée: ${parsed.command} par ${sender}`);
   await command.execute(ctx);
 }
+

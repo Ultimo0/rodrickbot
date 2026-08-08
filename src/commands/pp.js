@@ -36,7 +36,7 @@ export default {
   name: 'pp',
   aliases: ['photodeprofil', 'avatar'],
   description:
-    'Affiche la photo de profil (mention, réponse à un message, numéro, ou par défaut soi-même/le groupe). Usage: !pp [@mention|numéro]',
+    'Affiche la photo de profil (mention, réponse à un message, numéro, ou par défaut soi-même/le groupe). Usage: {prefix}pp [@mention|numéro]',
   category: 'Média',
   adminOnly: false,
   privateOnly: false, // doit marcher en privé ET en groupe

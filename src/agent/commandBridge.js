@@ -1,12 +1,12 @@
 /**
- * Bridge de sécurité entre l'Agent IA et les commandes historiques.
+ * Bridge de sécurité entre l’Agent IA et les commandes historiques.
  *
  * Ce module ne réécrit pas la logique des commandes. Il recrée simplement
  * un `ctx` de commande compatible avec le moteur existant, puis appelle
  * la méthode `execute(ctx)` de la commande chargée par le plugin loader.
  *
- * Cela permet à l'Agent d'appeler des commandes déjà validées par le bot
- * sans casser le système de permissions ni le pipeline d'exécution.
+ * Cela permet à l’Agent d’appeler des commandes déjà validées par le bot
+ * sans casser le système de permissions ni le pipeline d’exécution.
  */
 
 import { config, isAdmin } from '../config/index.js';
@@ -21,7 +21,7 @@ import { handleAntilink } from '../utils/antilink.js';
 import { handleDownloadReply } from '../utils/downloadReply.js';
 
 /**
- * Exécute une commande existante à partir d'un nom, en réutilisant son
+ * Exécute une commande existante à partir d’un nom, en réutilisant son
  * `ctx` et les garde-fous déjà présents dans le handler de messages.
  */
 export async function invokeExistingCommand(commandName, { sock, msg, chatId, sender, args = [], commands }) {

@@ -1,6 +1,6 @@
 export default {
   name: 'tagall',
-  description: 'Mentionne tous les membres du groupe sans afficher leurs numéros. Usage: !tagall [message]',
+  description: 'Mentionne tous les membres du groupe sans afficher leurs numéros. Usage: {prefix}tagall [message]',
   category: 'Gestion de groupe',
   adminOnly: true,
   privateOnly: false,
