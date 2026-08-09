@@ -1,4 +1,4 @@
-import { summarizeText } from '../utils/mistral.js';
+import { summarizeText } from '../utils/groq.js';
 import { logger } from '../utils/logger.js';
 import { resolveInputText } from '../utils/textInput.js';
 

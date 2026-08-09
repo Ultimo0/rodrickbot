@@ -5,6 +5,11 @@
 export const debugTool = {
   name: 'debug_message',
   description: 'Affiche la structure complète d\'un message pour le débogage. Utilisation: !debug',
+  // Outil interne : jamais exécutable via l'agent conversationnel (voir le
+  // filtre dans toolRegistry.js). Il dump le JSON brut d'un message
+  // WhatsApp — une fuite d'infos si jamais un chemin (hallucination du
+  // modèle, futur changement de prompt...) parvenait à le déclencher.
+  internal: true,
   params: [
     { name: 'msg', type: 'object', required: true, description: 'Message Baileys à analyser' },
   ],

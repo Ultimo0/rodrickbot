@@ -1,5 +1,5 @@
 import { resolveInputText } from '../utils/textInput.js';
-import { translateText } from '../utils/mistral.js';
+import { translateText } from '../utils/groq.js';
 import { logger } from '../utils/logger.js';
 
 const MAX_CHARS = 20000; // limite raisonnable pour rester dans la fenêtre de contexte du modèle

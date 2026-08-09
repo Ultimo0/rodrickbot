@@ -1,5 +1,6 @@
 import { getGroupSettings } from '../core/groupSettings.js';
 import { handlePromoteGuard } from '../utils/antipromote.js';
+import { handlePurgeGuard } from '../utils/antipurge.js';
 import { getCurrentTheme } from '../themes/engine.js';
 import { logger } from '../utils/logger.js';
 
@@ -15,6 +16,12 @@ export function createGroupParticipantsHandler(sock) {
       if (action === 'promote') {
         await handlePromoteGuard(sock, chatId, author, participants);
         return;
+      }
+
+      // Antipurge : ne bloque pas le message bye ci-dessous (les deux
+      // fonctionnalités sont indépendantes) — on ne "return" pas ici.
+      if (action === 'remove') {
+        await handlePurgeGuard(sock, chatId, author, participants);
       }
 
       if (action !== 'add' && action !== 'remove') return;

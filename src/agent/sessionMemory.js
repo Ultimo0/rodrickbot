@@ -91,6 +91,32 @@ export function clearSession(chatId, sender) {
   sessions.delete(buildKey(chatId, sender));
 }
 
+// Limite de débit des appels IA de l'agent (indépendante de
+// middlewares/antiSpam.js, qui ne couvre que les commandes préfixées —
+// l'agent s'active justement quand aucun préfixe n'est détecté, donc hors
+// de son radar). Objectif : éviter qu'un utilisateur ne multiplie les
+// appels Groq payants en spammant le chat en mode agent.
+const AGENT_RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const AGENT_RATE_LIMIT_MAX_CALLS = 8;
+
+/**
+ * Vérifie la limite de débit pour ce chat/utilisateur et enregistre l'appel
+ * s'il est autorisé. Retourne `true` si l'appel peut continuer, `false` si
+ * la limite est atteinte (dans ce cas, rien n'est enregistré en plus).
+ */
+export function checkAndRecordAgentCall(chatId, sender) {
+  const session = ensureSession(chatId, sender);
+  const cutoff = now() - AGENT_RATE_LIMIT_WINDOW_MS;
+  session.callTimestamps = (session.callTimestamps || []).filter((ts) => ts > cutoff);
+
+  if (session.callTimestamps.length >= AGENT_RATE_LIMIT_MAX_CALLS) {
+    return false;
+  }
+
+  session.callTimestamps.push(now());
+  return true;
+}
+
 export function getSessionStats() {
   pruneExpiredSessions();
   return {

@@ -1,9 +1,9 @@
 /**
  * Outil de résumé de texte pour l'Agent IA.
- * Utilise l'API Mistral pour résumer un texte.
+ * Utilise l'API Groq pour résumer un texte.
  */
 
-import { summarizeText } from '../../utils/mistral.js';
+import { summarizeText } from '../../utils/groq.js';
 import { resolveTextSource } from '../utils/textSourceResolver.js';
 
 export const summarizeTool = {
@@ -16,12 +16,12 @@ export const summarizeTool = {
     { name: 'chatId', type: 'string', required: false, description: 'ID du chat pour la résolution automatique' },
     { name: 'sender', type: 'string', required: false, description: 'Expéditeur pour la résolution automatique' },
   ],
-  execute: async ({ text, size = 'moyen', msg, chatId, sender }) => {
-    // Résolution automatique de la source de texte
-    let textToSummarize = text;
-    if (!textToSummarize && msg && chatId && sender) {
-      textToSummarize = resolveTextSource(msg, chatId, sender);
-    }
+  execute: async (ctx) => {
+    const { size = 'moyen' } = ctx;
+    // resolveTextSource() prend le contexte entier : elle applique déjà
+    // l'ordre de priorité texte direct → args → message cité → message
+    // actuel → mémoire de session.
+    const textToSummarize = resolveTextSource(ctx);
     
     if (!textToSummarize?.trim()) {
       throw new Error('Aucun texte à résumer. Réponds à un message, fournis un texte ou assure-toi que la mémoire de session contient du texte.');

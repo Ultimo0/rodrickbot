@@ -3,8 +3,9 @@
  * Utilise des instructions spécifiques pour la réécriture sans les restrictions de correction.
  */
 
-import { askMistral } from '../../utils/mistral.js';
+import { askGroq } from '../../utils/groq.js';
 import { resolveTextSource } from '../utils/textSourceResolver.js';
+import { logger } from '../../utils/logger.js';
 
 export const proRewriteTool = {
   name: 'rewrite_professional',
@@ -22,7 +23,7 @@ export const proRewriteTool = {
     if (!textToRewrite) {
       const errorMsg = 'Aucun texte à réécrire. Fournissez un texte, répondez à un message ou assurez-vous que la session contient du texte.';
       if (ctx.msg) {
-        console.error('Structure du message reçu lors de l\'échec:', JSON.stringify(ctx.msg, null, 2));
+        logger.debug({ msg: ctx.msg }, 'rewrite_professional: aucun texte résolu, structure du message reçu');
       }
       throw new Error(errorMsg);
     }
@@ -52,11 +53,11 @@ Réponds UNIQUEMENT avec la version réécrite, sans commentaires.
     const userPrompt = `TRANSFORME CE TEXTE EN VERSION PROFESSIONNELLE (obligatoire) :\n\n"${textToRewrite}"`;
 
     try {
-      const response = await askMistral(`${systemPrompt}\n\n${userPrompt}`);
+      const response = await askGroq(`${systemPrompt}\n\n${userPrompt}`);
       return response;
     } catch (error) {
-      console.error('Erreur Mistral:', error);
-      // Fallback pour ne pas échouer silencieusement si Mistral est indisponible
+      logger.warn({ err: error }, 'rewrite_professional: erreur Groq');
+      // Fallback pour ne pas échouer silencieusement si Groq est indisponible
       return `(Version professionnelle non disponible)\n\n${textToRewrite}`;
     }
   },

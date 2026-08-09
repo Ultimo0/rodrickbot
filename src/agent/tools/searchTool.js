@@ -15,11 +15,24 @@ export const searchTool = {
   execute: async ({ query, limit = 3 }) => {
     if (!query?.trim()) throw new Error('Requête de recherche vide.');
     const url = `https://duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
-    const res = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0',
-      },
-    });
+
+    // Timeout réseau : sans ça, un message reste bloqué indéfiniment si
+    // DuckDuckGo ne répond jamais.
+    const controller = new AbortController();
+    const timeoutHandle = setTimeout(() => controller.abort(), 8000);
+
+    let res;
+    try {
+      res = await fetch(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0' },
+        signal: controller.signal,
+      });
+    } catch (err) {
+      if (err.name === 'AbortError') throw new Error('Erreur recherche : délai de réponse dépassé.');
+      throw err;
+    } finally {
+      clearTimeout(timeoutHandle);
+    }
 
     if (!res.ok) throw new Error(`Erreur recherche (${res.status}).`);
     const html = await res.text();

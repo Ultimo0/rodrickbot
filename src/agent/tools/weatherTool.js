@@ -18,7 +18,22 @@ export const weatherTool = {
   execute: async ({ city, lang = 'fr' }) => {
     if (!city?.trim()) throw new Error('Ville manquante pour la météo.');
     const url = `${WEATHER_API_URL}/${encodeURIComponent(city)}?format=j1&lang=${encodeURIComponent(lang)}`;
-    const res = await fetch(url);
+
+    // Timeout réseau : sans ça, un message reste bloqué indéfiniment si
+    // l'API météo ne répond jamais.
+    const controller = new AbortController();
+    const timeoutHandle = setTimeout(() => controller.abort(), 8000);
+
+    let res;
+    try {
+      res = await fetch(url, { signal: controller.signal });
+    } catch (err) {
+      if (err.name === 'AbortError') throw new Error('Erreur météo : délai de réponse dépassé.');
+      throw err;
+    } finally {
+      clearTimeout(timeoutHandle);
+    }
+
     if (!res.ok) throw new Error(`Erreur météo (${res.status}).`);
     const json = await res.json();
     const current = json?.current_condition?.[0];

@@ -5,6 +5,49 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/), versionneme
 
 ## [Unreleased]
 
+## [1.17.0]
+### Changed
+- **Agent IA réservé aux administrateurs (`ADMIN_JIDS`)** :
+  - `src/handlers/messageHandler.js` : tout message hors commande (donc destiné à l'agent conversationnel) est désormais ignoré silencieusement s'il ne vient pas d'un admin (`ADMIN_JIDS`) ou du propriétaire en self-test — même si une session `!agent on` a été activée par ailleurs, pour ne pas laisser deviner à un non-admin que le mode existe.
+  - `src/commands/ultimo.js` (`!agent`/`!ultimo`) passe à `adminOnly: true` : seuls les admins peuvent désormais activer/désactiver le mode, cohérent avec la restriction ci-dessus (éviter qu'un non-admin l'active sans jamais obtenir de réponse).
+
+## [1.16.3]
+### Fixed
+- Agent IA : une commande pontée refusée (ex: `!ping`/`!status` en groupe, réservées au privé, ou une commande `adminOnly` demandée par un non-admin) envoyait le bon message de refus, **puis** un second message parasite "Outil inconnu: ping". Cause : `invokeExistingCommand` (`src/agent/commandBridge.js`) renvoyait `false` après avoir déjà envoyé le message de refus (ou après un blocage silencieux intentionnel — lockdown, bot désactivé à distance, antilink...), ce que `agentService.js` interprétait comme "non géré" et faisait retomber sur `executeTool('ping', ...)` — qui échoue toujours pour ces noms, puisque `ping`/`status`/etc. sont des commandes pontées et non des outils agent enregistrés. Tous les gardes-fous du bridge renvoient désormais `true` dès qu'ils ont pris en charge la requête (succès, refus explicite, ou silence intentionnel) ; `false` est réservé au seul cas où le bridge n'a rien géré (nom hors liste blanche).
+
+## [1.16.2]
+### Fixed
+- Agent IA : répondre à un message (reply) puis demander « traduire/corriger/résume en anglais » ignorait le message cité et traitait à la place l'instruction elle-même (ex: traduisait littéralement "Traduire en anglais"). Deux causes :
+  - `src/agent/agentService.js` transmettait toujours l'instruction tapée par l'utilisateur comme `text` (le contenu à traiter) aux outils `translate_text`/`correct_text`/`summarize_text`/`rewrite_professional` — cette valeur n'étant jamais vide, ces outils l'utilisaient directement sans jamais tenter de résoudre le message cité. Elle n'est désormais plus transmise pour ces outils, qui se reposent sur `resolveTextSource()` (texte direct → args → message cité → message actuel → mémoire de session).
+  - `src/agent/tools/{translateTool,correctTool,summarizeTool}.js` appelaient encore `resolveTextSource(msg, chatId, sender)` (ancienne signature à arguments positionnels), alors que `textSourceResolver.js` attend désormais un seul objet de contexte (`resolveTextSource(ctx)`) — seul `proRewriteTool.js` avait été mis à jour. Les trois outils appellent maintenant `resolveTextSource(ctx)` correctement.
+
+## [1.16.1]
+### Fixed
+- Agent IA : `INTENT_TOOL_NAMES` (`src/agent/agentService.js`) listait deux noms d'outils fantômes (`translate`, `ocr_image`) qui ne correspondaient à aucun outil réellement enregistré dans `toolRegistry.js` (les vrais noms sont `translate_text` et `ocr`). Comme cette liste est injectée telle quelle dans le prompt système envoyé au classifieur IA, celui-ci choisissait parfois ces noms invalides — notamment `translate` pour toute demande de traduction — ce qui faisait échouer `executeTool()` avec "Outil inconnu: translate". Liste corrigée pour correspondre exactement aux noms enregistrés.
+
+## [1.16.0]
+### Changed
+- **Migration complète de Mistral vers Groq** pour toutes les fonctionnalités IA du bot (`!ia`, `!ocr`, `!resume`, `!corriger`, `!traduire`, Agent IA conversationnel, `!rewrite`) :
+  - `src/utils/mistral.js` remplacé par `src/utils/groq.js` — endpoint `https://api.groq.com/openai/v1/chat/completions` (compatible OpenAI), fonctions renommées (`askMistral` → `askGroq`), messages d'erreur mis à jour. La résilience réseau ajoutée avec Mistral (timeout 20s via `AbortController`, retry/backoff sur 429, gestion dédiée du 402 "crédit épuisé", logs upstream jamais exposés à l'utilisateur) est conservée à l'identique côté Groq.
+  - `MISTRAL_API_KEY` (`.env`) remplacé par `GROQ_API_KEY` — **à mettre à jour manuellement dans `.env`, non inclus dans les archives/zips livrés**. Clé obtenable sur https://console.groq.com/.
+  - `mistralModel` (`settings.json`) remplacé par `groqModel` (`llama-3.3-70b-versatile` par défaut) et `groqVisionModel` (`qwen/qwen3.6-27b`, nouveau).
+  - `!ocr` : Groq n'a pas d'endpoint OCR dédié comme Mistral (`/v1/ocr`) — remplacé par un modèle de vision (`groqVisionModel`) via le chat completions standard, avec un prompt de transcription dédié. Les modèles vision de Groq changent assez fréquemment (plusieurs dépréciations ces derniers mois) : si l'OCR cesse de fonctionner, ajuster `groqVisionModel` dans `settings.json` en vérifiant https://console.groq.com/docs/vision.
+  - `src/agent/agentService.js` (détection d'intention) migré vers Groq (endpoint + modèle + clé), en conservant le client mutualisé (`requestGroqJson`, retry/timeout) ainsi que la liste blanche de commandes pontables et la limite de débit introduites après la migration Mistral.
+  - `src/agent/toolRegistry.js`, `src/agent/tools/{ocrTool,correctTool,summarizeTool,translateTool,proRewriteTool}.js`, `src/commands/{ia,ocr,resume,corriger,traduire}.js` : imports et références mises à jour.
+  - `src/agent/README.md` mis à jour.
+
+## [1.15.0]
+### Added
+- Commande `!antipurge` (alias `!antiraid`) `on|off|status` : détecte un admin (autre que `ADMIN_JIDS`) qui expulse 3 membres ou plus en moins de 10 secondes ("purge"/raid). Une fois détecté : l'auteur est démis puis expulsé du groupe, et le bot tente de réintégrer automatiquement les membres expulsés (`groupParticipantsUpdate(..., 'add')`), avec un compte-rendu transparent des réintégrations qui échouent (souvent dû aux réglages de confidentialité empêchant un ajout direct — WhatsApp ne garantit pas la réintégration).
+- `src/utils/antipurge.js` (`handlePurgeGuard`) : fenêtre glissante en mémoire par auteur (même principe que `antispamGuard.js`), branchée sur l'action `remove` de `group-participants.update` (déjà utilisée pour les messages bye — les deux fonctionnalités sont indépendantes, l'une n'empêche pas l'autre). Réutilise `isBotGroupAdmin` de `core/groupGuardian.js`.
+- `setAntipurge` dans `src/core/groupSettings.js`.
+
+## [1.14.3]
+### Fixed
+- `!guardian` n'exemptait jamais `ADMIN_JIDS` : un changement de nom/description/photo/lien d'invitation/réglages fait par un admin de confiance était annulé exactement comme pour n'importe qui d'autre — incohérent avec `!antipromote`/`!antispam`, qui exemptent déjà `ADMIN_JIDS`. `src/core/groupGuardian.js` vérifie maintenant l'auteur avant de restaurer :
+  - Photo et lien d'invitation : l'auteur vient directement de l'événement déclencheur (fiable).
+  - Nom/description/réglages (`groups.update` ne fournit pas d'auteur) : best-effort, basé sur le même mécanisme de détection d'auteur déjà utilisé pour la notification (`recentActors`) — si l'auteur n'a pas pu être identifié à temps, le changement est restauré quand même, même s'il venait d'un admin.
+
 ## [1.14.2]
 ### Added
 - `scripts/save-release.js` (`npm run save-release`) : sauvegarde locale d'une version stable dans `releases/v<version>/` (lu depuis `package.json`). Copie `src/`, `assets/`, `scripts/`, `tests/`, `package.json`, `CHANGELOG.md`, `README.md`, `.gitignore` — exclut `node_modules`, `.git`, `.env`, `auth_info/`, et tous les fichiers de données runtime. Refuse d'écraser une version déjà sauvegardée sauf avec `--force`. Purement local : `releases/` est ajouté à `.gitignore`, ce n'est ni un mécanisme de publication ni un remplacement des tags Git.

@@ -41,8 +41,10 @@ export const config = {
   // directement dans WhatsApp, et tant qu'ils sont vides aucune autre
   // commande n'est exécutée (voir handlers/messageHandler.js).
 
-  // Clé API Mistral (https://console.mistral.ai/) — utilisée par la commande !ia
-  mistralApiKey: process.env.MISTRAL_API_KEY || '',
+  // Clé API Groq (https://console.groq.com/) — utilisée par la commande !ia
+  // et toutes les fonctionnalités IA (correction, traduction, résumé, OCR,
+  // Agent IA). Anciennement Mistral (MISTRAL_API_KEY), migré vers Groq.
+  groqApiKey: process.env.GROQ_API_KEY || '',
 };
 
 export function isAdmin(jid) {

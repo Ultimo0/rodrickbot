@@ -27,3 +27,8 @@ npm-debug.log*
 Thumbs.db
 
 instance.json
+
+# Sauvegardes locales de versions stables (npm run save-release) — purement
+# local, pas fait pour être versionné (ce serait dupliquer tout le code
+# source dans git à chaque snapshot).
+releases/

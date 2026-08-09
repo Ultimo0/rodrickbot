@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import path from 'path';
 import { createHash } from 'crypto';
 import { WAMessageStubType, jidNormalizedUser } from '@whiskeysockets/baileys';
+import { isAdmin } from '../config/index.js';
 import { getGroupSettings } from './groupSettings.js';
 import { normalizeJid } from '../utils/groupTarget.js';
 import { logger } from '../utils/logger.js';
@@ -26,6 +27,15 @@ import { logger } from '../utils/logger.js';
  * `undefined` et est filtrée ci-dessous : la détection correspondante est
  * simplement désactivée (aucun faux positif possible), voir README/section
  * "Limites connues" fournie avec cette fonctionnalité.
+ *
+ * Exemption ADMIN_JIDS : les changements faits par un membre de ADMIN_JIDS
+ * ne sont pas annulés (cohérent avec !antipromote/!antispam). Pour la
+ * photo/le lien d'invitation, l'auteur vient directement de l'événement
+ * déclencheur — fiable. Pour subject/desc/announce/restrict ('groups.update'
+ * ne fournit pas d'auteur), on s'appuie sur le même mécanisme best-effort
+ * que pour la notification (recentActors) : si l'auteur n'a pas pu être
+ * identifié à temps, l'exemption ne s'applique pas et le changement est
+ * quand même restauré, même s'il venait d'un admin.
  */
 
 const MEDIA_DIR = path.join(process.cwd(), 'saved_media', 'guardian');
@@ -296,7 +306,15 @@ export function initGroupGuardian(sock) {
       if ('announce' in update && Boolean(update.announce) !== snapshot.announce) changed.push('announce');
       if ('restrict' in update && Boolean(update.restrict) !== snapshot.restrict) changed.push('restrict');
 
-      if (changed.length) await restoreMetadata(sock, chatId, snapshot, changed);
+      if (!changed.length) continue;
+
+      // ADMIN_JIDS exempté — best-effort : 'groups.update' ne fournit pas
+      // l'auteur, on regarde si un message système récent (voir
+      // messages.upsert plus bas) en a identifié un pour ce groupe.
+      const recentActor = recentActors.get(chatId);
+      if (recentActor && isAdmin(normalizeJid(recentActor))) continue;
+
+      await restoreMetadata(sock, chatId, snapshot, changed);
     }
   });
 
@@ -314,8 +332,10 @@ export function initGroupGuardian(sock) {
       if (!settings.guardian.enabled || !settings.guardian.snapshot) continue;
 
       if (ICON_STUB_TYPES.includes(msg.messageStubType)) {
+        if (actor && isAdmin(normalizeJid(actor))) continue; // ADMIN_JIDS exempté
         await checkAndRestoreIcon(sock, chatId, settings.guardian.snapshot);
       } else if (INVITE_STUB_TYPES.includes(msg.messageStubType)) {
+        if (actor && isAdmin(normalizeJid(actor))) continue; // ADMIN_JIDS exempté
         await handleInviteChange(sock, chatId);
       }
     }

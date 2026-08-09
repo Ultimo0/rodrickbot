@@ -1,9 +1,9 @@
-import { askMistral } from '../utils/mistral.js';
+import { askGroq } from '../utils/groq.js';
 
 export default {
   name: 'ia',
   aliases: ['ai', 'ask'],
-  description: 'Pose une question à l\'IA (Mistral). Usage: {prefix}ia <question>',
+  description: 'Pose une question à l\'IA (Groq). Usage: {prefix}ia <question>',
   category: 'Intelligence Artificielle',
   adminOnly: false,
   privateOnly: false,
@@ -18,7 +18,7 @@ export default {
     await ctx.processing();
 
     try {
-      const answer = await askMistral(question);
+      const answer = await askGroq(question);
       // Envoi direct (sans ctx.reply) : ctx.reply préfixe chaque ligne par
       // "> " (citation WhatsApp), illisible sur une réponse longue.
       await ctx.sock.sendMessage(ctx.chatId, { text: answer }, { quoted: ctx.msg });

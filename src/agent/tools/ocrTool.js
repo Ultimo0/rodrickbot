@@ -2,17 +2,18 @@
  * Outil `ocr`.
  *
  * Adaptateur de la commande `!ocr` déjà présente. Le code existant de
- * téléchargement média + OCR Mistral est réutilisé sans duplication.
+ * téléchargement média + OCR Groq (modèle vision) est réutilisé sans
+ * duplication.
  */
 
 import { downloadMediaMessage } from '@whiskeysockets/baileys';
 import { getMediaType, getMediaObject, getQuotedInfo, downloadQuotedMedia } from '../../utils/quotedContent.js';
-import { ocrImage } from '../../utils/mistral.js';
+import { ocrImage } from '../../utils/groq.js';
 import { logger } from '../../utils/logger.js';
 
 export const ocrTool = {
   name: 'ocr',
-  description: 'Extrait le texte visible d’une image par OCR via Mistral.',
+  description: 'Extrait le texte visible d’une image par OCR via Groq (modèle vision).',
   params: [
     { name: 'msg', type: 'object', required: true, description: 'Message WhatsApp source contenant une image.' },
     { name: 'sock', type: 'object', required: true, description: 'Socket Baileys actif.' },

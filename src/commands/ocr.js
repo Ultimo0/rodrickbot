@@ -1,6 +1,6 @@
 import { downloadMediaMessage } from '@whiskeysockets/baileys';
 import { getMediaType, getMediaObject, getQuotedInfo, downloadQuotedMedia } from '../utils/quotedContent.js';
-import { ocrImage } from '../utils/mistral.js';
+import { ocrImage } from '../utils/groq.js';
 import { logger } from '../utils/logger.js';
 
 export default {

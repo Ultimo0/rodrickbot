@@ -6,7 +6,7 @@ Le sous-système Agent IA est un module séparé qui s’appuie sur les commande
 
 Ajouter un mode conversationnel compatible avec l’architecture actuelle du bot WhatsApp :
 
-- détection d’intention via Mistral ;
+- détection d’intention via Groq ;
 - mémoire de session par `chatId + sender` ;
 - contexte conversationnel limité à une fenêtre récente ;
 - exécution d’outils existants via un registre d’outils ;
@@ -29,12 +29,12 @@ Ajouter un mode conversationnel compatible avec l’architecture actuelle du bot
 ### `toolRegistry.js`
 
 - expose un registre d’outils utilisés par l’agent ;
-- réutilise les services existants (`askMistral`, `correctText`, `translateText`, `summarizeText`, `ocrImage`).
+- réutilise les services existants (`askGroq`, `correctText`, `translateText`, `summarizeText`, `ocrImage`).
 - outils exposés par défaut : `play`, `sticker`, `ocr`, `translate`, `download`, `weather`, `search`, `tts`, `ask_general`, `summarize_text`, `correct_text`, `translate_text`, `ocr_image`.
 
 ### `agentService.js`
 
-- détecte l’intention via Mistral ;
+- détecte l’intention via Groq ;
 - applique un fallback local par mots-clés ;
 - décide quel outil appeler ;
 - exécute le tour de conversation de l’agent.
@@ -105,7 +105,7 @@ Pour ces cas, l’intention `tool` est remplacée par l’appel historique de co
 
 ## Recommandations de prompt IA
 
-Quand l’IA Mistral est utilisée, le système attend un JSON strict du type :
+Quand l’IA Groq est utilisée, le système attend un JSON strict du type :
 
 ```json
 {"intent":"chat|summary|translation|correction|ocr|general","tool":"play|sticker|ocr|translate|download|weather|search|tts|ask_general|summarize_text|correct_text|translate_text|ocr_image|null","language":"...","size":"court|moyen|détaillé"}
@@ -122,20 +122,17 @@ Quand l’IA Mistral est utilisée, le système attend un JSON strict du type :
 
 - l’agent ne remplace pas les commandes ;
 - les règles `adminOnly`, `privateOnly` et le lockdown restent applicables à l’architecture historique ;
-- on n’ajoute pas de nouvelle commande “publique” qui contournerait les filtres existants.
+- on n’ajoute pas de nouvelle commande “publique” qui contournerait les filtres existants ;
+- la liste des commandes pontables (`BRIDGE_ALLOWED_COMMANDS`) est appliquée par `commandBridge.js` lui-même, pas seulement par l’appelant — même un futur appel non filtré ne peut pas invoquer une commande hors liste ;
+- les outils marqués `internal: true` (ex: `debug_message`) sont bloqués par `toolRegistry.js` quel que soit le nom de tool renvoyé par la détection d’intention ;
+- une limite de débit par chat/utilisateur (8 appels/minute) protège contre un usage abusif de l’API Groq en mode agent.
 
 ## Activation
 
-La commande `!agent on` active le mode agent pour l’utilisateur courant sur ce chat.
+La commande `!agent on` active le mode agent pour l’utilisateur courant sur ce chat (`!agent` est un alias de la commande `ultimo` — voir `commands/ultimo.js`).
 
 La commande `!agent off` le désactive.
 
 La commande `!agent status` affiche l’état actuel.
 
 La commande `!agent clear` réinitialise sa mémoire pour ce chat/utilisateur.
-
-## Sécurité
-
-- l’agent ne remplace pas les commandes ;
-- les règles `adminOnly`, `privateOnly` et le lockdown restent applicables à l’architecture historique ;
-- on n’ajoute pas de nouvelle commande “publique” qui contournerait les filtres existants.

@@ -1,9 +1,9 @@
 /**
  * Outil de traduction pour l'Agent IA.
- * Utilise l'API Mistral pour traduire un texte.
+ * Utilise l'API Groq pour traduire un texte.
  */
 
-import { translateText } from '../../utils/mistral.js';
+import { translateText } from '../../utils/groq.js';
 import { resolveTextSource } from '../utils/textSourceResolver.js';
 
 export const translateTool = {
@@ -16,12 +16,13 @@ export const translateTool = {
     { name: 'chatId', type: 'string', required: false, description: 'ID du chat pour la résolution automatique' },
     { name: 'sender', type: 'string', required: false, description: 'Expéditeur pour la résolution automatique' },
   ],
-  execute: async ({ text, targetLanguage, msg, chatId, sender }) => {
-    // Résolution automatique de la source de texte
-    let textToTranslate = text;
-    if (!textToTranslate && msg && chatId && sender) {
-      textToTranslate = resolveTextSource(msg, chatId, sender);
-    }
+  execute: async (ctx) => {
+    const { targetLanguage } = ctx;
+    // resolveTextSource() prend le contexte entier : elle applique déjà
+    // l'ordre de priorité texte direct → args → message cité → message
+    // actuel → mémoire de session, donc pas besoin de vérifier `text`
+    // séparément ici.
+    const textToTranslate = resolveTextSource(ctx);
     
     if (!textToTranslate?.trim()) {
       throw new Error('Aucun texte à traduire. Réponds à un message, fournis un texte ou assure-toi que la mémoire de session contient du texte.');

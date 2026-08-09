@@ -6,7 +6,7 @@
  * dans les commandes et les utilitaires.
  */
 
-import { askMistral, correctText, summarizeText, translateText } from '../utils/mistral.js';
+import { askGroq, correctText, summarizeText, translateText } from '../utils/groq.js';
 import { downloadMediaMessage } from '@whiskeysockets/baileys';
 import { logger } from '../utils/logger.js';
 import { playTool } from './tools/playTool.js';
@@ -44,12 +44,12 @@ registerTool(debugTool);
 registerTool(proRewriteTool);
 registerTool({
   name: 'ask_general',
-  description: 'Pose une question générale à l’IA Mistral.',
+  description: 'Pose une question générale à l’IA Groq.',
   params: [{ name: 'question', type: 'string', required: true }],
   execute: async ({ question, text }) => {
     const payload = (question || text || '').trim();
     if (!payload) throw new Error('Question vide.');
-    return askMistral(payload);
+    return askGroq(payload);
   },
 });
 
@@ -59,10 +59,20 @@ export function getToolRegistry() {
   return [...tools.values()];
 }
 
-export async function executeTool(name, args = {}, context = {}) {
+/**
+ * @param {object} options
+ * @param {boolean} [options.allowInternal] — réservé aux appelants internes
+ *   de confiance (jamais l'agent conversationnel) ; permet d'exécuter un
+ *   outil marqué `internal: true` (ex: debug_message).
+ */
+export async function executeTool(name, args = {}, context = {}, { allowInternal = false } = {}) {
   const tool = tools.get(name);
   if (!tool) {
     throw new Error(`Outil inconnu: ${name}`);
+  }
+
+  if (tool.internal && !allowInternal) {
+    throw new Error(`Outil interne non exécutable via l'agent: ${name}`);
   }
 
   return tool.execute({ ...args, ...context });

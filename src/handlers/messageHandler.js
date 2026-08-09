@@ -41,14 +41,6 @@ async function handleSingleMessage(sock, commands, msg) {
 
   const chatId = msg.key.remoteJid;
   const sender = isGroup(chatId) ? msg.key.participant : chatId;
-  
-  // LOG TEMPORAIRE POUR DIAGNOSTIQUER LES MESSAGES CITÉS
-  if (msg.message.extendedTextMessage?.contextInfo?.quotedMessage ||
-      msg.message.contextInfo?.quotedMessage) {
-    console.log('=== MESSAGE AVEC CITATION DÉTECTÉ ===');
-    console.log('Message complet:', JSON.stringify(msg, null, 2));
-  }
-  
   const text = extractText(msg);
 
   if (await handleAntilink(sock, msg, chatId, sender, text)) return;
@@ -56,6 +48,13 @@ async function handleSingleMessage(sock, commands, msg) {
 
   const parsed = parseCommand(text, config.prefix);
   if (!parsed) {
+    // Agent IA réservé aux admins (ADMIN_JIDS) : ignoré silencieusement pour
+    // les autres, même si la session a été activée via !agent on — même
+    // logique de blocage silencieux que le lockdown mode (voir plus bas
+    // pour les commandes classiques), pour ne pas laisser deviner à un
+    // non-admin que le mode existe.
+    if (!(isSelfTest || isAdmin(sender))) return;
+
     const agentHandled = await runAgentTurn(sock, msg, chatId, sender, text, commands);
     if (agentHandled) {
       incrementMessageCount();

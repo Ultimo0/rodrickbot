@@ -6,5 +6,6 @@
   "logLevel": "info",
   "authMethod": "code",
   "allowSelfTest": true,
-  "mistralModel": "mistral-small-latest"
+  "groqModel": "llama-3.3-70b-versatile",
+  "groqVisionModel": "qwen/qwen3.6-27b"
 }

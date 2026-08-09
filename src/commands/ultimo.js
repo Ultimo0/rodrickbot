@@ -10,9 +10,9 @@ export default {
   name: 'ultimo',
   aliases: ['assistant', 'botia', 'agent'],
   description:
-    'Active/désactive le mode Agent IA conversationnel pour ce chat. Usage: {prefix}ultimo on|off|status|clear',
+    'Active/désactive le mode Agent IA conversationnel pour ce chat (réservé aux administrateurs — voir ADMIN_JIDS). Usage: {prefix}ultimo on|off|status|clear',
   category: 'Intelligence Artificielle',
-  adminOnly: false,
+  adminOnly: true,
   privateOnly: false,
   execute: async (ctx) => {
     const [mode = 'status'] = ctx.args;

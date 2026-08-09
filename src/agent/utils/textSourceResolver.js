@@ -10,6 +10,7 @@
 
 import { getTextContent, getQuotedInfo } from '../../utils/quotedContent.js';
 import { getSession } from '../sessionMemory.js';
+import { logger } from '../../utils/logger.js';
 
 /**
  * Résout la source de texte selon l'ordre de priorité à partir du contexte.
@@ -64,7 +65,7 @@ export function resolveTextSource(ctx) {
       return currentText;
     }
   } catch (error) {
-    console.warn('Impossible d\'extraire le texte du message actuel:', error.message);
+    logger.warn({ err: error }, 'Impossible d\'extraire le texte du message actuel');
   }
 
 

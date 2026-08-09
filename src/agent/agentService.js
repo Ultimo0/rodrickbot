@@ -1,23 +1,56 @@
 /**
  * Service principal de l'agent IA.
  *
- * Ce module orchestre les intentions proposées par Mistral, la mémoire par
+ * Ce module orchestre les intentions proposées par Groq, la mémoire par
  * utilisateur, et les outils existants pour produire une réponse utile sans
  * casser le moteur historique de commandes du bot.
  */
 
 import { config } from '../config/index.js';
 import { logger } from '../utils/logger.js';
-import { askMistral } from '../utils/mistral.js';
-import { appendSessionMessage, getSession, isAgentEnabled, setAgentEnabled } from './sessionMemory.js';
+import { askGroq, requestGroqJson, GROQ_CHAT_URL } from '../utils/groq.js';
+import {
+  appendSessionMessage,
+  checkAndRecordAgentCall,
+  getSession,
+  isAgentEnabled,
+  setAgentEnabled,
+} from './sessionMemory.js';
 import { buildConversationContext } from './contextBuilder.js';
 import { executeTool } from './toolRegistry.js';
-import { invokeExistingCommand } from './commandBridge.js';
+import { invokeExistingCommand, BRIDGE_ALLOWED_COMMANDS } from './commandBridge.js';
 import { getMediaType, getQuotedInfo } from '../utils/quotedContent.js';
 import { extractYoutubeUrl } from '../utils/youtube.js';
 import { extractTikTokUrl } from '../utils/tiktok.js';
 
-const INTENT_MODEL = config.mistralModel || 'mistral-small-latest';
+const INTENT_MODEL = config.groqModel || 'llama-3.3-70b-versatile';
+
+// Liste des tools que le classifieur Groq est autorisé à choisir. Tenue
+// à jour manuellement pour rester synchronisée avec toolRegistry.js — un
+// tool absent d'ici (comme `rewrite_professional` auparavant) n'est
+// atteignable que via inferLocalIntent(), jamais via une vraie
+// classification IA.
+// Doit rester strictement synchronisé avec les noms enregistrés dans
+// toolRegistry.js (voir `registerTool(...)` + `name: '...'` de chaque
+// outil) : un nom présent ici mais absent du registre (ex: anciennement
+// 'translate' et 'ocr_image', qui n'existaient pas — les vrais noms sont
+// 'translate_text' et 'ocr') fait planter executeTool() avec "Outil
+// inconnu", car ce nom est proposé tel quel au classifieur IA dans le
+// prompt système de detectIntent().
+const INTENT_TOOL_NAMES = [
+  'play',
+  'sticker',
+  'ocr',
+  'download',
+  'weather',
+  'search',
+  'tts',
+  'ask_general',
+  'summarize_text',
+  'correct_text',
+  'translate_text',
+  'rewrite_professional',
+];
 
 function normalizeText(value = '') {
   return String(value)
@@ -120,44 +153,42 @@ export async function detectIntent(text, contextPrompt, msg = null) {
     return localIntent;
   }
 
-  if (!config.mistralApiKey) {
-    throw new Error('Clé API Mistral manquante dans .env.');
+  if (!config.groqApiKey) {
+    throw new Error('Clé API Groq manquante dans .env.');
   }
 
   try {
-    const res = await fetch('https://api.mistral.ai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${config.mistralApiKey}`,
-      },
-      body: JSON.stringify({
-        model: INTENT_MODEL,
-        messages: [
-          {
-            role: 'system',
-            content:
-              'Tu classifies les demandes d’un assistant WhatsApp. Réponds uniquement avec un JSON strict: {"intent":"chat|summary|translation|correction|ocr|general","tool":"play|sticker|ocr|translate|download|weather|search|tts|ask_general|summarize_text|correct_text|translate_text|ocr_image|null","language":"...","size":"court|moyen|détaillé"}.',
-          },
-          {
-            role: 'user',
-            content: `${contextPrompt}\n\nDemande utilisateur: ${text}`,
-          },
-        ],
-        temperature: 0.2,
-        response_format: { type: 'json_object' },
-      }),
+    // Réutilise le même client Groq (retry/backoff sur 429 + timeout
+    // réseau) que askGroq/correctText/etc. — auparavant ce fetch était
+    // dupliqué ici, sans aucun retry ni timeout propre à la détection
+    // d'intention.
+    //
+    // L'énumération inclut aussi BRIDGE_ALLOWED_COMMANDS : sans ça, le pont
+    // vers les commandes historiques (menu/help/agent/setup...) documenté
+    // dans README.md n'était en réalité jamais atteignable, ni via Groq
+    // (qui ne les proposait pas), ni via inferLocalIntent() (qui ne les
+    // détecte pas) — corrigé ici.
+    const allIntentToolNames = [...INTENT_TOOL_NAMES, ...BRIDGE_ALLOWED_COMMANDS];
+    const json = await requestGroqJson(GROQ_CHAT_URL, {
+      model: INTENT_MODEL,
+      messages: [
+        {
+          role: 'system',
+          content:
+            `Tu classifies les demandes d’un assistant WhatsApp. Réponds uniquement avec un JSON strict: {"intent":"chat|summary|translation|correction|ocr|general","tool":"${allIntentToolNames.join('|')}|null","language":"...","size":"court|moyen|détaillé"}.`,
+        },
+        {
+          role: 'user',
+          content: `${contextPrompt}\n\nDemande utilisateur: ${text}`,
+        },
+      ],
+      temperature: 0.2,
+      response_format: { type: 'json_object' },
     });
 
-    if (!res.ok) {
-      const errText = await res.text().catch(() => '');
-      throw new Error(`Erreur détection d’intention (${res.status}) ${errText}`.trim());
-    }
-
-    const json = await res.json();
     const raw = json?.choices?.[0]?.message?.content;
     if (!raw) {
-      throw new Error('Aucune intention renvoyée par Mistral.');
+      throw new Error('Aucune intention renvoyée par Groq.');
     }
 
     try {
@@ -166,7 +197,7 @@ export async function detectIntent(text, contextPrompt, msg = null) {
       throw new Error(`Réponse JSON invalide pour l’intention: ${err.message}`);
     }
   } catch (err) {
-    if (/429|rate limit|rate_limited|1300/i.test(err.message)) {
+    if (/429|rate limit|rate_limited/i.test(err.message)) {
       logger.warn({ err }, 'Rate limit sur la détection d’intention : passage en fallback local');
       return { intent: 'general', tool: 'ask_general' };
     }
@@ -182,6 +213,19 @@ export async function runAgentTurn(sock, msg, chatId, sender, text, commands = n
     return false;
   }
 
+  // Limite de débit des appels IA de l'agent : évite qu'un utilisateur ne
+  // multiplie les appels Groq payants en spammant le chat en mode agent
+  // (middlewares/antiSpam.js ne couvre pas ce chemin, réservé aux commandes
+  // préfixées).
+  if (!checkAndRecordAgentCall(chatId, sender)) {
+    await sock.sendMessage(
+      chatId,
+      { text: '⏳ Trop de messages envoyés à l’agent en peu de temps. Réessaie dans une minute.' },
+      { quoted: msg }
+    );
+    return true;
+  }
+
   const context = buildConversationContext(chatId, sender, text);
   const intent = await detectIntent(text, context.prompt, msg).catch((err) => {
     logger.warn({ err }, 'Erreur détection d’intention IA');
@@ -190,9 +234,32 @@ export async function runAgentTurn(sock, msg, chatId, sender, text, commands = n
 
   try {
     let result = '';
-    if (intent.tool && intent.tool !== 'null') {
+    // Défense en profondeur : même si detectIntent() renvoie un nom de tool
+    // qui n'est ni dans la liste que voit le classifieur IA (INTENT_TOOL_NAMES)
+    // ni dans les commandes pontables, on l'ignore plutôt que de tenter de
+    // l'exécuter — ça bloque net un tool interne comme `debug_message` (voir
+    // toolRegistry.js) même en cas d'hallucination du modèle.
+    const isKnownTool = intent.tool && (INTENT_TOOL_NAMES.includes(intent.tool) || BRIDGE_ALLOWED_COMMANDS.includes(intent.tool));
+
+    if (intent.tool && intent.tool !== 'null' && !isKnownTool) {
+      logger.warn(`Tool non autorisé ignoré (hors liste blanche) : ${intent.tool}`);
+    }
+
+    if (isKnownTool) {
+      // Pour les outils de traitement de texte (traduction, correction,
+      // résumé, réécriture), `text` est l'instruction tapée par
+      // l'utilisateur (ex: "Traduire en anglais"), pas le contenu à
+      // traiter — on ne la transmet PAS comme `text` de l'outil, sinon
+      // celui-ci traduirait/corrigerait/résumerait littéralement
+      // l'instruction au lieu d'aller chercher le message cité (reply)
+      // via resolveTextSource(). Les autres outils (ask_general, search,
+      // weather...) continuent de recevoir `text` normalement.
+      const isTextProcessingTool = ['translate_text', 'correct_text', 'summarize_text', 'rewrite_professional'].includes(
+        intent.tool
+      );
+
       const toolArgs = {
-        text,
+        text: isTextProcessingTool ? undefined : text,
         question: text,
         targetLanguage: intent.language,
         size: intent.size,
@@ -204,7 +271,7 @@ export async function runAgentTurn(sock, msg, chatId, sender, text, commands = n
       };
 
       const commandCandidate = intent.tool;
-      if (['help', 'ping', 'status', 'statut', 'whoami', 'menu', 'agent', 'setup'].includes(commandCandidate)) {
+      if (BRIDGE_ALLOWED_COMMANDS.includes(commandCandidate)) {
         const handled = await invokeExistingCommand(commandCandidate, {
           sock,
           msg,
@@ -222,7 +289,7 @@ export async function runAgentTurn(sock, msg, chatId, sender, text, commands = n
 
       result = await executeTool(intent.tool, toolArgs, { sock, msg, chatId, sender });
     } else {
-      result = await askMistral(text);
+      result = await askGroq(text);
     }
 
     if (!result || !(typeof result === 'string' ? String(result).trim() : true)) {
