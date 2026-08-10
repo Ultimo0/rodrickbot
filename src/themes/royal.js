@@ -149,4 +149,23 @@ export default {
       '✦ Bonne route ✦',
     ].join('\n');
   },
+
+  renderDeletedMessages(data) {
+    const lines = [boxTop(19, BOX), `   🗑 ${bold('MESSAGES SUPPRIMES')}`, boxBottom(19, BOX), ''];
+
+    if (!data.entries.length) {
+      lines.push('◆ Aucun message supprimé récemment dans ce chat.');
+    } else {
+      for (const e of data.entries) {
+        lines.push(`◆ ${bold(`#${e.index} · ${e.typeLabel}`)}`);
+        lines.push(`   Supprimé par : ${e.authorLabel}`);
+        lines.push(`   ${e.whenLabel}`);
+        if (e.textContent) lines.push(`   ✦ ${e.textContent}`);
+        lines.push('');
+      }
+    }
+
+    lines.push(footer(data.footer));
+    return lines.join('\n');
+  },
 };

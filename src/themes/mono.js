@@ -102,4 +102,20 @@ export default {
   renderBye(data) {
     return block([`- @${data.number} a quitte ${data.groupName}`]);
   },
+
+  renderDeletedMessages(data) {
+    const lines = ['messages supprimes', SEP];
+
+    if (!data.entries.length) {
+      lines.push('(aucun message supprime recemment)');
+    } else {
+      for (const e of data.entries) {
+        lines.push(`#${e.index} ${e.typeLabel.toLowerCase()} - ${e.authorLabel} - ${e.whenLabel}`);
+        if (e.textContent) lines.push(`  ${e.textContent}`);
+      }
+    }
+
+    lines.push(SEP, footer(data.footer));
+    return block(lines);
+  },
 };

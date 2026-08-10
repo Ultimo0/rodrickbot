@@ -5,6 +5,12 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/), versionneme
 
 ## [Unreleased]
 
+## [1.18.0]
+### Added
+- Commande `!remove` (alias `!antidelete`, `!recovermsg`) : renvoie les 3 derniers messages supprimés ("supprimer pour tout le monde") dans le chat courant — texte, image, vidéo, audio — conservés 45 minutes. Fonctionne en privé comme en groupe. Réservée à `ADMIN_JIDS` (contenu potentiellement sensible). Affichage thémé (`renderDeletedMessages`, ajouté aux 5 thèmes existants), les médias sont renvoyés séparément du résumé.
+- `src/core/deletedMessageCache.js` : cache tout message texte/média entrant (n'importe quel chat) pendant 45 minutes, détecte les suppressions via `protocolMessage.type === REVOKE` (`messages.upsert`), maintient un journal des 3 dernières suppressions par chat avec la même rétention.
+- Contrat des thèmes étendu : `renderDeletedMessages({ entries, footer })`, implémenté dans `classique.js`, `royal.js`, `neon.js`, `mono.js`, `galaxy.js`, documenté dans `src/themes/README.md`.
+
 ## [1.17.0]
 ### Changed
 - **Agent IA réservé aux administrateurs (`ADMIN_JIDS`)** :

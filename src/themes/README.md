@@ -23,6 +23,7 @@ export default {
   renderStartup(data)       { /* ... */ return 'texte final'; },
   renderWelcome(data)       { /* ... */ return 'texte final'; },
   renderBye(data)           { /* ... */ return 'texte final'; },
+  renderDeletedMessages(data) { /* ... */ return 'texte final'; },
 };
 ```
 
@@ -43,6 +44,11 @@ change.
 - `renderStartup({ botName, signature, configured, instanceId?, instanceOwner?, prefix, commandCount, mode })`
 - `renderWelcome({ number, groupName })` / `renderBye({ number, groupName })`
   — `number` est déjà le numéro brut (sans `@`), à mentionner via `@${number}`.
+- `renderDeletedMessages({ entries: [{ index, icon, typeLabel, authorLabel, whenLabel, textContent }], footer })`
+  — `entries` peut être vide (aucune suppression récente) ; `textContent` vaut
+  `null` pour les entrées média (le média lui-même est renvoyé séparément par
+  `commands/remove.js`, jamais par le thème). `authorLabel` est déjà au
+  format `@numero`.
 
 ### Conventions à respecter
 

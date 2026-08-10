@@ -35,6 +35,7 @@ const DEFAULTS = {
   guardian: { enabled: false, snapshot: null },
   antispam: { enabled: false, messageLimit: 5, windowSeconds: 8 },
   antipurge: { enabled: false },
+  antistatut: { enabled: false },
 };
 
 function ensure(chatId) {
@@ -107,5 +108,11 @@ export function setAntispamConfig(chatId, messageLimit, windowSeconds) {
 export function setAntipurge(chatId, enabled) {
   const g = ensure(chatId);
   g.antipurge = { enabled };
+  persist();
+}
+
+export function setAntistatut(chatId, enabled) {
+  const g = ensure(chatId);
+  g.antistatut = { enabled };
   persist();
 }

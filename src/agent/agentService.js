@@ -17,7 +17,7 @@ import {
   setAgentEnabled,
 } from './sessionMemory.js';
 import { buildConversationContext } from './contextBuilder.js';
-import { executeTool } from './toolRegistry.js';
+import { executeTool, getIntentToolNames } from './toolRegistry.js';
 import { invokeExistingCommand, BRIDGE_ALLOWED_COMMANDS } from './commandBridge.js';
 import { getMediaType, getQuotedInfo } from '../utils/quotedContent.js';
 import { extractYoutubeUrl } from '../utils/youtube.js';
@@ -25,32 +25,13 @@ import { extractTikTokUrl } from '../utils/tiktok.js';
 
 const INTENT_MODEL = config.groqModel || 'llama-3.3-70b-versatile';
 
-// Liste des tools que le classifieur Groq est autorisé à choisir. Tenue
-// à jour manuellement pour rester synchronisée avec toolRegistry.js — un
-// tool absent d'ici (comme `rewrite_professional` auparavant) n'est
-// atteignable que via inferLocalIntent(), jamais via une vraie
-// classification IA.
-// Doit rester strictement synchronisé avec les noms enregistrés dans
-// toolRegistry.js (voir `registerTool(...)` + `name: '...'` de chaque
-// outil) : un nom présent ici mais absent du registre (ex: anciennement
-// 'translate' et 'ocr_image', qui n'existaient pas — les vrais noms sont
-// 'translate_text' et 'ocr') fait planter executeTool() avec "Outil
-// inconnu", car ce nom est proposé tel quel au classifieur IA dans le
-// prompt système de detectIntent().
-const INTENT_TOOL_NAMES = [
-  'play',
-  'sticker',
-  'ocr',
-  'download',
-  'weather',
-  'search',
-  'tts',
-  'ask_general',
-  'summarize_text',
-  'correct_text',
-  'translate_text',
-  'rewrite_professional',
-];
+// Liste des tools que le classifieur Groq est autorisé à choisir. Générée
+// dynamiquement depuis le registre réel (toolRegistry.js::getIntentToolNames)
+// au lieu d'être recopiée à la main : plus aucun risque de désynchronisation
+// entre les noms proposés au classifieur IA et les noms réellement
+// enregistrés (voir l'historique du bug avec 'rewrite_professional',
+// 'translate'/'translate_text', 'ocr_image'/'ocr').
+const INTENT_TOOL_NAMES = getIntentToolNames();
 
 function normalizeText(value = '') {
   return String(value)
@@ -97,6 +78,48 @@ function inferDownloadFormat(text) {
 
 function extractDownloadUrl(text) {
   return extractYoutubeUrl(text) || extractTikTokUrl(text) || text;
+}
+
+// Construit les arguments réellement attendus par chaque outil, plutôt
+// qu'un seul objet fourre-tout (city/query/url/format identiques pour
+// tous les tools) envoyé indistinctement à executeTool(). Chaque branche
+// ne fournit que les champs pertinents pour l'outil ciblé, ce qui évite
+// qu'un futur changement dans un outil (ex: un fallback interne sur un
+// champ générique comme `text`) ne déclenche un comportement fantôme
+// hérité d'un autre outil.
+function buildToolArgs(toolName, text, intent) {
+  const base = { text, question: text };
+
+  switch (toolName) {
+    case 'weather':
+      return { ...base, city: text, lang: intent.language };
+    case 'search':
+      return { ...base, query: text };
+    case 'download':
+      return { ...base, url: extractDownloadUrl(text), format: inferDownloadFormat(text) };
+    case 'play':
+      return { ...base, url: extractDownloadUrl(text), mode: inferDownloadFormat(text) === 'video' ? 'video' : 'audio' };
+    case 'tts':
+      return { ...base, language: intent.language };
+    case 'translate_text':
+      // Outil de traitement de texte : `text` n'est PAS transmis (voir
+      // commentaire dans runAgentTurn), seule la résolution automatique
+      // (message cité/mémoire) doit fournir le texte à traduire.
+      return { targetLanguage: intent.language };
+    case 'summarize_text':
+      return { size: intent.size };
+    case 'correct_text':
+    case 'rewrite_professional':
+      return {};
+    case 'sticker':
+    case 'ocr':
+      // sticker/ocr n'ont besoin que du contexte média (msg/sock/chatId),
+      // injecté séparément par executeTool(name, args, context).
+      return {};
+    case 'ask_general':
+    default:
+      return base;
+  }
 }
 
 function sendToolResult(sock, chatId, msg, result) {
@@ -254,21 +277,7 @@ export async function runAgentTurn(sock, msg, chatId, sender, text, commands = n
       // l'instruction au lieu d'aller chercher le message cité (reply)
       // via resolveTextSource(). Les autres outils (ask_general, search,
       // weather...) continuent de recevoir `text` normalement.
-      const isTextProcessingTool = ['translate_text', 'correct_text', 'summarize_text', 'rewrite_professional'].includes(
-        intent.tool
-      );
-
-      const toolArgs = {
-        text: isTextProcessingTool ? undefined : text,
-        question: text,
-        targetLanguage: intent.language,
-        size: intent.size,
-        query: text,
-        city: text,
-        mode: 'audio',
-        format: intent.tool === 'download' ? inferDownloadFormat(text) : 'audio',
-        url: intent.tool === 'download' ? extractDownloadUrl(text) : text,
-      };
+      const toolArgs = buildToolArgs(intent.tool, text, intent);
 
       const commandCandidate = intent.tool;
       if (BRIDGE_ALLOWED_COMMANDS.includes(commandCandidate)) {

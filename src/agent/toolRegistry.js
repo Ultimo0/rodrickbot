@@ -60,6 +60,22 @@ export function getToolRegistry() {
 }
 
 /**
+ * Noms des outils exposables au classifieur d'intention IA (agentService.js).
+ *
+ * Générée dynamiquement à partir du registre réel plutôt que recopiée à la
+ * main : élimine la classe d'erreur documentée dans agentService.js (un nom
+ * présent côté classifieur mais absent ici, ou l'inverse, comme cela s'est
+ * déjà produit avec `rewrite_professional`/`translate`/`ocr_image`). Les
+ * outils marqués `internal: true` (ex: debug_message) sont exclus : ils ne
+ * doivent jamais être proposés à l'IA conversationnelle.
+ */
+export function getIntentToolNames() {
+  return getToolRegistry()
+    .filter((tool) => !tool.internal)
+    .map((tool) => tool.name);
+}
+
+/**
  * @param {object} options
  * @param {boolean} [options.allowInternal] — réservé aux appelants internes
  *   de confiance (jamais l'agent conversationnel) ; permet d'exécuter un

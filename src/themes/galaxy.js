@@ -126,4 +126,23 @@ export default {
       '✦ Bon vent parmi les étoiles ✦',
     ].join('\n');
   },
+
+  renderDeletedMessages(data) {
+    const lines = [titleBlock('ÉTOILES ÉTEINTES'), ''];
+
+    if (!data.entries.length) {
+      lines.push('🌑 Aucune étoile éteinte récemment dans cette galaxie.');
+    } else {
+      for (const e of data.entries) {
+        lines.push(`${e.icon} ${script(`#${e.index} ${e.typeLabel}`)}`);
+        lines.push(`   🪐 Éteinte par : ${e.authorLabel}`);
+        lines.push(`   🌙 ${e.whenLabel}`);
+        if (e.textContent) lines.push(`   ✨ ${e.textContent}`);
+        lines.push('');
+      }
+    }
+
+    lines.push(footer(data.footer));
+    return lines.join('\n');
+  },
 };

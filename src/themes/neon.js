@@ -145,4 +145,23 @@ export default {
       '>> Connexion terminée.',
     ].join('\n');
   },
+
+  renderDeletedMessages(data) {
+    const lines = [boxTop(19, BOX), `  ${ACCENT} ${upper('LOGS SUPPRIMES')}`, boxBottom(19, BOX), ''];
+
+    if (!data.entries.length) {
+      lines.push('>> AUCUN LOG SUPPRIME RECEMMENT DANS CE CANAL.');
+    } else {
+      for (const e of data.entries) {
+        lines.push(`[${e.icon}] ENTRY_${String(e.index).padStart(2, '0')} :: ${e.typeLabel.toUpperCase()}`);
+        lines.push(`> AUTHOR.......... ${e.authorLabel}`);
+        lines.push(`> TIMESTAMP....... ${e.whenLabel}`);
+        if (e.textContent) lines.push(`> PAYLOAD......... ${e.textContent}`);
+        lines.push('');
+      }
+    }
+
+    lines.push(footer(data.footer));
+    return lines.join('\n');
+  },
 };

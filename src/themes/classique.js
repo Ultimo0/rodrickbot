@@ -147,4 +147,23 @@ export default {
       '🍀 Bonne chance pour la suite !',
     ].join('\n');
   },
+
+  renderDeletedMessages(data) {
+    const lines = [boxTop(19, BOX), `   🗑 *MESSAGES SUPPRIMÉS*`, boxBottom(19, BOX), ''];
+
+    if (!data.entries.length) {
+      lines.push('Aucun message supprimé récemment dans ce chat.');
+    } else {
+      for (const e of data.entries) {
+        lines.push(`${e.icon} *#${e.index} · ${e.typeLabel}*`);
+        lines.push(`👤 Supprimé par : ${e.authorLabel}`);
+        lines.push(`🕒 ${e.whenLabel}`);
+        if (e.textContent) lines.push(`💬 ${e.textContent}`);
+        lines.push('');
+      }
+    }
+
+    lines.push(footer(data.footer));
+    return lines.join('\n');
+  },
 };

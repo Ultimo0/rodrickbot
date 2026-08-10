@@ -8,6 +8,7 @@ import { initViewOnceCache } from './core/viewOnceCache.js';
 import { initLockScheduler } from './core/lockScheduler.js';
 import { initGroupGuardian } from './core/groupGuardian.js';
 import { initAntispamGuard } from './core/antispamGuard.js';
+import { initDeletedMessageCache } from './core/deletedMessageCache.js';
 import { createGroupParticipantsHandler } from './handlers/groupParticipantsHandler.js';
 import { startTelemetry } from './core/telemetry.js';
 import { sendStartupMessage } from './utils/startupMessage.js';
@@ -27,6 +28,7 @@ async function main() {
     initLockScheduler(sock);
     initGroupGuardian(sock);
     initAntispamGuard(sock);
+    initDeletedMessageCache(sock);
     sock.ev.on('messages.upsert', createMessageHandler(sock, commands));
     sock.ev.on('group-participants.update', createGroupParticipantsHandler(sock));
     startTelemetry();

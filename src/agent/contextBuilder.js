@@ -9,12 +9,26 @@
 import { getRecentMessages } from './sessionMemory.js';
 
 const MAX_HISTORY_MESSAGES = 8;
+// Longueur max (en caractères) d'un message individuel repris dans
+// l'historique envoyé à Groq. Sans ça, un utilisateur qui colle un pavé de
+// texte (ex: pour résumé/correction) fait gonfler le prompt système à
+// chaque tour suivant tant que ce message reste dans la fenêtre des 8
+// derniers — coût Groq inutile, le contenu intégral n'apportant rien à la
+// classification d'intention du tour courant.
+const MAX_HISTORY_ENTRY_CHARS = 400;
+
+function truncateForHistory(text = '') {
+  const value = String(text);
+  return value.length > MAX_HISTORY_ENTRY_CHARS
+    ? `${value.slice(0, MAX_HISTORY_ENTRY_CHARS)}… [tronqué]`
+    : value;
+}
 
 export function buildConversationContext(chatId, sender, latestUserText) {
   const recentMessages = getRecentMessages(chatId, sender, MAX_HISTORY_MESSAGES);
 
   const history = recentMessages
-    .map((entry) => `${entry.role === 'user' ? 'Utilisateur' : 'Assistant'}: ${entry.text}`)
+    .map((entry) => `${entry.role === 'user' ? 'Utilisateur' : 'Assistant'}: ${truncateForHistory(entry.text)}`)
     .join('\n');
 
   return {

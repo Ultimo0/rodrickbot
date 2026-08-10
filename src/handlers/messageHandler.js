@@ -6,6 +6,7 @@ import { attachReplyHelpers } from '../utils/reply.js';
 import { isLockdownMode, incrementMessageCount, incrementCommandCount } from '../core/state.js';
 import { isRemotelyDisabled } from '../core/remoteControl.js';
 import { handleAntilink } from '../utils/antilink.js';
+import { handleAntistatut } from '../utils/antistatut.js';
 import { handleDownloadReply } from '../utils/downloadReply.js';
 import { isInstanceConfigured } from '../core/instance.js';
 import { runAgentTurn } from '../agent/index.js';
@@ -41,6 +42,12 @@ async function handleSingleMessage(sock, commands, msg) {
 
   const chatId = msg.key.remoteJid;
   const sender = isGroup(chatId) ? msg.key.participant : chatId;
+
+  // Vérifié avant extractText() : une notification de mention de statut
+  // n'est ni un `conversation` ni un `extendedTextMessage`, donc `text`
+  // serait vide de toute façon — inutile d'attendre son extraction.
+  if (await handleAntistatut(sock, msg, chatId)) return;
+
   const text = extractText(msg);
 
   if (await handleAntilink(sock, msg, chatId, sender, text)) return;

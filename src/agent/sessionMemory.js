@@ -11,6 +11,13 @@
  */
 
 const DEFAULT_TTL_MS = 30 * 60 * 1000;
+// Plafond dur du nombre de messages conservés par session, indépendant du
+// TTL. Sans lui, un utilisateur qui enchaîne beaucoup de messages en moins
+// de DEFAULT_TTL_MS fait grossir `session.messages` sans limite jusqu'à
+// l'expiration de la session — alors que getRecentMessages() ne lit jamais
+// que les 8 derniers (voir contextBuilder.js). Volontairement plus large
+// que cette fenêtre de lecture pour laisser un peu de marge historique.
+const MAX_MESSAGES_PER_SESSION = 40;
 const sessions = new Map();
 
 function buildKey(chatId, sender) {
@@ -60,6 +67,11 @@ export function appendSessionMessage(chatId, sender, role, text) {
     text,
     ts: now(),
   });
+  // Borne dure : évite l'accumulation illimitée pour une session très
+  // active qui ne dépasse jamais son TTL (voir MAX_MESSAGES_PER_SESSION).
+  if (session.messages.length > MAX_MESSAGES_PER_SESSION) {
+    session.messages = session.messages.slice(-MAX_MESSAGES_PER_SESSION);
+  }
   session.expiresAt = now() + session.ttlMs;
   return session;
 }
