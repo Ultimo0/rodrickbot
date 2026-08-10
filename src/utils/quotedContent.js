@@ -133,6 +133,26 @@ export function getQuotedInfo(msg) {
     };
 }
 
+  // Filet de sécurité générique : si aucune des structures ci-dessus ne
+  // correspond (ex: type de message porteur de contextInfo non prévu —
+  // buttonsMessage, templateMessage, viewOnceMessageV2 avec un autre type
+  // interne, variation liée aux statuts WhatsApp), on cherche n'importe
+  // quel nœud direct de msg.message qui possède un contextInfo.quotedMessage.
+  // Même esprit défensif que utils/antistatut.js face aux variations du
+  // protocole Baileys/WhatsApp plutôt que de figer une liste exhaustive de
+  // cas et rater silencieusement les futurs.
+  for (const key of Object.keys(msg.message || {})) {
+    const node = msg.message[key];
+    const ctxInfo = node?.contextInfo;
+    if (ctxInfo?.quotedMessage) {
+      return {
+        quotedMessage: ctxInfo.quotedMessage,
+        stanzaId: ctxInfo.stanzaId,
+        participant: ctxInfo.participant,
+      };
+    }
+  }
+
   return null;
 }
 

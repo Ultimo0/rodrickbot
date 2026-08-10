@@ -20,6 +20,23 @@ export function createMessageHandler(sock, commands) {
         await handleSingleMessage(sock, commands, msg);
       } catch (err) {
         logger.error({ err }, 'Erreur lors du traitement d\'un message');
+        // Avant ce correctif, une exception ici (ex: structure de statut
+        // WhatsApp inattendue, échec Baileys) restait invisible pour
+        // l'utilisateur : aucune réponse dans le chat, uniquement un log
+        // serveur. Symptôme rapporté : "le bot ne répond rien du tout".
+        // On tente désormais un message d'erreur best-effort dans le chat
+        // d'origine, pour qu'un plantage inattendu ne se traduise plus
+        // jamais par un silence total côté utilisateur.
+        try {
+          const chatId = msg?.key?.remoteJid;
+          if (chatId) {
+            await sock.sendMessage(chatId, {
+              text: '❌ Une erreur inattendue est survenue lors du traitement de ce message. Réessaie, ou contacte le développeur si ça persiste.',
+            }, { quoted: msg });
+          }
+        } catch (notifyErr) {
+          logger.error({ notifyErr }, "Impossible d'envoyer le message d'erreur de secours");
+        }
       }
     }
   };

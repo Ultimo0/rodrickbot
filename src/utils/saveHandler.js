@@ -15,25 +15,25 @@ export async function handleSaveCommand(ctx, sourceType) {
   const label = sourceType === 'statut' ? 'statut' : 'message';
   const name = ctx.args[0];
 
-  if (!name) {
-    await ctx.error(`Usage: !${sourceType} <nom>\n(en répondant à un ${label})`);
-    return;
-  }
-
-  const quotedInfo = getQuotedInfo(ctx.msg);
-  if (!quotedInfo) {
-    await ctx.error(`❌ Réponds à un ${label} pour l'enregistrer.`);
-    return;
-  }
-
-  if (hasItem(name)) {
-    await ctx.error(`❌ Le nom "${name}" est déjà utilisé. Choisis un autre nom, ou supprime-le d'abord avec !dell ${name}.`);
-    return;
-  }
-
-  await ctx.processing();
-
   try {
+    if (!name) {
+      await ctx.error(`Usage: !${sourceType} <nom>\n(en répondant à un ${label})`);
+      return;
+    }
+
+    const quotedInfo = getQuotedInfo(ctx.msg);
+    if (!quotedInfo) {
+      await ctx.error(`❌ Réponds à un ${label} pour l'enregistrer.`);
+      return;
+    }
+
+    if (hasItem(name)) {
+      await ctx.error(`❌ Le nom "${name}" est déjà utilisé. Choisis un autre nom, ou supprime-le d'abord avec !dell ${name}.`);
+      return;
+    }
+
+    await ctx.processing();
+
     const mediaType = getMediaType(quotedInfo.quotedMessage);
 
     if (mediaType) {
@@ -58,6 +58,13 @@ export async function handleSaveCommand(ctx, sourceType) {
 
     await ctx.success(`✅ Enregistré sous "${name}".`);
   } catch (err) {
+    // Avant ce correctif, seule la portion téléchargement+sauvegarde était
+    // protégée : une exception dans getQuotedInfo()/getMediaType() sur une
+    // structure de statut WhatsApp inattendue remontait non filtrée jusqu'au
+    // handler global, qui ne renvoyait alors RIEN dans le chat (silence
+    // total) — seulement un log serveur. Toute la fonction est maintenant
+    // couverte, avec le message d'erreur réel pour diagnostiquer plus vite
+    // la prochaine fois.
     await ctx.error(`❌ Impossible d'enregistrer : ${err.message}`);
   }
 }
