@@ -5,6 +5,80 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/), versionneme
 
 ## [Unreleased]
 
+## [1.22.3]
+### Fixed
+- **Questions qui revenaient trop souvent.** Aucune mémoire n'empêchait un utilisateur de retomber sur une question déjà vue lors d'une partie précédente — statistiquement fréquent avec un pool d'environ 60 questions (15/catégorie), et quasi systématique en filtrant sur une seule catégorie.
+  - `QuizEngine` mémorise désormais, par utilisateur (en mémoire, non persisté), les 30 dernières questions vues, et `QuizLoader.pickRandomQuestions` les exclut en priorité du tirage suivant (`excludeIds`), avec repli gracieux si le pool filtré est trop petit pour les éviter complètement (mieux vaut une répétition occasionnelle qu'une partie plus courte que prévu).
+  - Pool récupéré depuis Open Trivia DB élargi de 15 à 25 questions par catégorie (jusqu'à ~100 au lieu de ~60), pour donner plus de marge à ce mécanisme — impact : le rafraîchissement Internet en tâche de fond (au démarrage, ou `/quiz refresh`) prend un peu plus longtemps, toujours sans bloquer le bot.
+
+## [1.22.2]
+### Changed
+- **Traduction des questions Internet : MyMemory (gratuit, sans clé) au lieu de Groq.** `QuizLoader.js` ne dépend plus de Groq pour traduire les questions Open Trivia DB en français — bascule sur [MyMemory](https://mymemory.translated.net) (API gratuite, sans clé, ~5000 mots/jour/IP), pour ne pas consommer le quota Groq utilisé ailleurs dans le bot (`!ia`, `!traduire`, `!corriger`).
+  - Traduction segment par segment (question + chaque réponse) avec un pool de 4 requêtes concurrentes, plutôt qu'un seul appel structuré JSON — MyMemory ne fait que traduire, pas de génération de contenu.
+  - Cache de traduction en mémoire (texte anglais → français) pour éviter de re-traduire les doublons entre questions.
+  - Repli par segment : un segment dont la traduction échoue garde son texte anglais plutôt que de faire échouer toute la question.
+  - **Conséquence assumée** : les questions Internet n'ont plus de champ `explanation` (MyMemory ne génère pas de contenu pédagogique, contrairement à un LLM) — seule la banque de secours locale (`src/data/quizQuestions.json`) en fournit désormais.
+  - Le module Quiz ne dépend plus d'aucune clé API (`GROQ_API_KEY` n'est plus nécessaire pour `/quiz`).
+  - **Non testé en conditions réelles** (pas d'accès réseau dans mon environnement de dev) — fiabilité/quota de MyMemory et qualité de traduction à vérifier après déploiement, `purgeCache`/`refresh` restent les outils de diagnostic si besoin.
+
+## [1.22.1]
+### Added
+- **`/quiz purge` — réinitialisation complète du module Quiz en une seule commande (admin uniquement, `ADMIN_JIDS`).** Contrairement à `/quiz resetall` (qui ne touche qu'aux stats des utilisateurs), `/quiz purge` vide les 3 fichiers de données du module d'un coup :
+  1. Sessions actives : interrompues et notifiées (comme `/quiz resetall`) avant toute suppression.
+  2. `quiz_sessions.json` vidé intégralement (historique compris, pas seulement les sessions actives).
+  3. `quiz_stats.json` vidé intégralement (XP, pièces, niveaux, succès de tous les utilisateurs).
+  4. `quiz_questions_cache.json` supprimé — la banque de secours locale (`src/data/quizQuestions.json`) reprend le relais immédiatement, en attendant le prochain `/quiz refresh` ou redémarrage.
+  - Irréversible et **sans fenêtre de confirmation** (à la différence de `/quiz reset` et `/quiz resetall`) : pensé comme un outil de remise à zéro pour le développement/diagnostic, pas comme une action courante.
+  - `QuizEngine.purgeEverything` orchestre les trois étapes ; `QuizSessionManager.purgeAllSessions` et `QuizLoader.purgeCache` sont les nouvelles primitives de bas niveau réutilisées.
+- **`/quiz sessions purge` — vidage ciblé de `quiz_sessions.json`** (admin, sous-commande de `/quiz sessions`) : contrairement à `/quiz sessions clear` (qui interrompt les sessions actives mais garde l'historique), `purge` supprime le fichier de sessions dans son intégralité, actives comprises, sans toucher aux stats/XP. Utile pour repartir d'un fichier de sessions propre sans perdre la progression des utilisateurs. Réutilise `QuizEngine.purgeAllSessionData` (interrompt puis vide).
+- **`/quiz categories` — liste les catégories de questions disponibles**, pour ne plus avoir à deviner les noms valides avant `/quiz <categorie>`. Réutilise `QuizLoader.listCategories`/`QuizEngine.getCategoriesMessage`, déjà utilisés en interne pour valider les catégories.
+
+## [1.22.0]
+### Changed
+- **Questions récupérées depuis Internet au lieu d'une banque figée dans le code.** `QuizLoader.js` récupère désormais les questions via [Open Trivia Database](https://opentdb.com) (gratuit, sans clé) et les traduit en français via Groq (`requestGroqJson`, déjà utilisé par `!ia`/`!traduire`/`!corriger`) — une courte explication est générée pour chaque question au passage.
+  - Fiabilité en 3 niveaux : cache disque 24h (`quiz_questions_cache.json`, racine) → récupération Internet en tâche de fond (ne bloque pas le démarrage du bot) → repli sur `src/data/quizQuestions.json`, dorénavant une simple **banque de secours** utilisée uniquement si le réseau ou Groq est indisponible.
+  - Catégories inchangées pour l'utilisateur (`geographie`, `histoire`, `sciences`, `informatique`) — mappées vers les catégories Open Trivia DB correspondantes en interne.
+  - Nouvelle commande admin **`/quiz refresh`** : force une récupération immédiate, en ignorant la fraîcheur du cache.
+  - Respect du rate-limit d'OpenTDB (~1 req/5s/IP) via un délai entre chaque catégorie récupérée.
+  - **Non testé en conditions réelles** (pas d'accès réseau dans mon environnement de dev) — comportement d'OpenTDB, qualité de la traduction Groq et cas de bascule en cours de partie à vérifier après déploiement.
+
+## [1.21.0]
+### Added
+- **`/quiz resetall` — réinitialisation globale (admin uniquement, `ADMIN_JIDS`).** Supprime les données quiz de TOUS les utilisateurs (XP, pièces, niveaux, historiques, succès), après confirmation `1`/`2`.
+  - Interrompt d'abord toute partie en cours (réutilise `QuizEngine.forceEndAllSessions`, chaque utilisateur concerné est notifié) avant de purger les statistiques (`QuizStatistics.deleteAllStats`), pour ne laisser aucune session orpheline référençant un profil supprimé.
+  - Fenêtre de confirmation **entièrement indépendante** de celle de `/quiz reset` (map `pendingGlobalResets` séparée dans `QuizResetService`) : un admin qui a une confirmation personnelle en attente ne peut jamais la confirmer par erreur en répondant à une confirmation globale, ou inversement.
+  - `messageHandler.js` : le reset global est vérifié en priorité dans la chaîne de routage des réponses texte (avant reset personnel, avant réponse à une question), avec le même contrat `false` = "pas concerné, laisse passer le message" que les autres flux quiz.
+  - Bloqué si l'admin a lui-même un quiz en cours (même garde que `/quiz reset`), pour qu'un "1"/"2" ne soit jamais ambigu.
+
+## [1.20.0]
+### Added
+- **`/quiz sessions` — commande admin de gestion des sessions actives** (réservée à `ADMIN_JIDS`, comme les autres commandes admin du bot) :
+  - `/quiz sessions` : liste toutes les sessions quiz actives (tous utilisateurs), avec question en cours et temps d'inactivité — diagnostic avant de forcer un nettoyage.
+  - `/quiz sessions clear` : interrompt de force **toutes** les sessions actives (débloque un état incohérent sans toucher aux stats/XP des utilisateurs concernés).
+  - `/quiz sessions clear @mention` / `<numero>` / en réponse à un message : interrompt de force la session d'un utilisateur précis (réutilise `utils/groupTarget.js`, déjà utilisé par `!warn` — mention, réponse citée, ou numéro en argument).
+  - S'appuie sur `QuizEngine.forceEndSession`/`forceEndAllSessions` (déjà présents) : contrairement à `/quiz reset`, seule la session en cours est terminée — XP, pièces, niveau et historique de l'utilisateur ne sont pas touchés — et l'utilisateur concerné est notifié.
+  - `QuizRenderer.renderSessionsList` pour l'affichage de la liste.
+
+## [1.19.1]
+### Fixed
+- **Quiz : remplacement du carrousel "liste WhatsApp" par des réponses numérotées en texte.** Testé en conditions réelles (voir capture utilisateur) : WhatsApp affiche le message liste (`sections`/`rows`) en texte brut sans aucune ligne cliquable pour les comptes personnels (non-Business) — restriction plateforme, pas un bug Baileys. `QuizRenderer` envoie désormais les options numérotées en texte pur (1️⃣, 2️⃣...) et n'accepte comme réponse qu'un chiffre nu envoyé pendant qu'une session est active, validé côté serveur (`QuizInteractionGuard.parseAnswerDigit`/`validateAnswerAttempt`) — même garantie "pas de texte libre" que le clic-only initial, juste un canal d'entrée différent.
+  - `QuizEngine.handleAnswerText` remplace `handleAnswerClick` ; ajout d'un verrou en mémoire par session (`sessionsBeingAnswered`) car deux messages texte distincts n'ont pas le même `messageId`, donc la déduplication réseau seule ne suffit plus à empêcher un double-envoi concurrent.
+  - `QuizResetService.handleTextReply` remplace `handleControlClick` ("1" confirme, "2" annule) ; `/quiz reset` refuse désormais explicitement si une session est déjà active, pour qu'un "1"/"2" ne soit jamais ambigu entre "réponse à une question" et "confirmation de reset".
+  - Renommage `QuizSessionManager` : `answeredButtonIds` → `answeredQuestionIds` (migration douce assurée pour les sessions déjà sur disque).
+  - `messageHandler.js` : le routage se fait désormais sur `hasPendingReset()`/`hasActiveSession()` + un chiffre nu, avec repli explicite vers le pipeline normal si le texte n'est pas un chiffre pertinent (évite qu'une vraie commande comme `/quiz abandonner` tapée en pleine partie soit avalée silencieusement).
+
+## [1.19.0]
+### Added
+- **Module Quiz interactif en carrousel WhatsApp** (commande `/quiz`) :
+  - `/quiz [categorie] [difficulte]`, `/quiz random`, `/quiz stats`, `/quiz classement`, `/quiz abandonner`, `/quiz reset` (avec confirmation par bouton avant suppression définitive).
+  - Carrousel = message liste natif WhatsApp (`sections`/`rows`), pas le type `buttons` (déprécié côté serveurs WhatsApp pour les comptes personnels) — réponse acceptée uniquement via clic sur une ligne, jamais par texte libre.
+  - Récompenses (XP, pièces, bonus de série, bonus "sans-faute"), niveaux, classement global, succès déblocables.
+  - Sécurité : anti-double-clic + idempotence anti-redélivrance réseau (`QuizInteractionGuard`), une seule session active par utilisateur, expiration après 10 min d'inactivité avec notification, sauvegarde disque après chaque réponse, reprise des sessions valides après redémarrage (`QuizCleanupService`), nettoyage périodique des sessions expirées.
+  - Architecture découplée : `QuizEngine` (orchestration), `QuizSessionManager`, `QuizLoader`, `QuizRenderer`, `QuizInteractionGuard`, `QuizStatistics`, `QuizRewards`, `QuizRanking`, `QuizAchievements`, `QuizTimer`, `QuizCleanupService`, `QuizResetService` — chacun dans `src/core/quiz/`.
+  - Banque de questions dans `src/data/quizQuestions.json` (catégories, difficultés, explications) — ajouter une question ne nécessite aucune modification de code.
+  - `src/handlers/messageHandler.js` : les clics sur le carrousel (`listResponseMessage`) sont interceptés et routés vers le module Quiz avant le pipeline de commandes classique, sans impacter les commandes existantes.
+  - Nouvelle catégorie de menu `Jeux` (`src/commands/help.js`).
+
 ## [1.18.0]
 ### Added
 - Commande `!remove` (alias `!antidelete`, `!recovermsg`) : renvoie les 3 derniers messages supprimés ("supprimer pour tout le monde") dans le chat courant — texte, image, vidéo, audio — conservés 45 minutes. Fonctionne en privé comme en groupe. Réservée à `ADMIN_JIDS` (contenu potentiellement sensible). Affichage thémé (`renderDeletedMessages`, ajouté aux 5 thèmes existants), les médias sont renvoyés séparément du résumé.

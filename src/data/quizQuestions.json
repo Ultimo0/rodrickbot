@@ -1,0 +1,100 @@
+{
+  "_comment": "Banque de SECOURS du module Quiz (source principale = Internet, voir QuizLoader.js). Utilisée uniquement si la récupération Open Trivia DB + traduction échoue (pas de réseau, clé Groq absente/quota dépassé...). Même format que les questions internet : id unique, category, difficulty (facile|moyen|difficile), question, options (2-4), correctIndex, explanation (affichée après une mauvaise réponse).",
+  "questions": [
+    {
+      "id": "geo-001",
+      "category": "geographie",
+      "difficulty": "facile",
+      "question": "Quelle est la capitale du Cameroun ?",
+      "options": ["Douala", "Yaoundé", "Garoua", "Bafoussam"],
+      "correctIndex": 1,
+      "explanation": "Yaoundé est la capitale politique du Cameroun ; Douala en est la capitale économique."
+    },
+    {
+      "id": "geo-002",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "Quel est le plus long fleuve d'Afrique ?",
+      "options": ["Le Congo", "Le Niger", "Le Nil", "Le Zambèze"],
+      "correctIndex": 2,
+      "explanation": "Le Nil mesure environ 6 650 km, ce qui en fait le plus long fleuve du monde."
+    },
+    {
+      "id": "sci-001",
+      "category": "sciences",
+      "difficulty": "facile",
+      "question": "Combien de planètes compte le système solaire ?",
+      "options": ["7", "8", "9", "10"],
+      "correctIndex": 1,
+      "explanation": "Depuis 2006 et le reclassement de Pluton, le système solaire compte 8 planètes officielles."
+    },
+    {
+      "id": "sci-002",
+      "category": "sciences",
+      "difficulty": "moyen",
+      "question": "Quel est le symbole chimique de l'or ?",
+      "options": ["Or", "Au", "Ag", "Fe"],
+      "correctIndex": 1,
+      "explanation": "\"Au\" vient du latin \"aurum\" (or)."
+    },
+    {
+      "id": "sci-003",
+      "category": "sciences",
+      "difficulty": "difficile",
+      "question": "Quelle particule est responsable de la masse des autres particules dans le modèle standard ?",
+      "options": ["Le photon", "Le boson de Higgs", "Le quark top", "Le neutrino"],
+      "correctIndex": 1,
+      "explanation": "Le boson de Higgs, découvert en 2012 au CERN, est lié au mécanisme donnant leur masse aux particules."
+    },
+    {
+      "id": "info-001",
+      "category": "informatique",
+      "difficulty": "facile",
+      "question": "Que signifie l'acronyme HTML ?",
+      "options": [
+        "HyperText Markup Language",
+        "High Tech Modern Language",
+        "HyperText Modern Links",
+        "Home Tool Markup Language"
+      ],
+      "correctIndex": 0,
+      "explanation": "HTML = HyperText Markup Language, le langage de balisage standard du Web."
+    },
+    {
+      "id": "info-002",
+      "category": "informatique",
+      "difficulty": "moyen",
+      "question": "Quelle couche du modèle OSI gère l'adressage IP ?",
+      "options": ["Couche liaison", "Couche réseau", "Couche transport", "Couche session"],
+      "correctIndex": 1,
+      "explanation": "La couche 3 (réseau) du modèle OSI gère le routage et l'adressage logique (IP)."
+    },
+    {
+      "id": "info-003",
+      "category": "informatique",
+      "difficulty": "difficile",
+      "question": "En Node.js, quel module natif Baileys utilise-t-il pour les événements temps réel WhatsApp ?",
+      "options": ["EventEmitter", "Stream", "Worker Threads", "Cluster"],
+      "correctIndex": 0,
+      "explanation": "Baileys expose ses événements (messages.upsert, etc.) via un EventEmitter (sock.ev)."
+    },
+    {
+      "id": "hist-001",
+      "category": "histoire",
+      "difficulty": "facile",
+      "question": "En quelle année le Cameroun a-t-il obtenu son indépendance ?",
+      "options": ["1958", "1960", "1962", "1965"],
+      "correctIndex": 1,
+      "explanation": "Le Cameroun francophone est devenu indépendant le 1er janvier 1960."
+    },
+    {
+      "id": "hist-002",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "Quel traité a mis fin à la Première Guerre mondiale ?",
+      "options": ["Traité de Vienne", "Traité de Versailles", "Traité de Tordesillas", "Traité de Rome"],
+      "correctIndex": 1,
+      "explanation": "Le traité de Versailles, signé en 1919, a officiellement mis fin à la Première Guerre mondiale."
+    }
+  ]
+}

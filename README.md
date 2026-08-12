@@ -13,6 +13,7 @@ Bot WhatsApp modulaire basé sur [Baileys](https://github.com/WhiskeySockets/Bai
 - **Reconnexion automatique** avec backoff exponentiel en cas de coupure.
 - **Carte de branding** (logo + lien vers la chaîne WhatsApp) sur certaines réponses.
 - **Anti-spam** basique par utilisateur (middleware).
+- **Quiz interactif** (`!quiz`) — XP, pièces, niveaux, classement, succès. Voir [`src/core/quiz/README.md`](src/core/quiz/README.md) pour l'architecture détaillée.
 
 ## Prérequis
 

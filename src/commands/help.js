@@ -21,6 +21,7 @@ const CATEGORY_MENU = [
   { key: 'telechargement', icon: '📥', label: 'Téléchargement', category: 'Téléchargement' },
   { key: 'sauvegardes', icon: '📁', label: 'Sauvegardes', category: 'Sauvegardes' },
   { key: 'ia', icon: '🤖', label: 'Intelligence Artificielle', category: 'Intelligence Artificielle' },
+  { key: 'jeux', icon: '🎮', label: 'Jeux', category: 'Jeux' },
 ];
 
 function footerData() {

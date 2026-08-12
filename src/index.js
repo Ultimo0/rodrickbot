@@ -12,6 +12,7 @@ import { initDeletedMessageCache } from './core/deletedMessageCache.js';
 import { createGroupParticipantsHandler } from './handlers/groupParticipantsHandler.js';
 import { startTelemetry } from './core/telemetry.js';
 import { sendStartupMessage } from './utils/startupMessage.js';
+import { initQuizCleanupService } from './core/quiz/QuizCleanupService.js';
 
 async function main() {
   logger.info(`Démarrage de ${config.botName}...`);
@@ -29,6 +30,7 @@ async function main() {
     initGroupGuardian(sock);
     initAntispamGuard(sock);
     initDeletedMessageCache(sock);
+    initQuizCleanupService(sock); // reprend les sessions quiz actives + démarre le balayage périodique
     sock.ev.on('messages.upsert', createMessageHandler(sock, commands));
     sock.ev.on('group-participants.update', createGroupParticipantsHandler(sock));
     startTelemetry();

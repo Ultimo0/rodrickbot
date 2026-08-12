@@ -10,6 +10,8 @@ import { handleAntistatut } from '../utils/antistatut.js';
 import { handleDownloadReply } from '../utils/downloadReply.js';
 import { isInstanceConfigured } from '../core/instance.js';
 import { runAgentTurn } from '../agent/index.js';
+import { handleAnswerText, hasActiveSession } from '../core/quiz/QuizEngine.js';
+import { handleTextReply, hasPendingReset, handleGlobalTextReply, hasPendingGlobalReset } from '../core/quiz/QuizResetService.js';
 
 export function createMessageHandler(sock, commands) {
   return async ({ messages, type }) => {
@@ -66,6 +68,32 @@ async function handleSingleMessage(sock, commands, msg) {
   if (await handleAntistatut(sock, msg, chatId)) return;
 
   const text = extractText(msg);
+
+  // Quiz : un chiffre nu envoyé par un utilisateur qui a une confirmation
+  // de reset (personnel ou global) ou un quiz en cours est traité ici,
+  // AVANT parseCommand() — "2" ne commence jamais par le préfixe donc ne
+  // matcherait aucune commande de toute façon, et tomberait sinon dans la
+  // branche Agent IA. handle*Reply()/handleAnswerText() renvoient false si
+  // le texte n'était PAS un chiffre pertinent (ex: l'utilisateur tape
+  // "/quiz abandonner" en pleine partie) : dans ce cas on continue le
+  // pipeline normalement, sans quoi une vraie commande serait avalée
+  // silencieusement. Le reset global (admin) est vérifié en premier : c'est
+  // le cas le plus rare et le plus destructeur, il ne doit jamais être
+  // masqué par un reset personnel ou une session qui traînerait pour le
+  // même utilisateur (impossible en pratique, /quiz les rend exclusifs,
+  // mais l'ordre de vérification reste le plus sûr par défaut).
+  if (!(isLockdownMode() && !(isSelfTest || isAdmin(sender)))) {
+    if (hasPendingGlobalReset(sender)) {
+      const handled = await handleGlobalTextReply(sock, { sender, chatId, messageId: msg.key.id, text });
+      if (handled) return;
+    } else if (hasPendingReset(sender)) {
+      const handled = await handleTextReply(sock, { sender, chatId, messageId: msg.key.id, text });
+      if (handled) return;
+    } else if (hasActiveSession(sender)) {
+      const handled = await handleAnswerText(sock, { sender, chatId, messageId: msg.key.id, text });
+      if (handled) return;
+    }
+  }
 
   if (await handleAntilink(sock, msg, chatId, sender, text)) return;
   if (await handleDownloadReply(sock, chatId, sender, text, msg)) return;
