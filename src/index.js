@@ -13,6 +13,7 @@ import { createGroupParticipantsHandler } from './handlers/groupParticipantsHand
 import { startTelemetry } from './core/telemetry.js';
 import { sendStartupMessage } from './utils/startupMessage.js';
 import { initQuizCleanupService } from './core/quiz/QuizCleanupService.js';
+import { cleanupStaleSessionsOnBoot as cleanupStaleCalcSessions } from './core/calc/CalcEngine.js';
 
 async function main() {
   logger.info(`Démarrage de ${config.botName}...`);
@@ -31,6 +32,7 @@ async function main() {
     initAntispamGuard(sock);
     initDeletedMessageCache(sock);
     initQuizCleanupService(sock); // reprend les sessions quiz actives + démarre le balayage périodique
+    cleanupStaleCalcSessions(); // clôture toute partie de calcul mental restée active avant ce redémarrage
     sock.ev.on('messages.upsert', createMessageHandler(sock, commands));
     sock.ev.on('group-participants.update', createGroupParticipantsHandler(sock));
     startTelemetry();

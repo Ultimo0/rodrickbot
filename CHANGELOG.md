@@ -5,6 +5,18 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/), versionneme
 
 ## [Unreleased]
 
+## [1.23.0]
+### Added
+- **Nouveau jeu : `/calcul` (calcul mental rapide).** Deuxième jeu du bot après le Quiz — 10 opérations arithmétiques chronométrées (7-15s selon la difficulté), réponse par un simple nombre en texte.
+  - `/calcul [facile|moyen|difficile]`, `/calcul stats`, `/calcul classement`, `/calcul abandonner`.
+  - Opérations générées à la volée (`CalcGenerator.js`), aucune dépendance réseau — la division est toujours construite pour garantir un résultat entier exact.
+  - Récompenses : points de base selon la difficulté, bonus de vitesse (répondre dans la première moitié du délai), bonus de série (dès 3 bonnes réponses d'affilée).
+  - Timer **par question** (pas par inactivité comme le Quiz) — la partie avance automatiquement, à temps ou pas, jamais bloquée : voir `CalcTimer.js`/`CalcEngine.resolveAnswer` pour la garantie anti-course entre une vraie réponse et l'expiration du délai.
+  - Économie séparée du Quiz (`calc_stats.json`) — pas de portefeuille unifié entre les jeux pour l'instant.
+  - `/quiz` et `/calcul` s'excluent mutuellement pour un même utilisateur, pour qu'un nombre tapé ne soit jamais ambigu entre les deux jeux.
+  - Architecture complète documentée dans `src/core/calc/README.md`.
+  - **Non testé en conditions réelles** (pas d'accès à WhatsApp dans mon environnement de dev) — calibrage des délais/récompenses à ajuster après premiers retours.
+
 ## [1.22.3]
 ### Fixed
 - **Questions qui revenaient trop souvent.** Aucune mémoire n'empêchait un utilisateur de retomber sur une question déjà vue lors d'une partie précédente — statistiquement fréquent avec un pool d'environ 60 questions (15/catégorie), et quasi systématique en filtrant sur une seule catégorie.

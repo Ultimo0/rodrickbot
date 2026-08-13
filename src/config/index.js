@@ -36,6 +36,11 @@ export const config = {
 
   telemetryUrl: process.env.TELEMETRY_URL || '',
   telemetryApiKey: process.env.TELEMETRY_API_KEY || '',
+
+  // JID de la chaîne WhatsApp officielle du bot (format xxxx@newsletter).
+  // Utilisé pour marquer les messages menu/ping comme "Transféré depuis"
+  // la chaîne (badge natif WhatsApp) — voir utils/channelCard.js.
+  channelJid: process.env.CHANNEL_JID || '',
   // instanceId / instanceOwner ne viennent plus de .env : voir
   // core/instance.js — ils sont fournis une seule fois via !setup
   // directement dans WhatsApp, et tant qu'ils sont vides aucune autre

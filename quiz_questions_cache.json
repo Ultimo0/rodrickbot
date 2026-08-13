@@ -1,0 +1,1305 @@
+{
+  "fetchedAt": 1786603040333,
+  "questions": [
+    {
+      "id": "net-0",
+      "category": "geographie",
+      "difficulty": "facile",
+      "question": "Quel pays du Royaume-Uni arbore un dragon sur son drapeau ?",
+      "options": [
+        "Irlande du Nord",
+        "Pays de Galle",
+        "Angleterre",
+        "Scotland"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-1",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "Dans quelle province canadienne se trouve Montréal ?",
+      "options": [
+        "Ontario",
+        "Nova Scotia",
+        "Québec",
+        "Alberta"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-2",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "Bridgetown est la capitale de quel pays insulaire des Caraïbes ?",
+      "options": [
+        "Cuba",
+        "Les Barbades",
+        "Jamaïque‎",
+        "Dominique"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-3",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "Quel pays se classe au premier rang du nombre de volcans historiquement actifs ?",
+      "options": [
+        "Inde",
+        "Indonésie",
+        "États-Unis",
+        "Japon"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-4",
+      "category": "geographie",
+      "difficulty": "difficile",
+      "question": "Quel pays est complètement enclavé par l'Afrique du Sud ?",
+      "options": [
+        "Botswana",
+        "Zimbabwe",
+        "Lesotho",
+        "Swaziland"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-5",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "Quel pays revendique la propriété de l'État contesté du Kosovo ?",
+      "options": [
+        "Croatie",
+        "Macédoine",
+        "Albanie",
+        "Serbie"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-6",
+      "category": "geographie",
+      "difficulty": "facile",
+      "question": "Où était l'ancienne ville de Pompéi ?",
+      "options": [
+        "Afrique de l'Est",
+        "Amérique du Sud",
+        "Pompilanus",
+        "Italie"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-7",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "Quelle ville du Texas est surnommée « La rose jaune du Texas » ?",
+      "options": [
+        "AmarilloCity in Texas USA",
+        "Fête-Dieu",
+        "Frisco",
+        "Houston"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-8",
+      "category": "geographie",
+      "difficulty": "difficile",
+      "question": "Quel est le nom de la région rocheuse qui couvre la majeure partie de l'est du Canada ?",
+      "options": [
+        "Appalaches",
+        "Bouclier canadien",
+        "Montagnes Rocheuses",
+        "Himalaya"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-9",
+      "category": "geographie",
+      "difficulty": "facile",
+      "question": "Quel est le deuxième plus grand pays du monde ?",
+      "options": [
+        "Fédération de Russie",
+        "Brésil",
+        "Chine",
+        "Canada"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-10",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "À Washington, D.C., que signifie le « C » ?",
+      "options": [
+        "CaledoniaCity in Nova Scotia Canada",
+        "Brésil",
+        "Corinthie",
+        "Ville"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-11",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "Les provinces espagnoles suivantes sont situées dans la région nord de l'Espagne, à l'exception de :",
+      "options": [
+        "Murcie",
+        "Le&oacute;n",
+        "Navarre",
+        "Asturies"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-12",
+      "category": "geographie",
+      "difficulty": "facile",
+      "question": "Quelle est la capitale de la Jamaïque ?",
+      "options": [
+        "Port-au-Prince",
+        "San Juan",
+        "Kingston",
+        "Bridgetown"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-13",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "Quelle est la capitale de l'État du Dakota du Sud ?",
+      "options": [
+        "WatertownCity name (optional, probably does not need a translation)",
+        "Pierre",
+        "Rapid CityCity in South Dakota USA",
+        "Sioux FallsCity in South Dakota USA"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-14",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "Quelle est la capitale du Vietnam ?",
+      "options": [
+        "Hai Phong",
+        "Hanoi",
+        "Hô-Chi-Minh-Ville",
+        "Da Nang"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-15",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "Un lion brandissant une épée est représenté sur le drapeau national de quel pays ?",
+      "options": [
+        "Albanie",
+        "Moldavie",
+        "Sri Lanka",
+        "Zambie"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-16",
+      "category": "geographie",
+      "difficulty": "facile",
+      "question": "Quel arrondissement est le plus éloigné au nord de New York ?",
+      "options": [
+        "Queens",
+        "Brooklyn",
+        "Manhattan",
+        "Bronx"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-17",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "Quel est le cinquième plus grand pays par région ?",
+      "options": [
+        "États-Unis",
+        "Brésil",
+        "Australie",
+        "Inde"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-18",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "Quel pays africain a le portugais comme langue officielle ?",
+      "options": [
+        "Botswana",
+        "Gabon",
+        "Mozambique",
+        "Togo"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-19",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "Quel est le plus grand lac du continent africain ?",
+      "options": [
+        "Lac Victoria",
+        "Lac Rodolphe",
+        "Lac Malawi",
+        "Lac Tanganyika"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-20",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "Quel est le seul pays au monde avec un drapeau qui n'a pas quatre angles droits ?",
+      "options": [
+        "Angola",
+        "Népal",
+        "Panama",
+        "Egypte"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-21",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "Le lac Titicaca est situé entre quelles deux nations ?",
+      "options": [
+        "Pérou et Bolivie",
+        "Inde et Bangladesh",
+        "Mexique et États-Unis",
+        "Kenya et Ouganda"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-22",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "Combien de comtés dans la République d'Irlande.",
+      "options": [
+        "30",
+        "26",
+        "28",
+        "32"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-23",
+      "category": "geographie",
+      "difficulty": "difficile",
+      "question": "Lequel de ces pays N'EST PAS le seul à commencer par cette lettre de l'alphabet ?",
+      "options": [
+        "Qatar",
+        "Zambie",
+        "Yémen",
+        "Oman"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-24",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "Lequel des pays suivants est une île ?",
+      "options": [
+        "Azerbaïdjan",
+        "Salvador",
+        "Djibouti",
+        "Chypre"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-25",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "Le génocide Herero a été perpétré en Afrique par laquelle des nations coloniales suivantes ?",
+      "options": [
+        "Allemagne",
+        "France",
+        "Belgique",
+        "Grande-Bretagne"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-26",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "Quand la Grande Guerre patriotique en URSS a-t-elle pris fin ?",
+      "options": [
+        "9 août 1945",
+        "2 septembre 1945",
+        "9 mai 1945",
+        "11 décembre 1945"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-27",
+      "category": "histoire",
+      "difficulty": "facile",
+      "question": "Quel pays a rejoint l'UE en 2013 ?",
+      "options": [
+        "Croatie",
+        "Bulgarie",
+        "Slovénie",
+        "Turquie"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-28",
+      "category": "histoire",
+      "difficulty": "facile",
+      "question": "L'alphabet romain original ne comportait pas les lettres suivantes, à l'EXCEPTION de :",
+      "options": [
+        "W",
+        "U",
+        "J\" •",
+        "X"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-29",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "Qui était stratège militaire à l'époque des Zhou orientaux ?",
+      "options": [
+        "Lu Bu",
+        "Gengis Khan",
+        "Vlad l'Empaleur",
+        "Sun Tzu"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-30",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "Le semoir a été inventé par quel inventeur britannique ?",
+      "options": [
+        "Charles Babbage",
+        "Jethro Tull",
+        "Isaac Newton.",
+        "J.J Thomson"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-31",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "Quel âge avait le célèbre roi Toutankhamon (Tut) à sa mort ?",
+      "options": [
+        "30",
+        "15",
+        "19",
+        "21"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-32",
+      "category": "histoire",
+      "difficulty": "facile",
+      "question": "Qui était le premier souverain d'Haïti après l'indépendance du pays ?",
+      "options": [
+        "Louverture",
+        "Henri Christophe",
+        "Alexandre Pétion",
+        "Jean-Jacques Dessalines"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-33",
+      "category": "histoire",
+      "difficulty": "difficile",
+      "question": "Dans les Sept Merveilles du Monde, quelle merveille est la seule qui ait survécu à ce jour ?",
+      "options": [
+        "Phare d'Alexandrie",
+        "Colosse de Rhodes",
+        "Grande pyramide de Gizeh",
+        "Statue de Zeus à Olympie"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-34",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "Le système de défense stratégique américain pendant la guerre froide a été surnommé d'après ce célèbre film.",
+      "options": [
+        "Mâchoires",
+        "Alien, le huitième passager",
+        "Star Wars",
+        "Blade Runner"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-35",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "Quel était le nom de la première colonie anglaise permanente en Amérique ?",
+      "options": [
+        "St. John’s",
+        "Jamestown",
+        "New York",
+        "Plymouth"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-36",
+      "category": "histoire",
+      "difficulty": "facile",
+      "question": "Combien de navires sœurs étaient liés au TItanic ?",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-37",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "Le Spitfire L.F. Mk IX avait quel moteur ?",
+      "options": [
+        "Merlin 50",
+        "Merlin 66",
+        "Griffon 65",
+        "Merlin X"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-38",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "Quel événement historique l'Ouverture de Tchaïkovski de 1812 faisait-elle référence ?",
+      "options": [
+        "La charge de la brigade légère (guerre de Crimée)",
+        "La Révolution de février",
+        "Guerres napoléoniennes",
+        "La guerre américaine de 1812"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-39",
+      "category": "histoire",
+      "difficulty": "facile",
+      "question": "Qui était le général confédéré pendant la guerre de Sécession ?",
+      "options": [
+        "George B. McClellan",
+        "Ulysses S. Grant",
+        "George A. Custer",
+        "Robert E. Lee"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-40",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "Quel nombre représente le chiffre romain « D » ?",
+      "options": [
+        "50",
+        "1000",
+        "100",
+        "500"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-41",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "Joseph Smith était le fondateur de quelle religion ?",
+      "options": [
+        "Église de Jésus-Christ des saints des derniers jours",
+        "Hindouisme",
+        "Christianisme",
+        "Bouddhisme"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-42",
+      "category": "histoire",
+      "difficulty": "facile",
+      "question": "Quand la bataille de la Somme a-t-elle commencé ?",
+      "options": [
+        "2 juillet 1916",
+        "1er juillet 1916",
+        "1er août 1916",
+        "30 juin 1916"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-43",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "Qui a été le premier mammifère lancé avec succès sur l'orbite terrestre ?",
+      "options": [
+        "la chienne Laïka.",
+        "Jambon, le chimpanzé",
+        "Baker, le singe",
+        "Belka, le chien"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-44",
+      "category": "histoire",
+      "difficulty": "difficile",
+      "question": "Quels pays ont participé à la guerre du homard ?",
+      "options": [
+        "La France et le Brésil",
+        "Australie et Nouvelle-Zélande",
+        "Canada et Norvège",
+        "États-Unis et Angleterre"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-45",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "Qui était le premier président de la République populaire de Chine ?",
+      "options": [
+        "Liu Shaoqi",
+        "Dong Biwu",
+        "Li Xiannian",
+        "Mao Zedong"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-46",
+      "category": "histoire",
+      "difficulty": "difficile",
+      "question": "Quand la Révolution française a-t-elle commencé ?",
+      "options": [
+        "Mai 05 1789",
+        "Mai 06",
+        "Avril 05 1789",
+        "12 avril"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-47",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "Quel président américain était en fonction au début de la guerre du Golfe ?",
+      "options": [
+        "George H. W. Bush",
+        "Richard Nixon",
+        "George Galloway",
+        "Ronald Regan"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-48",
+      "category": "histoire",
+      "difficulty": "difficile",
+      "question": "Qui a été le premier homme à voyager dans l'espace ?",
+      "options": [
+        "Virgil Ivan « Gus » Grissom",
+        "Neil Armstrong",
+        "Buzz Aldrin",
+        "Yuri Gagarin"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-49",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "Qui a couronné Charlemagne empereur du Saint-Empire romain germanique le jour de Noël en 800 ?",
+      "options": [
+        "Pape Urbain IV",
+        "Pape Étienne V",
+        "Pape Valentin",
+        "Pape Léon III"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-50",
+      "category": "sciences",
+      "difficulty": "facile",
+      "question": "Qu'est-ce qui se trouve au centre de notre galaxie ?",
+      "options": [
+        "Un trou de ver",
+        "Une supernova",
+        "C’est le trou noir en fait.",
+        "Un quasar"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-51",
+      "category": "sciences",
+      "difficulty": "moyen",
+      "question": "Le « tibia » se trouve dans quelle partie du corps ?",
+      "options": [
+        "Tête",
+        "Main",
+        "Pied",
+        "Bras"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-52",
+      "category": "sciences",
+      "difficulty": "moyen",
+      "question": "Quelle est l'étude des cellules et des tissus des plantes et des animaux ?",
+      "options": [
+        "Histologie",
+        "Biochimie",
+        "Anatomie",
+        "Microbiologie"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-53",
+      "category": "sciences",
+      "difficulty": "moyen",
+      "question": "Quel est l'âge de l'univers ?",
+      "options": [
+        "7,9 milliards d'années",
+        "16,2 milliards d'années",
+        "4,5 milliards d'années",
+        "13,8 milliards d'années"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-54",
+      "category": "sciences",
+      "difficulty": "moyen",
+      "question": "Environ combien de temps dure une année sur Uranus ?",
+      "options": [
+        "84,01 années terrestres",
+        "109 années terrestres",
+        "62 années terrestres",
+        "47 années terrestres"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-55",
+      "category": "sciences",
+      "difficulty": "moyen",
+      "question": "Le poumon droit humain a combien de lobes ?",
+      "options": [
+        "4",
+        "2",
+        "3",
+        "1"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-56",
+      "category": "sciences",
+      "difficulty": "facile",
+      "question": "Quelle est la « centrale » de la cellule animale eucaryote ?",
+      "options": [
+        "Mitochondries",
+        "Réticulum endoplasmique",
+        "Chloroplaste",
+        "Noyau"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-57",
+      "category": "sciences",
+      "difficulty": "facile",
+      "question": "Lequel de ces os est le plus difficile à briser ?",
+      "options": [
+        "Tibia",
+        "Humérus",
+        "produc -",
+        "Fémur"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-58",
+      "category": "sciences",
+      "difficulty": "facile",
+      "question": "Combien de lunes la Terre a-t-elle ?",
+      "options": [
+        "1",
+        "3",
+        "2",
+        "0"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-59",
+      "category": "sciences",
+      "difficulty": "difficile",
+      "question": "Lequel de ces éléments est utilisé pour montrer que la Terre tourne sur un axe ?",
+      "options": [
+        "Little Cornwallis Island, Nunavut 1999 : rejets en juillet, août et septembre seulement 2000 : rejets en juillet, août et septembre seulement",
+        "Cadran solaire",
+        "Pendule de Foucault ...",
+        "<g id=\"1\">Plaques tectoniques :</g>"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-60",
+      "category": "sciences",
+      "difficulty": "moyen",
+      "question": "De quoi sont faits les ongles humains ?",
+      "options": [
+        "Os",
+        "- - - Chitine",
+        "Le calcium",
+        "Kératine"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-61",
+      "category": "sciences",
+      "difficulty": "difficile",
+      "question": "Qu'est-ce que le « sténome » ?",
+      "options": [
+        "Un stimulant de combat de la Seconde Guerre mondiale",
+        "Un type d'assaisonnement",
+        "Une ville portuaire dans les Caraïbes",
+        "Un genre de papillons"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-62",
+      "category": "sciences",
+      "difficulty": "difficile",
+      "question": "Quelle quantité de rayonnement émet une banane ?",
+      "options": [
+        "0,5 Microsievert",
+        "0,3 Microsievert",
+        "0,7 Microsievert",
+        "0,1 Microsievert"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-63",
+      "category": "sciences",
+      "difficulty": "facile",
+      "question": "Quelle mission Apollo a été la première à atterrir sur la Lune ?",
+      "options": [
+        "Apollo",
+        "Apollo 9",
+        "Apollo 13",
+        "Apollo 11"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-64",
+      "category": "sciences",
+      "difficulty": "moyen",
+      "question": "Quelle est la formule chimique de l'ammoniac",
+      "options": [
+        "NO3",
+        "CO2",
+        "NH3",
+        "CH4"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-65",
+      "category": "sciences",
+      "difficulty": "moyen",
+      "question": "Quel désert est le seul désert au monde où pousse localement le cactus « Saguaro » ?",
+      "options": [
+        "Le désert de Gobi",
+        "Le désert de Yuma",
+        "Désert d'Arabie",
+        "Désert de Sonora"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-66",
+      "category": "sciences",
+      "difficulty": "difficile",
+      "question": "Quel pays a fait éclore et élever avec succès pour la première fois du thon rouge en 1979 ?",
+      "options": [
+        "France",
+        "Philippines",
+        "États-Unis",
+        "Japon"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-67",
+      "category": "sciences",
+      "difficulty": "facile",
+      "question": "Vénus est la planète la plus chaude du système solaire.",
+      "options": [
+        "Mars",
+        "Mercure",
+        "Jupiter",
+        "Venus"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-68",
+      "category": "sciences",
+      "difficulty": "moyen",
+      "question": "À quelle température l'eau bout-elle ?",
+      "options": [
+        "(212˚F).",
+        "178 °F",
+        "181 °F",
+        "200°F"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-69",
+      "category": "sciences",
+      "difficulty": "facile",
+      "question": "Quel est le poids atomique standard d'un noyau de plutonium ?",
+      "options": [
+        "244",
+        "128",
+        "481",
+        "94"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-70",
+      "category": "sciences",
+      "difficulty": "difficile",
+      "question": "Combien y a-t-il de types de quarks dans le modèle standard de la physique ?",
+      "options": [
+        "2",
+        "4",
+        "3",
+        "6"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-71",
+      "category": "sciences",
+      "difficulty": "moyen",
+      "question": "Quel est le plus grand organisme vivant actuellement connu de l'homme ?",
+      "options": [
+        "Les récifs coralliens",
+        "sequoia, séquoia;",
+        "Balaenoptera musculus",
+        "tête de méduse"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-72",
+      "category": "sciences",
+      "difficulty": "moyen",
+      "question": "Combien de planètes naines officiellement reconnues dans le système solaire portent le nom de divinités polynésiennes ?",
+      "options": [
+        "2",
+        "0",
+        "5",
+        "1"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-73",
+      "category": "sciences",
+      "difficulty": "difficile",
+      "question": "Quel est le nom scientifique de l'hominidé éteint connu sous le nom de « Lucy » ?",
+      "options": [
+        "Australopithecus Antaris",
+        "Australopithecus Architeuthis",
+        "Australopithecus africanus",
+        "Australopithecus afarensis"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-74",
+      "category": "sciences",
+      "difficulty": "moyen",
+      "question": "Lequel de ces éléments du tableau périodique est un gaz noble ?",
+      "options": [
+        "- - - Néon",
+        "Potassium",
+        "Colbalt",
+        "Iodine"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-75",
+      "category": "informatique",
+      "difficulty": "moyen",
+      "question": "Quel est le nom du thème par défaut installé avec Windows XP ?",
+      "options": [
+        "Béatitude",
+        "Neptune",
+        "Luna",
+        "Whistler"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-76",
+      "category": "informatique",
+      "difficulty": "difficile",
+      "question": "L'acronyme « RIP » signifie lequel d'entre eux ?",
+      "options": [
+        "Processus d'instance d'exécution",
+        "Processus d'intervalle régulier",
+        "Protocole d'inspection de routine",
+        "protocole RIP"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-77",
+      "category": "informatique",
+      "difficulty": "moyen",
+      "question": "Les imprimantes à jet laser et à jet d'encre sont toutes deux des exemples de quel type d'imprimante ?",
+      "options": [
+        "Imprimante par impact",
+        "Imprimante à marguerite",
+        "imprimante sans impact",
+        "Imprimante matricielle par points."
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-78",
+      "category": "informatique",
+      "difficulty": "difficile",
+      "question": "Quel protocole Internet a été documenté dans la RFC 1459 ?",
+      "options": [
+        "HTTPS",
+        "iti",
+        "HTTP",
+        "FTP"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-79",
+      "category": "informatique",
+      "difficulty": "moyen",
+      "question": "Le nom de la société de technologie HP signifie quoi ?",
+      "options": [
+        "Howard Packmann",
+        "Hellman-Pohl",
+        "Hp",
+        "Husker-Pollosk"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-80",
+      "category": "informatique",
+      "difficulty": "moyen",
+      "question": "À l'origine utilisé dans les adaptateurs PCM, quelle est la fréquence standard pour l'échantillonnage audio au format Compact Disc Digital Audio ?",
+      "options": [
+        "1,5 MHz",
+        "20,5 kHz",
+        "44,1 Hz",
+        "32,0 kHz"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-81",
+      "category": "informatique",
+      "difficulty": "facile",
+      "question": "Modèle de couleur CMJN signifie ?",
+      "options": [
+        "quadrichromie",
+        "Crème, Marron, Jaune et Kaki",
+        "Cyan, magenta, jaune et kaki",
+        "Crème, Marron, Jaune et Noir"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-82",
+      "category": "informatique",
+      "difficulty": "difficile",
+      "question": "Lequel des composants informatiques suivants peut être construit en utilisant uniquement des portes NAND ?",
+      "options": [
+        "ALU",
+        "RAM",
+        "UC",
+        "Inscription"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-83",
+      "category": "informatique",
+      "difficulty": "facile",
+      "question": "Quel type de mémoire est utilisé sur le cache mémoire ?",
+      "options": [
+        "DRAM",
+        "Clignotant",
+        "SRAM",
+        "ROM"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-84",
+      "category": "informatique",
+      "difficulty": "moyen",
+      "question": "Quel est le nombre de touches sur un clavier Windows standard ?",
+      "options": [
+        "104",
+        "76",
+        "94",
+        "64"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-85",
+      "category": "informatique",
+      "difficulty": "difficile",
+      "question": "Lequel d'entre eux était le nom d'un bogue trouvé en avril 2014 dans la bibliothèque de cryptographie OpenSSL accessible au public ?",
+      "options": [
+        "Shellscript",
+        "Heartbleed",
+        "Obusite",
+        "Sang corrompu"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-86",
+      "category": "informatique",
+      "difficulty": "facile",
+      "question": "Lorsque Gmail a été lancé pour la première fois, quelle quantité de stockage fournissait-il pour votre courrier électronique ?",
+      "options": [
+        "512MB",
+        "5 Go",
+        "1 Go",
+        "Illimité"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-87",
+      "category": "informatique",
+      "difficulty": "difficile",
+      "question": "Qui a inventé le « protocole Spanning Tree » ?",
+      "options": [
+        "Vint Cerf",
+        "Radia Perlman",
+        "Paul Vixie",
+        "Michael Roberts"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-88",
+      "category": "informatique",
+      "difficulty": "facile",
+      "question": "Que signifie SSD ?",
+      "options": [
+        "SSD (disque statique à semi-conducteurs)",
+        "Lecteur de solution source",
+        "état solide",
+        "Disque source de solution"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-89",
+      "category": "informatique",
+      "difficulty": "facile",
+      "question": "Que signifie CPU ?",
+      "options": [
+        "Unité centrale de traitement (processeur)",
+        "Central Processor Unit",
+        "ORDINATEUR MEMOIRES MAGNETIQUES MEMOIRES A SEMI­CONDUCTEURS",
+        "CPU unité de traitement centrale"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-90",
+      "category": "informatique",
+      "difficulty": "facile",
+      "question": "Le système de numérotation avec un radix de 16 est plus communément appelé",
+      "options": [
+        "Hexidécimal",
+        "Binaire",
+        "Octal",
+        "Duodécimal"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-91",
+      "category": "informatique",
+      "difficulty": "difficile",
+      "question": "L'Australie, le Japon et l'Asie du Sud-Est se trouvent dans quelle région de l'UIT ?",
+      "options": [
+        "Région 1",
+        "Région 2",
+        "Région 4",
+        "Région 3"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-92",
+      "category": "informatique",
+      "difficulty": "moyen",
+      "question": "Quel langage de codage était le langage de programmation n °1 en termes d'utilisation sur GitHub en 2015 ?",
+      "options": [
+        "Python",
+        "JavaScript",
+        "PHP",
+        "C#"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-93",
+      "category": "informatique",
+      "difficulty": "moyen",
+      "question": "Quel était le nom de l'image qui figure comme fond d'écran par défaut pour Windows XP ?",
+      "options": [
+        "Béatitude",
+        "Bonjour,",
+        "Désert de lune rouge",
+        "Les tulipes"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-94",
+      "category": "informatique",
+      "difficulty": "difficile",
+      "question": "Quel est le nom de code de la micro-architecture Intel Core de huitième génération lancée en octobre 2017 ?",
+      "options": [
+        "Coffee Lake",
+        "Broadwell",
+        "Skylake",
+        "Sandy Bridge"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-95",
+      "category": "informatique",
+      "difficulty": "difficile",
+      "question": "Lequel de ces interrupteurs à clavier mécaniques Cherry MX est à la fois tactile et cliquable ?",
+      "options": [
+        "Cherry MX - Noir",
+        "Bleu cerise MX",
+        "Marron cerise MX",
+        "Cherry MX Red"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-96",
+      "category": "informatique",
+      "difficulty": "moyen",
+      "question": "Lequel de ces noms n'est pas un nom de développement officiel pour une version d'Ubuntu ?",
+      "options": [
+        "Mystic Mansion",
+        "Loup-garou rusé",
+        "Trusty Tahr",
+        "Licorne utopique"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-97",
+      "category": "informatique",
+      "difficulty": "difficile",
+      "question": "Lequel des éléments suivants N'EST PAS un algorithme informatique ?",
+      "options": [
+        "Tri flottant",
+        "Tri rapide",
+        "tri par fusion",
+        "Tri à bulles"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-98",
+      "category": "informatique",
+      "difficulty": "difficile",
+      "question": "Lequel des éléments suivants est le plus ancien de ces ordinateurs par date de sortie ?",
+      "options": [
+        "TRS-80",
+        "Commodore 64",
+        "ZX Spectrum",
+        "Nuts 3"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-99",
+      "category": "informatique",
+      "difficulty": "difficile",
+      "question": "Selon le théorème de DeMorgan, l'expression booléenne (AB)' est équivalente à :",
+      "options": [
+        "A et B",
+        "AB' + AB",
+        "A B",
+        "A'B + B'A"
+      ],
+      "correctIndex": 0
+    }
+  ]
+}

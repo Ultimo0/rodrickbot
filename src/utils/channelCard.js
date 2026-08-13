@@ -6,12 +6,32 @@ import { config } from '../config/index.js';
 
 const ASSETS_DIR = path.join(process.cwd(), 'assets');
 const LOGO_CANDIDATES = ['logo.png', 'logo.jpg', 'logo.jpeg', 'logo.webp'];
-const THUMBNAIL_SIZE = 48; // px — logo très petit (utilisé pour un aperçu type lien)
 const BANNER_MAX_SIZE = 720; // px — taille raisonnable pour une image de menu
-export const CHANNEL_URL = 'https://whatsapp.com/channel/0029VbCDXki59PwNcJW60G39';
 
-let cachedThumbnail;
 let cachedBanner;
+
+/**
+ * contextInfo à injecter dans un message pour qu'il apparaisse dans WhatsApp
+ * comme "Transféré depuis" la chaîne officielle du bot (badge natif), au
+ * lieu d'envoyer un second message avec le lien de la chaîne.
+ *
+ * `serverMessageId` n'a pas besoin de correspondre à un vrai message publié
+ * sur la chaîne : WhatsApp l'utilise seulement pour l'affichage du badge de
+ * transfert, pas pour retrouver un message précis.
+ */
+function buildChannelForwardContext() {
+  if (!config.channelJid) return undefined;
+
+  return {
+    isForwarded: true,
+    forwardingScore: 9999,
+    forwardedNewsletterMessageInfo: {
+      newsletterJid: config.channelJid,
+      newsletterName: config.botName ? `${config.botName} — Chaîne officielle` : 'Chaîne officielle',
+      serverMessageId: 1,
+    },
+  };
+}
 
 function findLogoPath() {
   for (const filename of LOGO_CANDIDATES) {
@@ -19,30 +39,6 @@ function findLogoPath() {
     if (existsSync(fullPath)) return fullPath;
   }
   return null;
-}
-
-async function loadThumbnail() {
-  if (cachedThumbnail !== undefined) return cachedThumbnail;
-
-  const logoPath = findLogoPath();
-  if (!logoPath) {
-    logger.warn(
-      `Aucun logo trouvé dans assets/ (attendu: ${LOGO_CANDIDATES.join(', ')}) — carte envoyée sans miniature`
-    );
-    cachedThumbnail = null;
-    return cachedThumbnail;
-  }
-
-  try {
-    cachedThumbnail = await sharp(logoPath)
-      .resize(THUMBNAIL_SIZE, THUMBNAIL_SIZE, { fit: 'cover' })
-      .jpeg()
-      .toBuffer();
-  } catch (err) {
-    logger.warn({ err }, 'Erreur lors du traitement du logo — carte envoyée sans miniature');
-    cachedThumbnail = null;
-  }
-  return cachedThumbnail;
 }
 
 /** Charge le logo en taille "bannière" (non recadré en carré, juste limité en taille). */
@@ -71,46 +67,27 @@ async function loadBanner() {
 }
 
 /**
- * Envoie le lien de la chaîne WhatsApp comme message à part, avec un aperçu
- * de lien explicite. C'est ce qui permet à WhatsApp de reconnaître le lien
- * de chaîne et d'afficher le bouton natif "Voir la chaîne" au lieu du lien
- * brut — ça ne marche pas s'il est noyé dans une légende d'image ou collé
- * à d'autre texte.
- */
-async function sendChannelLink(ctx) {
-  const thumbnail = await loadThumbnail();
-
-  await ctx.sock.sendMessage(
-    ctx.chatId,
-    {
-      text: CHANNEL_URL,
-      linkPreview: {
-        'matched-text': CHANNEL_URL,
-        title: config.botName ? `${config.botName} — Chaîne officielle` : 'Chaîne WhatsApp officielle',
-        ...(thumbnail ? { jpegThumbnail: thumbnail } : {}),
-      },
-    },
-    { quoted: ctx.msg }
-  );
-}
-
-/**
- * Envoie un message contenant le texte (menu, etc.), puis le lien de la
- * chaîne WhatsApp dans un second message séparé (pour le bouton natif
- * "Voir la chaîne" — voir sendChannelLink). Si `asImage` est vrai et
- * qu'un logo existe dans assets/, le texte est envoyé comme légende d'une
- * image ; sinon (ou en l'absence de logo) le message reste un texte simple.
+ * Envoie un message (menu, ping, etc.) marqué comme provenant de la chaîne
+ * WhatsApp officielle du bot (badge natif "Transféré depuis"), en un seul
+ * message — plus de second message avec le lien de la chaîne. Si `asImage`
+ * est vrai et qu'un logo existe dans assets/, le texte est envoyé comme
+ * légende d'une image ; sinon (ou en l'absence de logo) le message reste un
+ * texte simple.
  */
 export async function sendWithChannelCard(ctx, text, { asImage = false } = {}) {
+  const contextInfo = buildChannelForwardContext();
+
   if (asImage) {
     const banner = await loadBanner();
     if (banner) {
-      await ctx.sock.sendMessage(ctx.chatId, { image: banner, caption: text }, { quoted: ctx.msg });
-      await sendChannelLink(ctx);
+      await ctx.sock.sendMessage(
+        ctx.chatId,
+        { image: banner, caption: text, contextInfo },
+        { quoted: ctx.msg }
+      );
       return;
     }
   }
 
-  await ctx.sock.sendMessage(ctx.chatId, { text }, { quoted: ctx.msg });
-  await sendChannelLink(ctx);
+  await ctx.sock.sendMessage(ctx.chatId, { text, contextInfo }, { quoted: ctx.msg });
 }

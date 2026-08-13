@@ -15,6 +15,7 @@ import { requestReset, requestGlobalReset } from '../core/quiz/QuizResetService.
 import { listCategories, reloadQuestions } from '../core/quiz/QuizLoader.js';
 import { renderSessionsList } from '../core/quiz/QuizRenderer.js';
 import { resolveTargetJids, normalizeJid } from '../utils/groupTarget.js';
+import { hasActiveSession as hasActiveCalcSession } from '../core/calc/CalcEngine.js';
 
 const DIFFICULTIES = ['facile', 'moyen', 'difficile'];
 
@@ -23,9 +24,14 @@ const START_FAILURE_MESSAGES = {
     '❌ Tu as déjà un quiz en cours. Réponds à la question en attente, ou tape /quiz abandonner pour y renoncer.',
   NO_QUESTIONS_AT_ALL: "❌ Aucune question n'est disponible pour le moment.",
   NO_QUESTIONS_MATCH: '❌ Aucune question ne correspond à cette catégorie/difficulté. Tape /quiz categories pour voir les options.',
+  CALC_ACTIVE: '❌ Termine ou abandonne (/calcul abandonner) ta partie de calcul mental en cours avant de lancer un quiz.',
 };
 
 async function handleStart(ctx, { category, difficulty } = {}) {
+  if (hasActiveCalcSession(ctx.sender)) {
+    await ctx.error(START_FAILURE_MESSAGES.CALC_ACTIVE);
+    return;
+  }
   const result = await startQuiz(ctx.sock, { chatId: ctx.chatId, sender: ctx.sender, category, difficulty });
   if (!result.ok) {
     await ctx.error(START_FAILURE_MESSAGES[result.reason] || '❌ Impossible de démarrer le quiz.');

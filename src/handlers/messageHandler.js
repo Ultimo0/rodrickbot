@@ -12,6 +12,7 @@ import { isInstanceConfigured } from '../core/instance.js';
 import { runAgentTurn } from '../agent/index.js';
 import { handleAnswerText, hasActiveSession } from '../core/quiz/QuizEngine.js';
 import { handleTextReply, hasPendingReset, handleGlobalTextReply, hasPendingGlobalReset } from '../core/quiz/QuizResetService.js';
+import { handleAnswerText as handleCalcAnswerText, hasActiveSession as hasActiveCalcSession } from '../core/calc/CalcEngine.js';
 
 export function createMessageHandler(sock, commands) {
   return async ({ messages, type }) => {
@@ -81,7 +82,12 @@ async function handleSingleMessage(sock, commands, msg) {
   // le cas le plus rare et le plus destructeur, il ne doit jamais être
   // masqué par un reset personnel ou une session qui traînerait pour le
   // même utilisateur (impossible en pratique, /quiz les rend exclusifs,
-  // mais l'ordre de vérification reste le plus sûr par défaut).
+  // mais l'ordre de vérification reste le plus sûr par défaut). Le calcul
+  // mental (CalcEngine) suit exactement le même contrat renvoyant false —
+  // /quiz et /calcul s'excluent mutuellement (voir commands/quiz.js et
+  // commands/calcul.js), donc jamais les deux actifs en même temps pour un
+  // même utilisateur : l'ordre entre les deux blocs ci-dessous ne crée pas
+  // d'ambiguïté réelle, seulement une garde de sécurité par défaut.
   if (!(isLockdownMode() && !(isSelfTest || isAdmin(sender)))) {
     if (hasPendingGlobalReset(sender)) {
       const handled = await handleGlobalTextReply(sock, { sender, chatId, messageId: msg.key.id, text });
@@ -91,6 +97,9 @@ async function handleSingleMessage(sock, commands, msg) {
       if (handled) return;
     } else if (hasActiveSession(sender)) {
       const handled = await handleAnswerText(sock, { sender, chatId, messageId: msg.key.id, text });
+      if (handled) return;
+    } else if (hasActiveCalcSession(sender)) {
+      const handled = await handleCalcAnswerText(sock, { sender, chatId, messageId: msg.key.id, text });
       if (handled) return;
     }
   }
