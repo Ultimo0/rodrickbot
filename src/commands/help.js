@@ -42,7 +42,16 @@ function withPrefix(text) {
 
 function getVisibleCommands(ctx) {
   const uniqueCommands = [...new Set(ctx.commands.values())];
-  return uniqueCommands.filter((cmd) => cmd.name !== 'help' && (!cmd.adminOnly || ctx.isAdmin));
+  return uniqueCommands.filter((cmd) => {
+    if (cmd.name === 'help') return false;
+    if (cmd.adminOnly && !ctx.isAdmin) return false;
+    // privateOnly !== false => bloquée en groupe par le handler (voir
+    // pluginLoader.js) : inutile de l'afficher dans le menu si on est
+    // justement en groupe, ça évite de faire taper une commande vouée à
+    // être refusée.
+    if (ctx.isGroup && cmd.privateOnly !== false) return false;
+    return true;
+  });
 }
 
 /** Menu principal : infos du bot + liste des catégories. Le thème actif décide entièrement de la mise en forme. */

@@ -1,94 +1,94 @@
 {
-  "fetchedAt": 1786603040333,
+  "fetchedAt": 1786664846882,
   "questions": [
     {
       "id": "net-0",
       "category": "geographie",
       "difficulty": "facile",
-      "question": "Quel pays du Royaume-Uni arbore un dragon sur son drapeau ?",
+      "question": "Quel pays arbore une feuille d'érable sur son drapeau ?",
       "options": [
-        "Irlande du Nord",
-        "Pays de Galle",
-        "Angleterre",
-        "Scotland"
+        "Inde",
+        "Canada",
+        "Brésil",
+        "Mexique"
       ],
       "correctIndex": 1
     },
     {
       "id": "net-1",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Dans quelle province canadienne se trouve Montréal ?",
+      "difficulty": "difficile",
+      "question": "Quel est le nom de l'hymne national canadien ?",
       "options": [
-        "Ontario",
-        "Nova Scotia",
-        "Québec",
-        "Alberta"
+        "Bannière à guirlandes de feuilles",
+        "Marche de la Puck Drop",
+        "Érable rouge",
+        "Hymne national du Canada"
       ],
-      "correctIndex": 2
+      "correctIndex": 3
     },
     {
       "id": "net-2",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Bridgetown est la capitale de quel pays insulaire des Caraïbes ?",
+      "difficulty": "facile",
+      "question": "Quel État américain a la population la plus élevée ?",
       "options": [
-        "Cuba",
-        "Les Barbades",
-        "Jamaïque‎",
-        "Dominique"
+        "Texas",
+        "New York",
+        "California",
+        "Florida"
       ],
-      "correctIndex": 1
+      "correctIndex": 2
     },
     {
       "id": "net-3",
       "category": "geographie",
       "difficulty": "moyen",
-      "question": "Quel pays se classe au premier rang du nombre de volcans historiquement actifs ?",
+      "question": "Quelle ville européenne a le kilométrage de canaux le plus élevé au monde ?",
       "options": [
-        "Inde",
-        "Indonésie",
-        "États-Unis",
-        "Japon"
+        "Birmingham",
+        "Berlin",
+        "Amsterdam",
+        "Venise"
       ],
-      "correctIndex": 1
+      "correctIndex": 0
     },
     {
       "id": "net-4",
       "category": "geographie",
       "difficulty": "difficile",
-      "question": "Quel pays est complètement enclavé par l'Afrique du Sud ?",
+      "question": "Quel est le nom officiel allemand des Chemins de fer fédéraux suisses ?",
       "options": [
-        "Botswana",
-        "Zimbabwe",
-        "Lesotho",
-        "Swaziland"
+        "Schweizerische Nationalbahnen",
+        "Bundesbahnen der Schweiz",
+        "Schweizerische Staatsbahnen",
+        "Schweizerische Bundesbahnen"
       ],
-      "correctIndex": 2
+      "correctIndex": 3
     },
     {
       "id": "net-5",
       "category": "geographie",
       "difficulty": "moyen",
-      "question": "Quel pays revendique la propriété de l'État contesté du Kosovo ?",
+      "question": "Which of the following countries does NOT recognize Armenia as an independent country?",
       "options": [
-        "Croatie",
-        "Macédoine",
-        "Albanie",
-        "Serbie"
+        "Pakistan",
+        "Iran",
+        "Turkey",
+        "Azerbaijan"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-6",
       "category": "geographie",
-      "difficulty": "facile",
-      "question": "Où était l'ancienne ville de Pompéi ?",
+      "difficulty": "moyen",
+      "question": "What are the four corner states of the US?",
       "options": [
-        "Afrique de l'Est",
-        "Amérique du Sud",
-        "Pompilanus",
-        "Italie"
+        "Oregon, Idaho, Nevada, Utah",
+        "Kansas, Oklahoma, Arkansas, Louisiana",
+        "South Dakota, Minnesota, Nebraska, Iowa",
+        "Utah, Colorado, Arizona, New Mexico"
       ],
       "correctIndex": 3
     },
@@ -96,12 +96,12 @@
       "id": "net-7",
       "category": "geographie",
       "difficulty": "moyen",
-      "question": "Quelle ville du Texas est surnommée « La rose jaune du Texas » ?",
+      "question": "Which German city is located on the River Isar?",
       "options": [
-        "AmarilloCity in Texas USA",
-        "Fête-Dieu",
-        "Frisco",
-        "Houston"
+        "Munich",
+        "Dortmund",
+        "Hamburg",
+        "Berlin"
       ],
       "correctIndex": 0
     },
@@ -109,350 +109,350 @@
       "id": "net-8",
       "category": "geographie",
       "difficulty": "difficile",
-      "question": "Quel est le nom de la région rocheuse qui couvre la majeure partie de l'est du Canada ?",
+      "question": "Which of these is an official currency of the Cook Islands?",
       "options": [
-        "Appalaches",
-        "Bouclier canadien",
-        "Montagnes Rocheuses",
-        "Himalaya"
+        "New Zealand Dollar",
+        "Australian Dollar",
+        "British Pound",
+        "United States Dollar"
       ],
-      "correctIndex": 1
+      "correctIndex": 0
     },
     {
       "id": "net-9",
       "category": "geographie",
       "difficulty": "facile",
-      "question": "Quel est le deuxième plus grand pays du monde ?",
+      "question": "Which of the following Japanese islands is the biggest?",
       "options": [
-        "Fédération de Russie",
-        "Brésil",
-        "Chine",
-        "Canada"
+        "Honshu",
+        "Hokkaido",
+        "Shikoku",
+        "Kyushu"
       ],
       "correctIndex": 0
     },
     {
       "id": "net-10",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "À Washington, D.C., que signifie le « C » ?",
+      "difficulty": "facile",
+      "question": "Which Borough is the farthest in the north of New York City?",
       "options": [
-        "CaledoniaCity in Nova Scotia Canada",
-        "Brésil",
-        "Corinthie",
-        "Ville"
-      ],
-      "correctIndex": 1
-    },
-    {
-      "id": "net-11",
-      "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Les provinces espagnoles suivantes sont situées dans la région nord de l'Espagne, à l'exception de :",
-      "options": [
-        "Murcie",
-        "Le&oacute;n",
-        "Navarre",
-        "Asturies"
+        "Bronx",
+        "Queens",
+        "Brooklyn",
+        "Manhattan"
       ],
       "correctIndex": 0
     },
     {
-      "id": "net-12",
+      "id": "net-11",
       "category": "geographie",
-      "difficulty": "facile",
-      "question": "Quelle est la capitale de la Jamaïque ?",
+      "difficulty": "difficile",
+      "question": "What is the county seat of King County, Washington?",
       "options": [
-        "Port-au-Prince",
-        "San Juan",
-        "Kingston",
-        "Bridgetown"
+        "Bellevue",
+        "Enumclaw",
+        "Seattle",
+        "Skykomish"
       ],
       "correctIndex": 2
+    },
+    {
+      "id": "net-12",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "Where is the \"Sonoran Desert\" located?",
+      "options": [
+        "South America",
+        "Africa",
+        "Asia",
+        "North America"
+      ],
+      "correctIndex": 3
     },
     {
       "id": "net-13",
       "category": "geographie",
       "difficulty": "moyen",
-      "question": "Quelle est la capitale de l'État du Dakota du Sud ?",
+      "question": "What is the name of the capital of Turkey?",
       "options": [
-        "WatertownCity name (optional, probably does not need a translation)",
-        "Pierre",
-        "Rapid CityCity in South Dakota USA",
-        "Sioux FallsCity in South Dakota USA"
+        "Istanbul",
+        "Izmir",
+        "Ankara",
+        "Bursa"
       ],
-      "correctIndex": 1
+      "correctIndex": 2
     },
     {
       "id": "net-14",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Quelle est la capitale du Vietnam ?",
+      "difficulty": "difficile",
+      "question": "Which of the following is a castle?",
       "options": [
-        "Hai Phong",
-        "Hanoi",
-        "Hô-Chi-Minh-Ville",
-        "Da Nang"
+        "Frank Castle",
+        "Richard Castle",
+        "Olivia Castle",
+        "Elizabeth Castle"
       ],
-      "correctIndex": 1
+      "correctIndex": 3
     },
     {
       "id": "net-15",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Un lion brandissant une épée est représenté sur le drapeau national de quel pays ?",
+      "difficulty": "facile",
+      "question": "What is the nickname for the US state Delaware?",
       "options": [
-        "Albanie",
-        "Moldavie",
-        "Sri Lanka",
-        "Zambie"
+        "The Fiftieth State",
+        "The Sixteenth State",
+        "The First State",
+        "The Second State"
       ],
       "correctIndex": 2
     },
     {
       "id": "net-16",
       "category": "geographie",
-      "difficulty": "facile",
-      "question": "Quel arrondissement est le plus éloigné au nord de New York ?",
+      "difficulty": "difficile",
+      "question": "What is the most populous Muslim-majority nation in 2010?",
       "options": [
-        "Queens",
-        "Brooklyn",
-        "Manhattan",
-        "Bronx"
+        "Sudan",
+        "Indonesia",
+        "Iran",
+        "Saudi Arabia"
       ],
-      "correctIndex": 3
+      "correctIndex": 1
     },
     {
       "id": "net-17",
       "category": "geographie",
       "difficulty": "moyen",
-      "question": "Quel est le cinquième plus grand pays par région ?",
+      "question": "What is the only country in the world with a flag that doesn't have four right angles?",
       "options": [
-        "États-Unis",
-        "Brésil",
-        "Australie",
-        "Inde"
+        "Panama",
+        "Nepal",
+        "Angola",
+        "Egypt"
       ],
       "correctIndex": 1
     },
     {
       "id": "net-18",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Quel pays africain a le portugais comme langue officielle ?",
+      "difficulty": "facile",
+      "question": "What is the Polish city known to Germans as Danzig?",
       "options": [
-        "Botswana",
-        "Gabon",
-        "Mozambique",
-        "Togo"
-      ],
-      "correctIndex": 2
-    },
-    {
-      "id": "net-19",
-      "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Quel est le plus grand lac du continent africain ?",
-      "options": [
-        "Lac Victoria",
-        "Lac Rodolphe",
-        "Lac Malawi",
-        "Lac Tanganyika"
+        "Gdańsk",
+        "Poznań",
+        "Warsaw",
+        "Zakopane"
       ],
       "correctIndex": 0
     },
     {
+      "id": "net-19",
+      "category": "geographie",
+      "difficulty": "facile",
+      "question": "Which nation claims ownership of Antarctica?",
+      "options": [
+        "United Nations",
+        "Australia",
+        "No one, but there are claims.",
+        "United States of America"
+      ],
+      "correctIndex": 2
+    },
+    {
       "id": "net-20",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Quel est le seul pays au monde avec un drapeau qui n'a pas quatre angles droits ?",
+      "difficulty": "difficile",
+      "question": "Bir Tawil, an uninhabited track of land claimed by no country, is located along the border of which two countries?",
       "options": [
-        "Angola",
-        "Népal",
-        "Panama",
-        "Egypte"
+        "Iraq and Saudi Arabia",
+        "Egypt and Sudan",
+        "Israel and Jordan",
+        "Chad and Libya"
       ],
       "correctIndex": 1
     },
     {
       "id": "net-21",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Le lac Titicaca est situé entre quelles deux nations ?",
+      "difficulty": "difficile",
+      "question": "What is the land connecting North America and South America?",
       "options": [
-        "Pérou et Bolivie",
-        "Inde et Bangladesh",
-        "Mexique et États-Unis",
-        "Kenya et Ouganda"
+        "Isthmus of Suez",
+        "Urals",
+        "Isthmus of Panama",
+        "Australasia"
       ],
-      "correctIndex": 0
+      "correctIndex": 2
     },
     {
       "id": "net-22",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Combien de comtés dans la République d'Irlande.",
+      "difficulty": "difficile",
+      "question": "What city is known as the Rose Capital of the World?",
       "options": [
-        "30",
-        "26",
-        "28",
-        "32"
+        "San Diego, California",
+        "Miami, Florida",
+        "Tyler, Texas",
+        "Anaheim, California"
       ],
-      "correctIndex": 1
+      "correctIndex": 2
     },
     {
       "id": "net-23",
       "category": "geographie",
-      "difficulty": "difficile",
-      "question": "Lequel de ces pays N'EST PAS le seul à commencer par cette lettre de l'alphabet ?",
+      "difficulty": "facile",
+      "question": "What is the capital of Romania?",
       "options": [
-        "Qatar",
-        "Zambie",
-        "Yémen",
-        "Oman"
+        "Bratislava",
+        "Belgrade",
+        "Budapest",
+        "Bucharest"
       ],
-      "correctIndex": 1
+      "correctIndex": 3
     },
     {
       "id": "net-24",
       "category": "geographie",
       "difficulty": "moyen",
-      "question": "Lequel des pays suivants est une île ?",
+      "question": " What is the only nation that borders both Uruguay and Venezuela?",
       "options": [
-        "Azerbaïdjan",
-        "Salvador",
-        "Djibouti",
-        "Chypre"
-      ],
-      "correctIndex": 3
-    },
-    {
-      "id": "net-25",
-      "category": "histoire",
-      "difficulty": "moyen",
-      "question": "Le génocide Herero a été perpétré en Afrique par laquelle des nations coloniales suivantes ?",
-      "options": [
-        "Allemagne",
-        "France",
-        "Belgique",
-        "Grande-Bretagne"
-      ],
-      "correctIndex": 0
-    },
-    {
-      "id": "net-26",
-      "category": "histoire",
-      "difficulty": "moyen",
-      "question": "Quand la Grande Guerre patriotique en URSS a-t-elle pris fin ?",
-      "options": [
-        "9 août 1945",
-        "2 septembre 1945",
-        "9 mai 1945",
-        "11 décembre 1945"
+        "Panama",
+        "Chile",
+        "Brésil",
+        "Mexique"
       ],
       "correctIndex": 2
     },
     {
-      "id": "net-27",
+      "id": "net-25",
       "category": "histoire",
       "difficulty": "facile",
-      "question": "Quel pays a rejoint l'UE en 2013 ?",
+      "question": "Which country was Josef Stalin born in?",
       "options": [
-        "Croatie",
-        "Bulgarie",
-        "Slovénie",
-        "Turquie"
+        "Germany",
+        "Russia",
+        "Georgia",
+        "Poland"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-26",
+      "category": "histoire",
+      "difficulty": "facile",
+      "question": "Where did first known lesbian rights organization in the United States, Daughters of Bilitis, start?",
+      "options": [
+        "San Francisco",
+        "New York",
+        "Chicago",
+        "Los Angeles"
       ],
       "correctIndex": 0
     },
     {
+      "id": "net-27",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "What happened on June 6, 1944?",
+      "options": [
+        "Atomic bombings of Hiroshima and Nagasaki",
+        "Attack on Pearl Harbor",
+        "D-Day",
+        "The Liberation of Paris"
+      ],
+      "correctIndex": 2
+    },
+    {
       "id": "net-28",
       "category": "histoire",
-      "difficulty": "facile",
-      "question": "L'alphabet romain original ne comportait pas les lettres suivantes, à l'EXCEPTION de :",
+      "difficulty": "difficile",
+      "question": "What age was King Henry V when he died?",
       "options": [
-        "W",
-        "U",
-        "J\" •",
-        "X"
+        "62",
+        "35",
+        "87",
+        "73"
       ],
-      "correctIndex": 3
+      "correctIndex": 1
     },
     {
       "id": "net-29",
       "category": "histoire",
       "difficulty": "moyen",
-      "question": "Qui était stratège militaire à l'époque des Zhou orientaux ?",
+      "question": "Which building was set aflame on August 24th, 1812?",
       "options": [
-        "Lu Bu",
-        "Gengis Khan",
-        "Vlad l'Empaleur",
-        "Sun Tzu"
+        "The White House",
+        "Palace of the Nation",
+        "Parliament Building",
+        "Grand National Assembly Building"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-30",
       "category": "histoire",
       "difficulty": "moyen",
-      "question": "Le semoir a été inventé par quel inventeur britannique ?",
+      "question": "The Panama Canal was finished under the administration of which U.S. president?",
       "options": [
-        "Charles Babbage",
-        "Jethro Tull",
-        "Isaac Newton.",
-        "J.J Thomson"
-      ],
-      "correctIndex": 1
-    },
-    {
-      "id": "net-31",
-      "category": "histoire",
-      "difficulty": "moyen",
-      "question": "Quel âge avait le célèbre roi Toutankhamon (Tut) à sa mort ?",
-      "options": [
-        "30",
-        "15",
-        "19",
-        "21"
-      ],
-      "correctIndex": 2
-    },
-    {
-      "id": "net-32",
-      "category": "histoire",
-      "difficulty": "facile",
-      "question": "Qui était le premier souverain d'Haïti après l'indépendance du pays ?",
-      "options": [
-        "Louverture",
-        "Henri Christophe",
-        "Alexandre Pétion",
-        "Jean-Jacques Dessalines"
+        "Herbert Hoover",
+        "Franklin Delano Roosevelt",
+        "Theodore Roosevelt",
+        "Woodrow Wilson"
       ],
       "correctIndex": 3
     },
     {
-      "id": "net-33",
+      "id": "net-31",
       "category": "histoire",
       "difficulty": "difficile",
-      "question": "Dans les Sept Merveilles du Monde, quelle merveille est la seule qui ait survécu à ce jour ?",
+      "question": "Who was the last emperor of Mexico?",
       "options": [
-        "Phare d'Alexandrie",
-        "Colosse de Rhodes",
-        "Grande pyramide de Gizeh",
-        "Statue de Zeus à Olympie"
+        "Andrés Manuel L&oacute;pez Obrador",
+        "Napoleon III",
+        "Agust&iacute;n de Iturbide",
+        "Ferdinand Maximilian"
       ],
-      "correctIndex": 2
+      "correctIndex": 3
+    },
+    {
+      "id": "net-32",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "Who was the only US President to be elected four times?",
+      "options": [
+        "Franklin Roosevelt",
+        "Abraham Lincoln",
+        "George Washington",
+        "Theodore Roosevelt"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-33",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "In what year did the First World War end?",
+      "options": [
+        "1914",
+        "1912",
+        "1916",
+        "1918"
+      ],
+      "correctIndex": 3
     },
     {
       "id": "net-34",
       "category": "histoire",
-      "difficulty": "moyen",
-      "question": "Le système de défense stratégique américain pendant la guerre froide a été surnommé d'après ce célèbre film.",
+      "difficulty": "facile",
+      "question": "In what year did the Great Northern War, between Russia and Sweden, end?",
       "options": [
-        "Mâchoires",
-        "Alien, le huitième passager",
-        "Star Wars",
-        "Blade Runner"
+        "1727",
+        "1726",
+        "1721",
+        "1724"
       ],
       "correctIndex": 2
     },
@@ -460,77 +460,77 @@
       "id": "net-35",
       "category": "histoire",
       "difficulty": "moyen",
-      "question": "Quel était le nom de la première colonie anglaise permanente en Amérique ?",
+      "question": "Which king was killed at the Battle of Bosworth Field in 1485? ",
       "options": [
-        "St. John’s",
-        "Jamestown",
-        "New York",
-        "Plymouth"
+        "Richard III",
+        "Edward V",
+        "Henry VII",
+        "James I"
       ],
-      "correctIndex": 1
+      "correctIndex": 0
     },
     {
       "id": "net-36",
       "category": "histoire",
       "difficulty": "facile",
-      "question": "Combien de navires sœurs étaient liés au TItanic ?",
+      "question": "Which one of these was not a beach landing site in the Invasion of Normandy?",
       "options": [
-        "1",
-        "2",
-        "3",
-        "4"
+        "Sword",
+        "Juno",
+        "Gold",
+        "Silver"
       ],
-      "correctIndex": 1
+      "correctIndex": 3
     },
     {
       "id": "net-37",
       "category": "histoire",
-      "difficulty": "moyen",
-      "question": "Le Spitfire L.F. Mk IX avait quel moteur ?",
+      "difficulty": "facile",
+      "question": "What battle was the longest in World War I, lasting approximately 303 days?",
       "options": [
-        "Merlin 50",
-        "Merlin 66",
-        "Griffon 65",
-        "Merlin X"
+        "Battle of Passchendaele",
+        "Battle of Stalingrad",
+        "Battle of Amiens",
+        "Battle of Verdun "
       ],
-      "correctIndex": 1
+      "correctIndex": 3
     },
     {
       "id": "net-38",
       "category": "histoire",
-      "difficulty": "moyen",
-      "question": "Quel événement historique l'Ouverture de Tchaïkovski de 1812 faisait-elle référence ?",
+      "difficulty": "difficile",
+      "question": "Spain was formed in 1469 with the marriage of Isabella I of Castile and Ferdinand II of what other Iberian kingdom?",
       "options": [
-        "La charge de la brigade légère (guerre de Crimée)",
-        "La Révolution de février",
-        "Guerres napoléoniennes",
-        "La guerre américaine de 1812"
+        "Galicia",
+        "Aragon",
+        "Le&oacute;n",
+        "Navarre"
       ],
-      "correctIndex": 2
+      "correctIndex": 1
     },
     {
       "id": "net-39",
       "category": "histoire",
       "difficulty": "facile",
-      "question": "Qui était le général confédéré pendant la guerre de Sécession ?",
+      "question": "Who was among those killed in the 2010 Smolensk, Russia plane crash tragedy?",
       "options": [
-        "George B. McClellan",
-        "Ulysses S. Grant",
-        "George A. Custer",
-        "Robert E. Lee"
+        "Pope John Paul II",
+        "Bang-Ding Ow",
+        "Albert Putin",
+        "The Polish President"
       ],
       "correctIndex": 3
     },
     {
       "id": "net-40",
       "category": "histoire",
-      "difficulty": "moyen",
-      "question": "Quel nombre représente le chiffre romain « D » ?",
+      "difficulty": "facile",
+      "question": "The collapse of the Soviet Union took place in which year?",
       "options": [
-        "50",
-        "1000",
-        "100",
-        "500"
+        "1992",
+        "1891",
+        "1990",
+        "1991"
       ],
       "correctIndex": 3
     },
@@ -538,90 +538,90 @@
       "id": "net-41",
       "category": "histoire",
       "difficulty": "moyen",
-      "question": "Joseph Smith était le fondateur de quelle religion ?",
+      "question": "Which of the following Soviet revolutionaries was exiled from the USSR and later assassinated in 1940 for criticizing Stalinism?",
       "options": [
-        "Église de Jésus-Christ des saints des derniers jours",
-        "Hindouisme",
-        "Christianisme",
-        "Bouddhisme"
+        "Leon Trotsky",
+        "Vladimir Lenin",
+        "Lev Kamenev",
+        "Mikhail Kalinin"
       ],
       "correctIndex": 0
     },
     {
       "id": "net-42",
       "category": "histoire",
-      "difficulty": "facile",
-      "question": "Quand la bataille de la Somme a-t-elle commencé ?",
-      "options": [
-        "2 juillet 1916",
-        "1er juillet 1916",
-        "1er août 1916",
-        "30 juin 1916"
-      ],
-      "correctIndex": 1
-    },
-    {
-      "id": "net-43",
-      "category": "histoire",
       "difficulty": "moyen",
-      "question": "Qui a été le premier mammifère lancé avec succès sur l'orbite terrestre ?",
+      "question": "In 1961, an American B-52 aircraft crashed and nearly detonated two 4mt nuclear bombs over which US city?",
       "options": [
-        "la chienne Laïka.",
-        "Jambon, le chimpanzé",
-        "Baker, le singe",
-        "Belka, le chien"
-      ],
-      "correctIndex": 0
-    },
-    {
-      "id": "net-44",
-      "category": "histoire",
-      "difficulty": "difficile",
-      "question": "Quels pays ont participé à la guerre du homard ?",
-      "options": [
-        "La France et le Brésil",
-        "Australie et Nouvelle-Zélande",
-        "Canada et Norvège",
-        "États-Unis et Angleterre"
-      ],
-      "correctIndex": 0
-    },
-    {
-      "id": "net-45",
-      "category": "histoire",
-      "difficulty": "moyen",
-      "question": "Qui était le premier président de la République populaire de Chine ?",
-      "options": [
-        "Liu Shaoqi",
-        "Dong Biwu",
-        "Li Xiannian",
-        "Mao Zedong"
+        "Hicksville, New York",
+        "Jacksonville, Florida",
+        "Conway, Arkansas",
+        "Goldsboro, North Carolina"
       ],
       "correctIndex": 3
     },
     {
-      "id": "net-46",
+      "id": "net-43",
+      "category": "histoire",
+      "difficulty": "facile",
+      "question": "The RMS Titanic sunk during her maiden voyage from Southampton, England to which American city?",
+      "options": [
+        "Boston ",
+        "New York City",
+        "Philadelphia",
+        "Washington"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-44",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "During the Mongolian invasions of Japan, what were the Mongol boats mostly stopped by?",
+      "options": [
+        "Economic depression",
+        "Typhoons",
+        "Tornados",
+        "Samurai"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-45",
       "category": "histoire",
       "difficulty": "difficile",
-      "question": "Quand la Révolution française a-t-elle commencé ?",
+      "question": "What Southeast Asian country was formerly known as 'Lan Xang'?",
       "options": [
-        "Mai 05 1789",
-        "Mai 06",
-        "Avril 05 1789",
-        "12 avril"
+        "Laos",
+        "Thailand",
+        "Vietnam",
+        "Cambodia"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-46",
+      "category": "histoire",
+      "difficulty": "moyen",
+      "question": "Which U.S. President was in office when the Gulf War began?",
+      "options": [
+        "George H. W. Bush",
+        "Richard Nixon",
+        "George W. Bush ",
+        "Ronald Regan"
       ],
       "correctIndex": 0
     },
     {
       "id": "net-47",
       "category": "histoire",
-      "difficulty": "moyen",
-      "question": "Quel président américain était en fonction au début de la guerre du Golfe ?",
+      "difficulty": "difficile",
+      "question": "What was the real name of the Albanian national leader Skanderbeg?",
       "options": [
-        "George H. W. Bush",
-        "Richard Nixon",
-        "George Galloway",
-        "Ronald Regan"
+        "Gjergj Kastrioti",
+        "Mirash Krasniki",
+        "Iskander Bejko",
+        "Diturak Zhulati"
       ],
       "correctIndex": 0
     },
@@ -629,25 +629,25 @@
       "id": "net-48",
       "category": "histoire",
       "difficulty": "difficile",
-      "question": "Qui a été le premier homme à voyager dans l'espace ?",
+      "question": "What was Napoleon Bonaparte's name before he changed it?",
       "options": [
-        "Virgil Ivan « Gus » Grissom",
-        "Neil Armstrong",
-        "Buzz Aldrin",
-        "Yuri Gagarin"
+        "Naapolion van Bonijpaart",
+        "Napole&atilde;o do Boaparte",
+        "Napoleona de Buenoparte",
+        "Napoleone di Buonaparte"
       ],
       "correctIndex": 3
     },
     {
       "id": "net-49",
       "category": "histoire",
-      "difficulty": "moyen",
-      "question": "Qui a couronné Charlemagne empereur du Saint-Empire romain germanique le jour de Noël en 800 ?",
+      "difficulty": "difficile",
+      "question": "How many women joined the United States Armed Services during World War II?",
       "options": [
-        "Pape Urbain IV",
-        "Pape Étienne V",
-        "Pape Valentin",
-        "Pape Léon III"
+        "225,000",
+        "100,000",
+        "500,000",
+        "350,000"
       ],
       "correctIndex": 3
     },
@@ -655,428 +655,428 @@
       "id": "net-50",
       "category": "sciences",
       "difficulty": "facile",
-      "question": "Qu'est-ce qui se trouve au centre de notre galaxie ?",
+      "question": "How many planets are there in the Solar System?",
       "options": [
-        "Un trou de ver",
-        "Une supernova",
-        "C’est le trou noir en fait.",
-        "Un quasar"
+        "8",
+        "10",
+        "11",
+        "9"
       ],
-      "correctIndex": 2
+      "correctIndex": 0
     },
     {
       "id": "net-51",
       "category": "sciences",
       "difficulty": "moyen",
-      "question": "Le « tibia » se trouve dans quelle partie du corps ?",
+      "question": "Deionized water is water with which of the following removed?",
       "options": [
-        "Tête",
-        "Main",
-        "Pied",
-        "Bras"
+        "Oxygen",
+        "Hydrogen",
+        "Uncharged atoms",
+        "Iron"
       ],
-      "correctIndex": 2
+      "correctIndex": 3
     },
     {
       "id": "net-52",
       "category": "sciences",
-      "difficulty": "moyen",
-      "question": "Quelle est l'étude des cellules et des tissus des plantes et des animaux ?",
+      "difficulty": "facile",
+      "question": "How many laws of thermodynamics are there?",
       "options": [
-        "Histologie",
-        "Biochimie",
-        "Anatomie",
-        "Microbiologie"
+        "Three",
+        "Two",
+        "Four",
+        "Five"
       ],
-      "correctIndex": 0
+      "correctIndex": 2
     },
     {
       "id": "net-53",
       "category": "sciences",
       "difficulty": "moyen",
-      "question": "Quel est l'âge de l'univers ?",
+      "question": "When the Falcon Heavy was launched on it's test flight, what was the only part of the operation that failed?",
       "options": [
-        "7,9 milliards d'années",
-        "16,2 milliards d'années",
-        "4,5 milliards d'années",
-        "13,8 milliards d'années"
+        "Center Core Landing",
+        "Ignition and Liftoff",
+        "Deployment of Starman",
+        "Side Booster Landing"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-54",
       "category": "sciences",
-      "difficulty": "moyen",
-      "question": "Environ combien de temps dure une année sur Uranus ?",
+      "difficulty": "facile",
+      "question": "How many bones are in the human body?",
       "options": [
-        "84,01 années terrestres",
-        "109 années terrestres",
-        "62 années terrestres",
-        "47 années terrestres"
+        "203",
+        "206",
+        "209",
+        "200"
       ],
-      "correctIndex": 0
+      "correctIndex": 1
     },
     {
       "id": "net-55",
       "category": "sciences",
-      "difficulty": "moyen",
-      "question": "Le poumon droit humain a combien de lobes ?",
+      "difficulty": "facile",
+      "question": "What is the powerhouse of the cell?",
       "options": [
-        "4",
-        "2",
-        "3",
-        "1"
+        "Redbull",
+        "Ribosome",
+        "Nucleus",
+        "Mitochondria"
       ],
-      "correctIndex": 2
+      "correctIndex": 3
     },
     {
       "id": "net-56",
       "category": "sciences",
-      "difficulty": "facile",
-      "question": "Quelle est la « centrale » de la cellule animale eucaryote ?",
-      "options": [
-        "Mitochondries",
-        "Réticulum endoplasmique",
-        "Chloroplaste",
-        "Noyau"
-      ],
-      "correctIndex": 0
-    },
-    {
-      "id": "net-57",
-      "category": "sciences",
-      "difficulty": "facile",
-      "question": "Lequel de ces os est le plus difficile à briser ?",
-      "options": [
-        "Tibia",
-        "Humérus",
-        "produc -",
-        "Fémur"
-      ],
-      "correctIndex": 3
-    },
-    {
-      "id": "net-58",
-      "category": "sciences",
-      "difficulty": "facile",
-      "question": "Combien de lunes la Terre a-t-elle ?",
-      "options": [
-        "1",
-        "3",
-        "2",
-        "0"
-      ],
-      "correctIndex": 0
-    },
-    {
-      "id": "net-59",
-      "category": "sciences",
       "difficulty": "difficile",
-      "question": "Lequel de ces éléments est utilisé pour montrer que la Terre tourne sur un axe ?",
+      "question": "The core of the Sun can reach which temperature?",
       "options": [
-        "Little Cornwallis Island, Nunavut 1999 : rejets en juillet, août et septembre seulement 2000 : rejets en juillet, août et septembre seulement",
-        "Cadran solaire",
-        "Pendule de Foucault ...",
-        "<g id=\"1\">Plaques tectoniques :</g>"
+        "938,000° F (521093.3° C)",
+        "8° Billion F (°4.4 Billion C)",
+        "27° Million F (15° Million C)",
+        "Absolute Zero (Both F and C)"
       ],
       "correctIndex": 2
     },
     {
-      "id": "net-60",
+      "id": "net-57",
       "category": "sciences",
       "difficulty": "moyen",
-      "question": "De quoi sont faits les ongles humains ?",
+      "question": "Who made the discovery of X-rays?",
       "options": [
-        "Os",
-        "- - - Chitine",
-        "Le calcium",
-        "Kératine"
+        "Thomas Alva Edison",
+        "James Watt",
+        "Wilhelm Conrad Röntgen",
+        "Albert Einstein"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-58",
+      "category": "sciences",
+      "difficulty": "difficile",
+      "question": "The Western Lowland Gorilla is scientifically know as?",
+      "options": [
+        "Gorilla Beringei Graueri",
+        "Gorilla Gorilla Diehli",
+        "Gorilla Gorilla Gorilla",
+        "Gorilla Beringei Beringei"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-59",
+      "category": "sciences",
+      "difficulty": "moyen",
+      "question": "What is the chemical symbol for lead?",
+      "options": [
+        "Pm",
+        "Le",
+        "Ld",
+        "Pb"
       ],
       "correctIndex": 3
     },
     {
-      "id": "net-61",
+      "id": "net-60",
       "category": "sciences",
       "difficulty": "difficile",
-      "question": "Qu'est-ce que le « sténome » ?",
+      "question": "How much radiation does a banana emit?",
       "options": [
-        "Un stimulant de combat de la Seconde Guerre mondiale",
-        "Un type d'assaisonnement",
-        "Une ville portuaire dans les Caraïbes",
-        "Un genre de papillons"
+        "0.1 Microsievert",
+        "0.7 Microsievert",
+        "0.5 Microsievert",
+        "0.3 Microsievert"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
+    },
+    {
+      "id": "net-61",
+      "category": "sciences",
+      "difficulty": "moyen",
+      "question": "The humerus, paired radius, and ulna come together to form what joint?",
+      "options": [
+        "Elbow",
+        "Ankle",
+        "Sholder",
+        "Knee"
+      ],
+      "correctIndex": 0
     },
     {
       "id": "net-62",
       "category": "sciences",
       "difficulty": "difficile",
-      "question": "Quelle quantité de rayonnement émet une banane ?",
+      "question": "Which is not a type of neuron?",
       "options": [
-        "0,5 Microsievert",
-        "0,3 Microsievert",
-        "0,7 Microsievert",
-        "0,1 Microsievert"
+        "Perceptual Neuron",
+        "Motor Neuron",
+        "Sensory Neuron",
+        "Interneuron"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-63",
       "category": "sciences",
       "difficulty": "facile",
-      "question": "Quelle mission Apollo a été la première à atterrir sur la Lune ?",
+      "question": "What is the \"powerhouse\" of the Eukaryotic animal cell?",
       "options": [
-        "Apollo",
-        "Apollo 9",
-        "Apollo 13",
-        "Apollo 11"
+        "Nucleus",
+        "Chloroplast",
+        "Endoplasmic Reticulum",
+        "Mitochondria"
       ],
       "correctIndex": 3
     },
     {
       "id": "net-64",
       "category": "sciences",
-      "difficulty": "moyen",
-      "question": "Quelle est la formule chimique de l'ammoniac",
+      "difficulty": "difficile",
+      "question": "Botanically speaking, which of these fruits is NOT a berry?",
       "options": [
-        "NO3",
-        "CO2",
-        "NH3",
-        "CH4"
+        "Blueberry",
+        "Banana",
+        "Concord Grape",
+        "Strawberry"
       ],
-      "correctIndex": 2
+      "correctIndex": 3
     },
     {
       "id": "net-65",
       "category": "sciences",
       "difficulty": "moyen",
-      "question": "Quel désert est le seul désert au monde où pousse localement le cactus « Saguaro » ?",
+      "question": "Which continent do sweet potatoes originally come from?",
       "options": [
-        "Le désert de Gobi",
-        "Le désert de Yuma",
-        "Désert d'Arabie",
-        "Désert de Sonora"
+        "Africa",
+        "South America",
+        "Asia",
+        "Europe"
       ],
-      "correctIndex": 3
+      "correctIndex": 1
     },
     {
       "id": "net-66",
       "category": "sciences",
-      "difficulty": "difficile",
-      "question": "Quel pays a fait éclore et élever avec succès pour la première fois du thon rouge en 1979 ?",
+      "difficulty": "facile",
+      "question": "What is the speed of light in a vacuum?",
       "options": [
-        "France",
-        "Philippines",
-        "États-Unis",
-        "Japon"
+        "299,792,458 m/s",
+        "751,665,014,151 m/s",
+        "50,461 m/s",
+        "308,215,043 m/s"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-67",
       "category": "sciences",
       "difficulty": "facile",
-      "question": "Vénus est la planète la plus chaude du système solaire.",
+      "question": "What organelle aids in synthesis of DNA in cells?",
       "options": [
-        "Mars",
-        "Mercure",
-        "Jupiter",
-        "Venus"
+        "Lysosomes",
+        "Nuclei",
+        "Ribosomes",
+        "Mitochondria"
       ],
-      "correctIndex": 3
+      "correctIndex": 2
     },
     {
       "id": "net-68",
       "category": "sciences",
-      "difficulty": "moyen",
-      "question": "À quelle température l'eau bout-elle ?",
+      "difficulty": "facile",
+      "question": "What animal takes part in Schrödinger's most famous thought experiment?",
       "options": [
-        "(212˚F).",
-        "178 °F",
-        "181 °F",
-        "200°F"
+        "Cat",
+        "Butterfly",
+        "Bat",
+        "Dog"
       ],
       "correctIndex": 0
     },
     {
       "id": "net-69",
       "category": "sciences",
-      "difficulty": "facile",
-      "question": "Quel est le poids atomique standard d'un noyau de plutonium ?",
+      "difficulty": "moyen",
+      "question": "Which of these two plates are best know for forming earthquakes and tsunami's? ",
       "options": [
-        "244",
-        "128",
-        "481",
-        "94"
+        "Transform Plate Boundaries/Divergent Plate Boundaries",
+        "Divergent Plate Boundaries/Convergent/Oceanic Crust",
+        "Convergent Plate Boundaries/Oceanic Crust",
+        "Oceanic & Continental Crust/Transform Plate Boundaries"
       ],
-      "correctIndex": 0
+      "correctIndex": 2
     },
     {
       "id": "net-70",
       "category": "sciences",
-      "difficulty": "difficile",
-      "question": "Combien y a-t-il de types de quarks dans le modèle standard de la physique ?",
+      "difficulty": "moyen",
+      "question": "What was the category of the 2005 hurricane, Hurricane Katrina, in the Saffir-Simpson hurricane wind scale?",
       "options": [
-        "2",
-        "4",
-        "3",
-        "6"
+        "Category 1",
+        "Category 4",
+        "Category 2",
+        "Category 5"
       ],
       "correctIndex": 3
     },
     {
       "id": "net-71",
       "category": "sciences",
-      "difficulty": "moyen",
-      "question": "Quel est le plus grand organisme vivant actuellement connu de l'homme ?",
+      "difficulty": "difficile",
+      "question": "What is considered the rarest form of color blindness?",
       "options": [
-        "Les récifs coralliens",
-        "sequoia, séquoia;",
-        "Balaenoptera musculus",
-        "tête de méduse"
+        "Blue",
+        "Purple",
+        "Green",
+        "Red"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-72",
       "category": "sciences",
       "difficulty": "moyen",
-      "question": "Combien de planètes naines officiellement reconnues dans le système solaire portent le nom de divinités polynésiennes ?",
+      "question": "The medical condition osteoporosis affects which part of the body?",
       "options": [
-        "2",
-        "0",
-        "5",
-        "1"
+        "Skin",
+        "Brain",
+        "Bones",
+        "Heart"
       ],
-      "correctIndex": 0
+      "correctIndex": 2
     },
     {
       "id": "net-73",
       "category": "sciences",
-      "difficulty": "difficile",
-      "question": "Quel est le nom scientifique de l'hominidé éteint connu sous le nom de « Lucy » ?",
+      "difficulty": "moyen",
+      "question": "Which of the following is NOT a passive electrical component?",
       "options": [
-        "Australopithecus Antaris",
-        "Australopithecus Architeuthis",
-        "Australopithecus africanus",
-        "Australopithecus afarensis"
+        "Inductor",
+        "Transistor",
+        "Capacitor",
+        "Resistor"
       ],
-      "correctIndex": 3
+      "correctIndex": 1
     },
     {
       "id": "net-74",
       "category": "sciences",
       "difficulty": "moyen",
-      "question": "Lequel de ces éléments du tableau périodique est un gaz noble ?",
+      "question": "To the nearest minute, how long does it take for light to travel from the Sun to the Earth?",
       "options": [
-        "- - - Néon",
-        "Potassium",
-        "Colbalt",
-        "Iodine"
+        "6 Minutes",
+        "2 Minutes",
+        "12 Minutes",
+        "8 Minutes"
       ],
-      "correctIndex": 0
+      "correctIndex": 3
     },
     {
       "id": "net-75",
       "category": "informatique",
       "difficulty": "moyen",
-      "question": "Quel est le nom du thème par défaut installé avec Windows XP ?",
+      "question": "What is the main CPU is the Sega Mega Drive / Sega Genesis?",
       "options": [
-        "Béatitude",
-        "Neptune",
-        "Luna",
-        "Whistler"
+        "Zilog Z80",
+        "Yamaha YM2612",
+        "Motorola 68000",
+        "Intel 8088"
       ],
       "correctIndex": 2
     },
     {
       "id": "net-76",
       "category": "informatique",
-      "difficulty": "difficile",
-      "question": "L'acronyme « RIP » signifie lequel d'entre eux ?",
+      "difficulty": "facile",
+      "question": "In computing, how many bits are in a nibble?",
       "options": [
-        "Processus d'instance d'exécution",
-        "Processus d'intervalle régulier",
-        "Protocole d'inspection de routine",
-        "protocole RIP"
+        "16",
+        "32",
+        "2",
+        "4"
       ],
       "correctIndex": 3
     },
     {
       "id": "net-77",
       "category": "informatique",
-      "difficulty": "moyen",
-      "question": "Les imprimantes à jet laser et à jet d'encre sont toutes deux des exemples de quel type d'imprimante ?",
+      "difficulty": "difficile",
+      "question": "What was the name of the security vulnerability found in Bash in 2014?",
       "options": [
-        "Imprimante par impact",
-        "Imprimante à marguerite",
-        "imprimante sans impact",
-        "Imprimante matricielle par points."
+        "Shellshock",
+        "Stagefright",
+        "Bashbug",
+        "Heartbleed"
       ],
-      "correctIndex": 2
+      "correctIndex": 0
     },
     {
       "id": "net-78",
       "category": "informatique",
-      "difficulty": "difficile",
-      "question": "Quel protocole Internet a été documenté dans la RFC 1459 ?",
+      "difficulty": "facile",
+      "question": "What is the name of Layer 7 of the OSI model?",
       "options": [
-        "HTTPS",
-        "iti",
-        "HTTP",
-        "FTP"
+        "Session",
+        "Network",
+        "Present",
+        "Application"
       ],
-      "correctIndex": 1
+      "correctIndex": 3
     },
     {
       "id": "net-79",
       "category": "informatique",
       "difficulty": "moyen",
-      "question": "Le nom de la société de technologie HP signifie quoi ?",
+      "question": "What does \"LCD\" stand for?",
       "options": [
-        "Howard Packmann",
-        "Hellman-Pohl",
-        "Hp",
-        "Husker-Pollosk"
+        "Language Control Design",
+        "Last Common Difference",
+        "Long Continuous Design",
+        "Liquid Crystal Display"
       ],
-      "correctIndex": 2
+      "correctIndex": 3
     },
     {
       "id": "net-80",
       "category": "informatique",
-      "difficulty": "moyen",
-      "question": "À l'origine utilisé dans les adaptateurs PCM, quelle est la fréquence standard pour l'échantillonnage audio au format Compact Disc Digital Audio ?",
+      "difficulty": "difficile",
+      "question": "The acronym \"RIP\" stands for which of these?",
       "options": [
-        "1,5 MHz",
-        "20,5 kHz",
-        "44,1 Hz",
-        "32,0 kHz"
+        "Runtime Instance Processes",
+        "Regular Interval Processes",
+        "Routine Inspection Protocol",
+        "Routing Information Protocol"
       ],
-      "correctIndex": 2
+      "correctIndex": 3
     },
     {
       "id": "net-81",
       "category": "informatique",
-      "difficulty": "facile",
-      "question": "Modèle de couleur CMJN signifie ?",
+      "difficulty": "difficile",
+      "question": "Australia, Japan, and Southeast Asia are in which ITU Region?",
       "options": [
-        "quadrichromie",
-        "Crème, Marron, Jaune et Kaki",
-        "Cyan, magenta, jaune et kaki",
-        "Crème, Marron, Jaune et Noir"
+        "Region 1",
+        "Region 2",
+        "Region 3",
+        "Region 4"
       ],
-      "correctIndex": 0
+      "correctIndex": 2
     },
     {
       "id": "net-82",
       "category": "informatique",
       "difficulty": "difficile",
-      "question": "Lequel des composants informatiques suivants peut être construit en utilisant uniquement des portes NAND ?",
+      "question": "Who is the original author of the realtime physics engine called PhysX?",
       "options": [
-        "ALU",
-        "RAM",
-        "UC",
-        "Inscription"
+        "NovodeX",
+        "Nvidia",
+        "AMD",
+        "Ageia"
       ],
       "correctIndex": 0
     },
@@ -1084,25 +1084,25 @@
       "id": "net-83",
       "category": "informatique",
       "difficulty": "facile",
-      "question": "Quel type de mémoire est utilisé sur le cache mémoire ?",
+      "question": "In \"Hexadecimal\", what color would be displayed from the color code? \"#00FF00\"?",
       "options": [
-        "DRAM",
-        "Clignotant",
-        "SRAM",
-        "ROM"
+        "Green",
+        "Blue",
+        "Red",
+        "Yellow"
       ],
-      "correctIndex": 2
+      "correctIndex": 0
     },
     {
       "id": "net-84",
       "category": "informatique",
-      "difficulty": "moyen",
-      "question": "Quel est le nombre de touches sur un clavier Windows standard ?",
+      "difficulty": "difficile",
+      "question": "Who is the founder of Palantir?",
       "options": [
-        "104",
-        "76",
-        "94",
-        "64"
+        "Peter Thiel",
+        "Jack Dorsey",
+        "Marc Benioff",
+        "Mark Zuckerberg"
       ],
       "correctIndex": 0
     },
@@ -1110,64 +1110,64 @@
       "id": "net-85",
       "category": "informatique",
       "difficulty": "difficile",
-      "question": "Lequel d'entre eux était le nom d'un bogue trouvé en avril 2014 dans la bibliothèque de cryptographie OpenSSL accessible au public ?",
+      "question": "Which of these was the name of a bug found in April 2014 in the publicly available OpenSSL cryptography library?",
       "options": [
-        "Shellscript",
+        "Shellshock",
+        "Corrupted Blood",
         "Heartbleed",
-        "Obusite",
-        "Sang corrompu"
+        "Shellscript"
       ],
-      "correctIndex": 1
+      "correctIndex": 2
     },
     {
       "id": "net-86",
       "category": "informatique",
       "difficulty": "facile",
-      "question": "Lorsque Gmail a été lancé pour la première fois, quelle quantité de stockage fournissait-il pour votre courrier électronique ?",
+      "question": "What does the Prt Sc button do?",
       "options": [
-        "512MB",
-        "5 Go",
-        "1 Go",
-        "Illimité"
+        "Captures what's on the screen and copies it to your clipboard",
+        "Closes all windows",
+        "Saves a .png file of what's on the screen in your screenshots folder in photos",
+        "Nothing"
       ],
-      "correctIndex": 2
+      "correctIndex": 0
     },
     {
       "id": "net-87",
       "category": "informatique",
-      "difficulty": "difficile",
-      "question": "Qui a inventé le « protocole Spanning Tree » ?",
+      "difficulty": "moyen",
+      "question": "What is the correct term for the metal object in between the CPU and the CPU fan within a computer system?",
       "options": [
-        "Vint Cerf",
-        "Radia Perlman",
-        "Paul Vixie",
-        "Michael Roberts"
+        "Heat Sink",
+        "Temperature Decipator",
+        "CPU Vent",
+        "Heat Vent"
       ],
-      "correctIndex": 1
+      "correctIndex": 0
     },
     {
       "id": "net-88",
       "category": "informatique",
-      "difficulty": "facile",
-      "question": "Que signifie SSD ?",
+      "difficulty": "moyen",
+      "question": "Which of these programming languages is a low-level language?",
       "options": [
-        "SSD (disque statique à semi-conducteurs)",
-        "Lecteur de solution source",
-        "état solide",
-        "Disque source de solution"
+        "Python",
+        "Assembly",
+        "C#",
+        "Pascal"
       ],
-      "correctIndex": 0
+      "correctIndex": 1
     },
     {
       "id": "net-89",
       "category": "informatique",
       "difficulty": "facile",
-      "question": "Que signifie CPU ?",
+      "question": "When Gmail first launched, how much storage did it provide for your email?",
       "options": [
-        "Unité centrale de traitement (processeur)",
-        "Central Processor Unit",
-        "ORDINATEUR MEMOIRES MAGNETIQUES MEMOIRES A SEMI­CONDUCTEURS",
-        "CPU unité de traitement centrale"
+        "1GB",
+        "Unlimited",
+        "5GB",
+        "512MB"
       ],
       "correctIndex": 0
     },
@@ -1175,90 +1175,90 @@
       "id": "net-90",
       "category": "informatique",
       "difficulty": "facile",
-      "question": "Le système de numérotation avec un radix de 16 est plus communément appelé",
+      "question": "The C programming language was created by this American computer scientist. ",
       "options": [
-        "Hexidécimal",
-        "Binaire",
-        "Octal",
-        "Duodécimal"
+        "Willis Ware",
+        "al-Khwārizmī",
+        "Tim Berners Lee",
+        "Dennis Ritchie"
       ],
-      "correctIndex": 0
+      "correctIndex": 3
     },
     {
       "id": "net-91",
       "category": "informatique",
-      "difficulty": "difficile",
-      "question": "L'Australie, le Japon et l'Asie du Sud-Est se trouvent dans quelle région de l'UIT ?",
+      "difficulty": "moyen",
+      "question": "What does the 'S' in the RSA encryption algorithm stand for?",
       "options": [
-        "Région 1",
-        "Région 2",
-        "Région 4",
-        "Région 3"
+        "Secure",
+        "Schottky",
+        "Stable",
+        "Shamir"
       ],
       "correctIndex": 3
     },
     {
       "id": "net-92",
       "category": "informatique",
-      "difficulty": "moyen",
-      "question": "Quel langage de codage était le langage de programmation n °1 en termes d'utilisation sur GitHub en 2015 ?",
+      "difficulty": "difficile",
+      "question": "Which of the following is the oldest of these computers by release date?",
       "options": [
-        "Python",
-        "JavaScript",
-        "PHP",
-        "C#"
+        "Commodore 64",
+        "ZX Spectrum",
+        "Apple 3",
+        "TRS-80"
       ],
-      "correctIndex": 1
+      "correctIndex": 3
     },
     {
       "id": "net-93",
       "category": "informatique",
-      "difficulty": "moyen",
-      "question": "Quel était le nom de l'image qui figure comme fond d'écran par défaut pour Windows XP ?",
+      "difficulty": "difficile",
+      "question": "According to DeMorgan's Theorem, the Boolean expression (AB)' is equivalent to:",
       "options": [
-        "Béatitude",
-        "Bonjour,",
-        "Désert de lune rouge",
-        "Les tulipes"
+        "A'B + B'A",
+        "A'B'",
+        "AB' + AB",
+        "A' + B'"
       ],
-      "correctIndex": 0
+      "correctIndex": 3
     },
     {
       "id": "net-94",
       "category": "informatique",
-      "difficulty": "difficile",
-      "question": "Quel est le nom de code de la micro-architecture Intel Core de huitième génération lancée en octobre 2017 ?",
+      "difficulty": "moyen",
+      "question": "Which operating system was released first?",
       "options": [
-        "Coffee Lake",
-        "Broadwell",
-        "Skylake",
-        "Sandy Bridge"
-      ],
-      "correctIndex": 0
-    },
-    {
-      "id": "net-95",
-      "category": "informatique",
-      "difficulty": "difficile",
-      "question": "Lequel de ces interrupteurs à clavier mécaniques Cherry MX est à la fois tactile et cliquable ?",
-      "options": [
-        "Cherry MX - Noir",
-        "Bleu cerise MX",
-        "Marron cerise MX",
-        "Cherry MX Red"
+        "OS/2",
+        "Mac OS",
+        "Linux",
+        "Windows"
       ],
       "correctIndex": 1
     },
     {
+      "id": "net-95",
+      "category": "informatique",
+      "difficulty": "facile",
+      "question": "Which SQL keyword is used to fetch data from a database?",
+      "options": [
+        "VALUES",
+        "INDEX",
+        "SELECT",
+        "EXEC"
+      ],
+      "correctIndex": 2
+    },
+    {
       "id": "net-96",
       "category": "informatique",
-      "difficulty": "moyen",
-      "question": "Lequel de ces noms n'est pas un nom de développement officiel pour une version d'Ubuntu ?",
+      "difficulty": "difficile",
+      "question": "The internet domain .fm is the country-code top-level domain for which Pacific Ocean island nation?",
       "options": [
-        "Mystic Mansion",
-        "Loup-garou rusé",
-        "Trusty Tahr",
-        "Licorne utopique"
+        "Micronesia",
+        "Marshall Islands",
+        "Tuvalu",
+        "Fiji"
       ],
       "correctIndex": 0
     },
@@ -1266,38 +1266,38 @@
       "id": "net-97",
       "category": "informatique",
       "difficulty": "difficile",
-      "question": "Lequel des éléments suivants N'EST PAS un algorithme informatique ?",
+      "question": "Which of these names was an actual codename for a cancelled Microsoft project?",
       "options": [
-        "Tri flottant",
-        "Tri rapide",
-        "tri par fusion",
-        "Tri à bulles"
+        "Enceladus",
+        "Pollux",
+        "Neptune",
+        "Saturn"
       ],
-      "correctIndex": 0
+      "correctIndex": 2
     },
     {
       "id": "net-98",
       "category": "informatique",
       "difficulty": "difficile",
-      "question": "Lequel des éléments suivants est le plus ancien de ces ordinateurs par date de sortie ?",
+      "question": "What port does HTTP run on?",
       "options": [
-        "TRS-80",
-        "Commodore 64",
-        "ZX Spectrum",
-        "Nuts 3"
+        "53",
+        "443",
+        "23",
+        "80"
       ],
-      "correctIndex": 0
+      "correctIndex": 3
     },
     {
       "id": "net-99",
       "category": "informatique",
-      "difficulty": "difficile",
-      "question": "Selon le théorème de DeMorgan, l'expression booléenne (AB)' est équivalente à :",
+      "difficulty": "moyen",
+      "question": "What does the term GPU stand for?",
       "options": [
-        "A et B",
-        "AB' + AB",
-        "A B",
-        "A'B + B'A"
+        "Graphics Processing Unit",
+        "Graphical Proprietary Unit",
+        "Graphite Producing Unit",
+        "Gaming Processor Unit"
       ],
       "correctIndex": 0
     }

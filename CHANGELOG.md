@@ -5,6 +5,39 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/), versionneme
 
 ## [Unreleased]
 
+## [1.27.1]
+### Fixed
+- **`!savecontacts` : erreur "Aucun numéro exploitable trouvé" sur des groupes de 100+ membres.** Depuis une mise à jour de confidentialité WhatsApp (2024+), Baileys retourne les participants d'un groupe avec un identifiant interne `@lid` dans `p.id` au lieu du vrai numéro `@s.whatsapp.net`. L'ancienne logique ne cherchait que dans `p.id`, renvoyant 0 résultats. Correction : le vrai JID téléphonique est désormais recherché dans `p.id`, `p.jid` et `p.lid` (les trois champs que Baileys peut utiliser selon la version) — même stratégie déjà appliquée dans `groupGuardian.js > isBotGroupAdmin`.
+
+## [1.27.0]
+### Added
+- **Nouvelle commande `!savecontacts` (admin, alias `!exportcontacts`/`!enregistrercontacts`).** Exporte les membres du groupe en fichier `.vcf` (format contacts standard), envoyé **uniquement en message privé** à l'admin qui a lancé la commande — jamais posté dans le groupe, pour ne pas exposer la liste complète des numéros à tout le monde.
+  - Le groupe ne reçoit qu'une confirmation neutre (`✅ Liste des membres envoyée en message privé.`), sans aucun numéro ni détail.
+  - Les JID en `@lid` (numéro masqué par un réglage de confidentialité récent de WhatsApp) sont ignorés proprement — impossibles à convertir en contact exploitable — et comptés dans un résumé (`X membre(s) ignoré(s)`).
+  - Techniquement, Baileys/WhatsApp ne permet pas d'ajouter directement un numéro au carnet d'adresses du téléphone : le fichier `.vcf` généré doit être importé manuellement par l'admin depuis son appli Contacts après réception.
+  - **Non testé en conditions réelles** (pas d'accès WhatsApp dans mon environnement de dev).
+
+## [1.26.0]
+### Added
+- **Nouvelle commande `!approval on|off` (admin, alias `!joinapproval`/`!approbation`).** Active ou désactive directement le paramètre WhatsApp natif "Approbation des nouveaux membres" du groupe, via `sock.groupJoinApprovalMode` (Baileys) — contrairement à `!antilink`, ce n'est pas un réglage stocké côté bot mais un vrai paramètre du groupe.
+  - Sans argument : affiche le statut actuel (`metadata.joinApprovalMode`).
+  - Complète `!approveall` (v1.25.0) : une fois le mode activé, les demandes d'adhésion en attente peuvent être validées en masse avec `!approveall`.
+  - **Non testé en conditions réelles** (pas d'accès WhatsApp dans mon environnement de dev) — à valider notamment sur la présence du champ `joinApprovalMode` dans `groupMetadata` selon la version de Baileys installée.
+
+## [1.25.0]
+### Added
+- **Nouvelle commande `!approveall` (admin, alias `!approuvertout`/`!acceptall`).** Approuve en une fois toutes les demandes d'adhésion en attente d'un groupe dont le mode "Approbation des nouveaux membres" est activé.
+  - Utilise `sock.groupRequestParticipantsList` (Baileys) pour lister les demandes en attente, puis `sock.groupRequestParticipantsUpdate(..., 'approve')` par lots de 20 (même limite prudente que `!kickall`), pour rester cohérent avec les autres commandes de masse du bot.
+  - Aucune vérification séparée du flag "approbation activée" : si le mode n'est pas activé (ou si personne n'attend), la liste renvoyée par Baileys est simplement vide, et l'utilisateur reçoit un message clair dans ce cas plutôt qu'une erreur technique.
+  - **Non testé en conditions réelles** (pas d'accès WhatsApp dans mon environnement de dev) — à valider notamment sur le format exact de `status` renvoyé par `groupRequestParticipantsUpdate` selon la version de Baileys.
+
+## [1.24.0]
+### Added
+- **Nouvelle commande `!play` (alias `!music`).** Recherche une chanson sur YouTube à partir d'un simple titre (pas besoin de lien) et envoie directement l'audio en mp3, sans étape de confirmation — comportement inspiré des bots type "ERFAN-MD SONG".
+  - `searchYoutubeData(query)` ajouté dans `src/utils/youtube.js` : utilise la syntaxe `ytsearch1:` de yt-dlp pour récupérer le premier résultat pertinent (titre, chaîne, durée, vues, miniature) sans téléchargement, réutilise `MAX_DURATION_SECONDS` déjà en place pour `!youtube`.
+  - Envoie d'abord une carte d'infos (miniature + titre/chaîne/durée/vues/format), puis le message audio (mp3 128kbps) via `downloadYoutubeAudio` existant — aucune nouvelle dépendance.
+  - **Non testé en conditions réelles** (pas d'accès à WhatsApp/réseau dans mon environnement de dev) — à valider notamment sur la fiabilité de la recherche `ytsearch1:` et le rendu de la carte d'infos avant un premier envoi client.
+
 ## [1.23.0]
 ### Added
 - **Nouveau jeu : `/calcul` (calcul mental rapide).** Deuxième jeu du bot après le Quiz — 10 opérations arithmétiques chronométrées (7-15s selon la difficulté), réponse par un simple nombre en texte.
