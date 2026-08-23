@@ -1,6 +1,6 @@
 {
   "name": "RodrickBot",
-  "version": "1.27.1",
+  "version": "1.29.1",
   "description": "Bot WhatsApp extensible basé sur Baileys 6.7.19",
   "type": "module",
   "main": "src/index.js",
@@ -8,17 +8,20 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "start": "node src/index.js",
+    "start": "node boot.mjs",
     "dev": "node --watch src/index.js",
     "build": "node scripts/build.js",
     "start:dist": "node dist/index.js",
     "save-release": "node scripts/save-release.js",
     "test": "node --test tests/",
-    "test:coverage": "node --test --experimental-test-coverage tests/"
+    "test:coverage": "node --test --experimental-test-coverage tests/",
+    "postinstall": "node fix-ytdlp.cjs"
+
   },
   "dependencies": {
     "@hapi/boom": "^10.0.1",
     "@whiskeysockets/baileys": "6.7.19",
+    "adm-zip": "^0.6.0",
     "dotenv": "^16.4.5",
     "ffmpeg-static": "^5.2.0",
     "fluent-ffmpeg": "^2.1.3",

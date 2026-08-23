@@ -45,6 +45,9 @@ change.
 - `renderWelcome({ number, groupName })` / `renderBye({ number, groupName })`
   — `number` est déjà le numéro brut (sans `@`), à mentionner via `@${number}`.
 - `renderDeletedMessages({ entries: [{ index, icon, typeLabel, authorLabel, whenLabel, textContent }], footer })`
+- `renderActivityGroup({ mode: 'summary'|'period'|'top', memberCount, today, week, month, periodLabel, periodCount, top: [{ label, count }], lastActivityLabel, footer })`
+- `renderActivityUser({ userLabel, total, today, week, month, lastActivityLabel, footer })`
+- `renderInactive({ minDaysLabel, inactive: [{ label, lastActivityLabel }], unknownCount, footer })`
   — `entries` peut être vide (aucune suppression récente) ; `textContent` vaut
   `null` pour les entrées média (le média lui-même est renvoyé séparément par
   `commands/remove.js`, jamais par le thème). `authorLabel` est déjà au

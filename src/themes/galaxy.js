@@ -145,4 +145,69 @@ export default {
     lines.push(footer(data.footer));
     return lines.join('\n');
   },
+
+  renderActivityGroup(data) {
+    const lines = [titleBlock('CONSTELLATION DU GROUPE'), ''];
+
+    if (data.mode === 'summary') {
+      lines.push(`🪐 Membres de la galaxie : ${data.memberCount}`);
+      lines.push(`🌠 Messages aujourd'hui : ${data.today}`);
+      lines.push(`🌙 Cette semaine : ${data.week}`);
+      lines.push(`✨ Ce mois : ${data.month}`);
+    } else if (data.mode === 'period') {
+      lines.push(`🌠 ${script(data.periodLabel)} : ${data.periodCount} messages`);
+    } else if (data.mode === 'top') {
+      lines.push(`🪐 ${script('Étoiles les plus brillantes')} · ${data.periodLabel}`);
+    }
+
+    if (data.top.length) {
+      lines.push('', `✦ ${script('Étoiles les plus brillantes')} ✦`, '');
+      data.top.forEach((u, i) => lines.push(`${i + 1}. ${u.label} — ${u.count} messages ✨`));
+    } else if (data.mode !== 'summary') {
+      lines.push('', '🌑 Aucune lumière détectée sur cette période.');
+    }
+
+    if (data.lastActivityLabel) {
+      lines.push('', `🌙 Dernière lueur d'activité :`, `   ${data.lastActivityLabel}`);
+    }
+
+    lines.push('', footer(data.footer));
+    return lines.join('\n');
+  },
+
+  renderActivityUser(data) {
+    const lines = [
+      titleBlock(`ORBITE DE ${data.userLabel}`),
+      '',
+      `🌠 Messages : ${data.total}`,
+      '',
+      `✨ Aujourd'hui : ${data.today}`,
+      `🌙 Cette semaine : ${data.week}`,
+      `🪐 Ce mois : ${data.month}`,
+      '',
+      `🌙 Dernière lueur d'activité :`,
+      `   ${data.lastActivityLabel}`,
+      '',
+      footer(data.footer),
+    ];
+    return lines.join('\n');
+  },
+
+  renderInactive(data) {
+    const lines = [titleBlock('ÉTOILES ENDORMIES'), ''];
+
+    lines.push(`🌑 Aucune lumière depuis ${data.minDaysLabel} :`, '');
+    if (!data.inactive.length) {
+      lines.push('✦ Toute la galaxie brille encore ✦');
+    } else {
+      for (const m of data.inactive) lines.push(`💤 ${m.label}`);
+    }
+
+    if (data.unknownCount > 0) {
+      lines.push('', `🌫️ ${data.unknownCount} étoile(s) sans lumière connue (non comptée ci-dessus).`);
+    }
+
+    lines.push('', footer(data.footer));
+    return lines.join('\n');
+  },
 };

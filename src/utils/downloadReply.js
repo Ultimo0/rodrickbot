@@ -1,6 +1,6 @@
 import { getPendingChoice, clearPendingChoice } from '../core/downloadSessions.js';
 import { downloadBuffer } from './tiktok.js';
-import { downloadYoutubeAudio, downloadYoutubeVideo } from './youtube.js';
+import { downloadYoutubeAudio, downloadYoutubeVideo, explainYoutubeError } from './youtube.js';
 import { downloadFacebookAudio, downloadFacebookVideo } from './facebook.js';
 import { logger } from './logger.js';
 
@@ -112,7 +112,8 @@ export async function handleDownloadReply(sock, chatId, sender, text, msg) {
     }
   } catch (err) {
     logger.warn({ err }, `Erreur lors du téléchargement (${data.type})`);
-    await sock.sendMessage(chatId, { text: `> ❌ Échec du téléchargement : ${err.message}` }, { quoted: msg });
+    const message = data.type === 'youtube' ? explainYoutubeError(err) : err.message;
+    await sock.sendMessage(chatId, { text: `> ❌ Échec du téléchargement : ${message}` }, { quoted: msg });
   }
 
   return true;

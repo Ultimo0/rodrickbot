@@ -166,4 +166,74 @@ export default {
     lines.push(footer(data.footer));
     return lines.join('\n');
   },
+
+  renderActivityGroup(data) {
+    const lines = [boxTop(19, BOX), `   📊 *ACTIVITÉ DU GROUPE*`, boxBottom(19, BOX), ''];
+
+    if (data.mode === 'summary') {
+      lines.push(`👥 Membres : ${data.memberCount}`);
+      lines.push(`💬 Messages aujourd'hui : ${data.today}`);
+      lines.push(`📅 Cette semaine : ${data.week}`);
+      lines.push(`📆 Ce mois : ${data.month}`);
+    } else if (data.mode === 'period') {
+      lines.push(`📅 ${data.periodLabel} : ${data.periodCount} messages`);
+    } else if (data.mode === 'top') {
+      lines.push(`🏆 Top membres · ${data.periodLabel}`);
+    }
+
+    if (data.top.length) {
+      lines.push('', '🔥 *Membres les plus actifs :*', '');
+      data.top.forEach((u, i) => lines.push(`${i + 1}. ${u.label} — ${u.count} messages`));
+    } else if (data.mode !== 'summary') {
+      lines.push('', 'Aucune activité sur cette période.');
+    }
+
+    if (data.lastActivityLabel) {
+      lines.push('', `🕐 Dernière activité :`, data.lastActivityLabel);
+    }
+
+    lines.push('', footer(data.footer));
+    return lines.join('\n');
+  },
+
+  renderActivityUser(data) {
+    const lines = [
+      boxTop(19, BOX),
+      `   📊 *ACTIVITÉ DE ${data.userLabel}*`,
+      boxBottom(19, BOX),
+      '',
+      `💬 Messages : ${data.total}`,
+      '',
+      `📅 Aujourd'hui : ${data.today}`,
+      `📅 Cette semaine : ${data.week}`,
+      `📆 Ce mois : ${data.month}`,
+      '',
+      `🕐 Dernière activité :`,
+      data.lastActivityLabel,
+      '',
+      footer(data.footer),
+    ];
+    return lines.join('\n');
+  },
+
+  renderInactive(data) {
+    const lines = [boxTop(19, BOX), `   👻 *MEMBRES INACTIFS*`, boxBottom(19, BOX), ''];
+
+    lines.push(`Aucune activité depuis ${data.minDaysLabel} :`, '');
+    if (!data.inactive.length) {
+      lines.push('Aucun membre inactif sur cette période. 🎉');
+    } else {
+      for (const m of data.inactive) lines.push(`• ${m.label}`);
+    }
+
+    if (data.unknownCount > 0) {
+      lines.push(
+        '',
+        `ℹ️ ${data.unknownCount} membre(s) sans donnée d'activité connue (non pris en compte ci-dessus).`
+      );
+    }
+
+    lines.push('', footer(data.footer));
+    return lines.join('\n');
+  },
 };

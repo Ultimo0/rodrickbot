@@ -164,4 +164,70 @@ export default {
     lines.push(footer(data.footer));
     return lines.join('\n');
   },
+
+  renderActivityGroup(data) {
+    const lines = [boxTop(19, BOX), `  ${ACCENT} ${upper('ACTIVITE GROUPE')}`, boxBottom(19, BOX), ''];
+
+    if (data.mode === 'summary') {
+      lines.push(`> MEMBERS......... ${data.memberCount}`);
+      lines.push(`> TODAY........... ${data.today} msg`);
+      lines.push(`> WEEK............ ${data.week} msg`);
+      lines.push(`> MONTH........... ${data.month} msg`);
+    } else if (data.mode === 'period') {
+      lines.push(`> ${upper(data.periodLabel.toUpperCase())} : ${data.periodCount} msg`);
+    } else if (data.mode === 'top') {
+      lines.push(`>> TOP MEMBERS :: ${data.periodLabel.toUpperCase()}`);
+    }
+
+    if (data.top.length) {
+      lines.push('', `>> RANKING`);
+      data.top.forEach((u, i) => lines.push(`[${String(i + 1).padStart(2, '0')}] ${u.label} — ${u.count} msg`));
+    } else if (data.mode !== 'summary') {
+      lines.push('', '>> AUCUNE ACTIVITE SUR CETTE PERIODE.');
+    }
+
+    if (data.lastActivityLabel) {
+      lines.push('', `> LAST_SEEN....... ${data.lastActivityLabel}`);
+    }
+
+    lines.push('', footer(data.footer));
+    return lines.join('\n');
+  },
+
+  renderActivityUser(data) {
+    const lines = [
+      boxTop(19, BOX),
+      `  ${ACCENT} ${upper('ACTIVITE')} :: ${data.userLabel}`,
+      boxBottom(19, BOX),
+      '',
+      `> MESSAGES........ ${data.total}`,
+      '',
+      `> TODAY........... ${data.today}`,
+      `> WEEK............ ${data.week}`,
+      `> MONTH........... ${data.month}`,
+      '',
+      `> LAST_SEEN....... ${data.lastActivityLabel}`,
+      '',
+      footer(data.footer),
+    ];
+    return lines.join('\n');
+  },
+
+  renderInactive(data) {
+    const lines = [boxTop(19, BOX), `  ${ACCENT} ${upper('MEMBRES INACTIFS')}`, boxBottom(19, BOX), ''];
+
+    lines.push(`>> AUCUNE ACTIVITE DEPUIS ${data.minDaysLabel.toUpperCase()} :`, '');
+    if (!data.inactive.length) {
+      lines.push('>> STATUS......... AUCUN MEMBRE INACTIF.');
+    } else {
+      for (const m of data.inactive) lines.push(`> ${m.label}`);
+    }
+
+    if (data.unknownCount > 0) {
+      lines.push('', `>> ${data.unknownCount} MEMBRE(S) SANS DONNEE CONNUE (IGNORE).`);
+    }
+
+    lines.push('', footer(data.footer));
+    return lines.join('\n');
+  },
 };

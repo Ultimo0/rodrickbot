@@ -1,5 +1,8 @@
 node_modules/
 
+# Cookies YouTube (contournement anti-bot) — secret, jamais commit
+data/cookies.txt
+
 # Secrets et configuration locale — ne jamais commit
 .env
 

@@ -1,354 +1,354 @@
 {
-  "fetchedAt": 1786664846882,
+  "fetchedAt": 1787493677239,
   "questions": [
     {
       "id": "net-0",
       "category": "geographie",
-      "difficulty": "facile",
-      "question": "Quel pays arbore une feuille d'érable sur son drapeau ?",
+      "difficulty": "moyen",
+      "question": "Which of these countries is not a United Nations member state?",
       "options": [
-        "Inde",
-        "Canada",
-        "Brésil",
-        "Mexique"
+        "South Sudan",
+        "Niue",
+        "Tuvalu",
+        "Montenegro"
       ],
       "correctIndex": 1
     },
     {
       "id": "net-1",
       "category": "geographie",
-      "difficulty": "difficile",
-      "question": "Quel est le nom de l'hymne national canadien ?",
+      "difficulty": "moyen",
+      "question": "On a London Underground map, what colour is the Circle Line?",
       "options": [
-        "Bannière à guirlandes de feuilles",
-        "Marche de la Puck Drop",
-        "Érable rouge",
-        "Hymne national du Canada"
+        "Yellow",
+        "Red",
+        "Blue",
+        "Green"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-2",
       "category": "geographie",
       "difficulty": "facile",
-      "question": "Quel État américain a la population la plus élevée ?",
+      "question": "Which of these African countries list \"Spanish\" as an official language?",
       "options": [
-        "Texas",
-        "New York",
-        "California",
-        "Florida"
+        "Guinea",
+        "Cameroon",
+        "Equatorial Guinea",
+        "Angola"
       ],
       "correctIndex": 2
     },
     {
       "id": "net-3",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Quelle ville européenne a le kilométrage de canaux le plus élevé au monde ?",
+      "difficulty": "facile",
+      "question": "What state is the largest state of the United States of America?",
       "options": [
-        "Birmingham",
-        "Berlin",
-        "Amsterdam",
-        "Venise"
+        "Texas",
+        "California",
+        "Alaska",
+        "Washington"
       ],
-      "correctIndex": 0
+      "correctIndex": 2
     },
     {
       "id": "net-4",
       "category": "geographie",
-      "difficulty": "difficile",
-      "question": "Quel est le nom officiel allemand des Chemins de fer fédéraux suisses ?",
+      "difficulty": "moyen",
+      "question": "What is the capital of the US state Nevada?",
       "options": [
-        "Schweizerische Nationalbahnen",
-        "Bundesbahnen der Schweiz",
-        "Schweizerische Staatsbahnen",
-        "Schweizerische Bundesbahnen"
+        "Reno",
+        "Henderson",
+        "Las Vegas",
+        "Carson City"
       ],
       "correctIndex": 3
     },
     {
       "id": "net-5",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Which of the following countries does NOT recognize Armenia as an independent country?",
+      "difficulty": "difficile",
+      "question": "What is the land connecting North America and South America?",
       "options": [
-        "Pakistan",
-        "Iran",
-        "Turkey",
-        "Azerbaijan"
+        "Isthmus of Suez",
+        "Urals",
+        "Australasia",
+        "Isthmus of Panama"
       ],
-      "correctIndex": 0
+      "correctIndex": 3
     },
     {
       "id": "net-6",
       "category": "geographie",
       "difficulty": "moyen",
-      "question": "What are the four corner states of the US?",
+      "question": "Which state of the United States is the smallest?",
       "options": [
-        "Oregon, Idaho, Nevada, Utah",
-        "Kansas, Oklahoma, Arkansas, Louisiana",
-        "South Dakota, Minnesota, Nebraska, Iowa",
-        "Utah, Colorado, Arizona, New Mexico"
+        "Maine",
+        "Vermont",
+        "Massachusetts",
+        "Rhode Island "
       ],
       "correctIndex": 3
     },
     {
       "id": "net-7",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Which German city is located on the River Isar?",
+      "difficulty": "difficile",
+      "question": "Where is the fast food chain \"Panda Express\" headquartered?",
       "options": [
-        "Munich",
-        "Dortmund",
-        "Hamburg",
-        "Berlin"
+        "San Diego, California",
+        "Rosemead, California",
+        "Fresno, California",
+        "Sacramento, California"
       ],
-      "correctIndex": 0
+      "correctIndex": 1
     },
     {
       "id": "net-8",
       "category": "geographie",
-      "difficulty": "difficile",
-      "question": "Which of these is an official currency of the Cook Islands?",
+      "difficulty": "moyen",
+      "question": "All of the following are towns/villages in the Pacific Island nation of Kiribati EXCEPT:",
       "options": [
-        "New Zealand Dollar",
-        "Australian Dollar",
-        "British Pound",
-        "United States Dollar"
+        "Urutora",
+        "Washington",
+        "London",
+        "Rungata"
       ],
       "correctIndex": 0
     },
     {
       "id": "net-9",
       "category": "geographie",
-      "difficulty": "facile",
-      "question": "Which of the following Japanese islands is the biggest?",
+      "difficulty": "moyen",
+      "question": "The World Health Organization headquarters is located in which European country?",
       "options": [
-        "Honshu",
-        "Hokkaido",
-        "Shikoku",
-        "Kyushu"
+        "United Kingdom",
+        "Switzerland",
+        "France",
+        "Belgium"
       ],
-      "correctIndex": 0
+      "correctIndex": 1
     },
     {
       "id": "net-10",
       "category": "geographie",
-      "difficulty": "facile",
-      "question": "Which Borough is the farthest in the north of New York City?",
+      "difficulty": "moyen",
+      "question": "How many countries are inside the United Kingdom?",
       "options": [
-        "Bronx",
-        "Queens",
-        "Brooklyn",
-        "Manhattan"
+        "Four",
+        "Three",
+        "One",
+        "Two"
       ],
       "correctIndex": 0
     },
     {
       "id": "net-11",
       "category": "geographie",
-      "difficulty": "difficile",
-      "question": "What is the county seat of King County, Washington?",
+      "difficulty": "facile",
+      "question": "The Alps are a mountain range on which continent?",
       "options": [
-        "Bellevue",
-        "Enumclaw",
-        "Seattle",
-        "Skykomish"
+        "Asia",
+        "North America",
+        "Africa",
+        "Europe"
       ],
-      "correctIndex": 2
+      "correctIndex": 3
     },
     {
       "id": "net-12",
       "category": "geographie",
       "difficulty": "moyen",
-      "question": "Where is the \"Sonoran Desert\" located?",
+      "question": "Which country claims ownership of the disputed state Kosovo?",
       "options": [
-        "South America",
-        "Africa",
-        "Asia",
-        "North America"
+        "Croatia",
+        "Macedonia",
+        "Albania",
+        "Serbia"
       ],
       "correctIndex": 3
     },
     {
       "id": "net-13",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "What is the name of the capital of Turkey?",
+      "difficulty": "facile",
+      "question": "What is Russia's second-largest city?",
       "options": [
-        "Istanbul",
-        "Izmir",
-        "Ankara",
-        "Bursa"
+        "Minsk",
+        "Saint Petersburg",
+        "Nizhny Novgorod",
+        "Vladivostok"
       ],
-      "correctIndex": 2
+      "correctIndex": 1
     },
     {
       "id": "net-14",
       "category": "geographie",
       "difficulty": "difficile",
-      "question": "Which of the following is a castle?",
+      "question": "What is special about Lake Titicaca?",
       "options": [
-        "Frank Castle",
-        "Richard Castle",
-        "Olivia Castle",
-        "Elizabeth Castle"
+        "Remains frozen all year round",
+        "Longest lake in the world",
+        "Highest navigable lake",
+        "Deepest lake in the world"
       ],
-      "correctIndex": 3
+      "correctIndex": 2
     },
     {
       "id": "net-15",
       "category": "geographie",
-      "difficulty": "facile",
-      "question": "What is the nickname for the US state Delaware?",
+      "difficulty": "moyen",
+      "question": "Which of these countries is not written in its native language?",
       "options": [
-        "The Fiftieth State",
-        "The Sixteenth State",
-        "The First State",
-        "The Second State"
+        "Slova&scaron;ko",
+        "Ell&aacute;da",
+        "Schweiz",
+        "Suomi"
       ],
-      "correctIndex": 2
+      "correctIndex": 0
     },
     {
       "id": "net-16",
       "category": "geographie",
       "difficulty": "difficile",
-      "question": "What is the most populous Muslim-majority nation in 2010?",
+      "question": "What is the tallest mountain in Canada?",
       "options": [
-        "Sudan",
-        "Indonesia",
-        "Iran",
-        "Saudi Arabia"
+        "Mount Logan",
+        "Mont Tremblant",
+        "Whistler Mountain",
+        "Blue Mountain"
       ],
-      "correctIndex": 1
+      "correctIndex": 0
     },
     {
       "id": "net-17",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "What is the only country in the world with a flag that doesn't have four right angles?",
+      "difficulty": "facile",
+      "question": "Which of these is the name of the largest city in the US state Tennessee?",
       "options": [
-        "Panama",
-        "Nepal",
-        "Angola",
-        "Egypt"
+        "Memphis",
+        "Luxor",
+        "Alexandria",
+        "Thebes"
       ],
-      "correctIndex": 1
+      "correctIndex": 0
     },
     {
       "id": "net-18",
       "category": "geographie",
-      "difficulty": "facile",
-      "question": "What is the Polish city known to Germans as Danzig?",
+      "difficulty": "moyen",
+      "question": "Where are the Nazca Lines located?",
       "options": [
-        "Gdańsk",
-        "Poznań",
-        "Warsaw",
-        "Zakopane"
+        "Ecuador",
+        "Peru",
+        "Colombia",
+        "Brazil"
       ],
-      "correctIndex": 0
+      "correctIndex": 1
     },
     {
       "id": "net-19",
       "category": "geographie",
       "difficulty": "facile",
-      "question": "Which nation claims ownership of Antarctica?",
+      "question": "Which of the following countries has a flag featuring a yellow lion wielding a sword on a dark red background?",
       "options": [
-        "United Nations",
-        "Australia",
-        "No one, but there are claims.",
-        "United States of America"
+        "Kiribati",
+        "Scotland",
+        "Sri Lanka",
+        "Bhutan"
       ],
       "correctIndex": 2
     },
     {
       "id": "net-20",
       "category": "geographie",
-      "difficulty": "difficile",
-      "question": "Bir Tawil, an uninhabited track of land claimed by no country, is located along the border of which two countries?",
+      "difficulty": "facile",
+      "question": "What is the capital of Finland?",
       "options": [
-        "Iraq and Saudi Arabia",
-        "Egypt and Sudan",
-        "Israel and Jordan",
-        "Chad and Libya"
+        "Jabraltar",
+        "Macedonia",
+        "Oslo",
+        "Helsinki"
       ],
-      "correctIndex": 1
+      "correctIndex": 3
     },
     {
       "id": "net-21",
       "category": "geographie",
-      "difficulty": "difficile",
-      "question": "What is the land connecting North America and South America?",
+      "difficulty": "facile",
+      "question": "What is the official language of Costa Rica?",
       "options": [
-        "Isthmus of Suez",
-        "Urals",
-        "Isthmus of Panama",
-        "Australasia"
+        "Spanish",
+        "Creole",
+        "Portuguese",
+        "English"
       ],
-      "correctIndex": 2
+      "correctIndex": 0
     },
     {
       "id": "net-22",
       "category": "geographie",
       "difficulty": "difficile",
-      "question": "What city is known as the Rose Capital of the World?",
+      "question": "Which river was dammed to create Gatun Lake and the Panama Canal?",
       "options": [
-        "San Diego, California",
-        "Miami, Florida",
-        "Tyler, Texas",
-        "Anaheim, California"
-      ],
-      "correctIndex": 2
-    },
-    {
-      "id": "net-23",
-      "category": "geographie",
-      "difficulty": "facile",
-      "question": "What is the capital of Romania?",
-      "options": [
-        "Bratislava",
-        "Belgrade",
-        "Budapest",
-        "Bucharest"
+        "Tuira River",
+        "Chucunaque River",
+        "Chepo River ",
+        "Chagres River"
       ],
       "correctIndex": 3
     },
     {
-      "id": "net-24",
+      "id": "net-23",
       "category": "geographie",
       "difficulty": "moyen",
-      "question": " What is the only nation that borders both Uruguay and Venezuela?",
+      "question": "The US state of New York has about as many inhabitants as?",
       "options": [
-        "Panama",
-        "Chile",
-        "Brésil",
-        "Mexique"
+        "Romania",
+        "Hungary",
+        "Germany",
+        "Poland"
       ],
-      "correctIndex": 2
+      "correctIndex": 0
+    },
+    {
+      "id": "net-24",
+      "category": "geographie",
+      "difficulty": "difficile",
+      "question": "Which of the following is a castle?",
+      "options": [
+        "Elizabeth Castle",
+        "Olivia Castle",
+        "Frank Castle",
+        "Richard Castle"
+      ],
+      "correctIndex": 0
     },
     {
       "id": "net-25",
       "category": "histoire",
-      "difficulty": "facile",
-      "question": "Which country was Josef Stalin born in?",
+      "difficulty": "moyen",
+      "question": "Who was the first mammal successfully launched into Earth's orbit?",
       "options": [
-        "Germany",
-        "Russia",
-        "Georgia",
-        "Poland"
+        "Ham, the chimpanzee",
+        "Baker, the monkey",
+        "Belka, the dog",
+        "Laika, the dog"
       ],
-      "correctIndex": 2
+      "correctIndex": 3
     },
     {
       "id": "net-26",
       "category": "histoire",
       "difficulty": "facile",
-      "question": "Where did first known lesbian rights organization in the United States, Daughters of Bilitis, start?",
+      "question": "Which famous military commander marched an army, which included war elephants, over the Alps during the Second Punic War?",
       "options": [
-        "San Francisco",
-        "New York",
-        "Chicago",
-        "Los Angeles"
+        "Hannibal",
+        "Tiberius",
+        "Alexander the Great",
+        "Garmanicus"
       ],
       "correctIndex": 0
     },
@@ -356,38 +356,38 @@
       "id": "net-27",
       "category": "histoire",
       "difficulty": "moyen",
-      "question": "What happened on June 6, 1944?",
+      "question": "Who was the only US President to be elected four times?",
       "options": [
-        "Atomic bombings of Hiroshima and Nagasaki",
-        "Attack on Pearl Harbor",
-        "D-Day",
-        "The Liberation of Paris"
+        "Abraham Lincoln",
+        "Franklin Roosevelt",
+        "Theodore Roosevelt",
+        "George Washington"
       ],
-      "correctIndex": 2
+      "correctIndex": 1
     },
     {
       "id": "net-28",
       "category": "histoire",
-      "difficulty": "difficile",
-      "question": "What age was King Henry V when he died?",
+      "difficulty": "moyen",
+      "question": "Which of the following ancient Near Eastern peoples still exists as a modern ethnic group?",
       "options": [
-        "62",
-        "35",
-        "87",
-        "73"
+        "Elamites",
+        "Babylonians",
+        "Hittites",
+        "Assyrians"
       ],
-      "correctIndex": 1
+      "correctIndex": 3
     },
     {
       "id": "net-29",
       "category": "histoire",
       "difficulty": "moyen",
-      "question": "Which building was set aflame on August 24th, 1812?",
+      "question": "The Fallingwater House, located in Pennsylvania, was designed by which architect?",
       "options": [
-        "The White House",
-        "Palace of the Nation",
-        "Parliament Building",
-        "Grand National Assembly Building"
+        "Frank Lloyd Wright",
+        "Antoni Gaudi",
+        "Frank Gehry",
+        "Le Corbusier"
       ],
       "correctIndex": 0
     },
@@ -395,155 +395,155 @@
       "id": "net-30",
       "category": "histoire",
       "difficulty": "moyen",
-      "question": "The Panama Canal was finished under the administration of which U.S. president?",
+      "question": "Which Las Vegas casino was originally constructed and operated by mobster Bugsy Siegel?",
       "options": [
-        "Herbert Hoover",
-        "Franklin Delano Roosevelt",
-        "Theodore Roosevelt",
-        "Woodrow Wilson"
+        "The Flamingo",
+        "The Sahara",
+        "The Sands",
+        "The MGM Grand"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-31",
       "category": "histoire",
-      "difficulty": "difficile",
-      "question": "Who was the last emperor of Mexico?",
+      "difficulty": "moyen",
+      "question": "When did L. L. Zamenhof first publish \"Unua Libro\", the first publication describing his international language Esperanto?",
       "options": [
-        "Andrés Manuel L&oacute;pez Obrador",
-        "Napoleon III",
-        "Agust&iacute;n de Iturbide",
-        "Ferdinand Maximilian"
+        "1915",
+        "1887",
+        "1905",
+        "1897"
       ],
-      "correctIndex": 3
+      "correctIndex": 1
     },
     {
       "id": "net-32",
       "category": "histoire",
       "difficulty": "moyen",
-      "question": "Who was the only US President to be elected four times?",
+      "question": "The creator of the Enigma Cypher and Machine was of what nationality?",
       "options": [
-        "Franklin Roosevelt",
-        "Abraham Lincoln",
-        "George Washington",
-        "Theodore Roosevelt"
+        "American",
+        "British",
+        "Polish",
+        "German"
       ],
-      "correctIndex": 0
+      "correctIndex": 3
     },
     {
       "id": "net-33",
       "category": "histoire",
-      "difficulty": "moyen",
-      "question": "In what year did the First World War end?",
+      "difficulty": "difficile",
+      "question": "The ancient city of Chichén Itz&aacute; was built by which civilization?",
       "options": [
-        "1914",
-        "1912",
-        "1916",
-        "1918"
+        "Aztecs",
+        "Mayans",
+        "Incas",
+        "Toltecs"
       ],
-      "correctIndex": 3
+      "correctIndex": 1
     },
     {
       "id": "net-34",
       "category": "histoire",
       "difficulty": "facile",
-      "question": "In what year did the Great Northern War, between Russia and Sweden, end?",
+      "question": "Which South American country fought Great Britain over the Falkland Islands in 1982?",
       "options": [
-        "1727",
-        "1726",
-        "1721",
-        "1724"
+        "Brazil",
+        "Argentina",
+        "Chile",
+        "Venezuela"
       ],
-      "correctIndex": 2
+      "correctIndex": 1
     },
     {
       "id": "net-35",
       "category": "histoire",
       "difficulty": "moyen",
-      "question": "Which king was killed at the Battle of Bosworth Field in 1485? ",
+      "question": "Who was the first president born in the independent United States?",
       "options": [
-        "Richard III",
-        "Edward V",
-        "Henry VII",
-        "James I"
+        "George Washington",
+        "Martin Van Buren",
+        "John Adams",
+        "James Monroe "
       ],
-      "correctIndex": 0
+      "correctIndex": 1
     },
     {
       "id": "net-36",
       "category": "histoire",
       "difficulty": "facile",
-      "question": "Which one of these was not a beach landing site in the Invasion of Normandy?",
+      "question": "Which game was the Game of the Year in 2018?",
       "options": [
-        "Sword",
-        "Juno",
-        "Gold",
-        "Silver"
+        "Detroit: Become Human",
+        "Red Dead Redemption 2",
+        "A Way Out",
+        "God of War"
       ],
       "correctIndex": 3
     },
     {
       "id": "net-37",
       "category": "histoire",
-      "difficulty": "facile",
-      "question": "What battle was the longest in World War I, lasting approximately 303 days?",
+      "difficulty": "moyen",
+      "question": "The fraudelent doctor John R. Brinkley acummulated great fame and wealth in the early 1900s offering what service?",
       "options": [
-        "Battle of Passchendaele",
-        "Battle of Stalingrad",
-        "Battle of Amiens",
-        "Battle of Verdun "
+        "Turkey breast implants",
+        "Cow liver transplant",
+        "Pig blood transfusion",
+        "Goat testicles transplant"
       ],
       "correctIndex": 3
     },
     {
       "id": "net-38",
       "category": "histoire",
-      "difficulty": "difficile",
-      "question": "Spain was formed in 1469 with the marriage of Isabella I of Castile and Ferdinand II of what other Iberian kingdom?",
+      "difficulty": "moyen",
+      "question": "What year did Skoal, a smokeless Tobacco company, release their first line of Pouches, known as \"Skoal Bandits\"?",
       "options": [
-        "Galicia",
-        "Aragon",
-        "Le&oacute;n",
-        "Navarre"
+        "1822",
+        "1984",
+        "1934",
+        "1983"
       ],
-      "correctIndex": 1
+      "correctIndex": 3
     },
     {
       "id": "net-39",
       "category": "histoire",
-      "difficulty": "facile",
-      "question": "Who was among those killed in the 2010 Smolensk, Russia plane crash tragedy?",
+      "difficulty": "difficile",
+      "question": "Where was Napoleon Bonaparte born?",
       "options": [
-        "Pope John Paul II",
-        "Bang-Ding Ow",
-        "Albert Putin",
-        "The Polish President"
+        "Normandy",
+        "Brittany",
+        "Paris",
+        "Corsica"
       ],
       "correctIndex": 3
     },
     {
       "id": "net-40",
       "category": "histoire",
-      "difficulty": "facile",
-      "question": "The collapse of the Soviet Union took place in which year?",
+      "difficulty": "moyen",
+      "question": "Which of the following battles is often considered as marking the beginning of the fall of the Western Roman Empire?",
       "options": [
-        "1992",
-        "1891",
-        "1990",
-        "1991"
+        "Battle of Constantinople",
+        "Battle of Thessalonica",
+        "Battle of Adrianople",
+        "Battle of Pollentia"
       ],
-      "correctIndex": 3
+      "correctIndex": 2
     },
     {
       "id": "net-41",
       "category": "histoire",
       "difficulty": "moyen",
-      "question": "Which of the following Soviet revolutionaries was exiled from the USSR and later assassinated in 1940 for criticizing Stalinism?",
+      "question": "Adolf Hitler was born on which date?",
       "options": [
-        "Leon Trotsky",
-        "Vladimir Lenin",
-        "Lev Kamenev",
-        "Mikhail Kalinin"
+        "April 20, 1889",
+        "February 6, 1889",
+        "June 12, 1889",
+        "April 16, 1889"
       ],
       "correctIndex": 0
     },
@@ -551,51 +551,51 @@
       "id": "net-42",
       "category": "histoire",
       "difficulty": "moyen",
-      "question": "In 1961, an American B-52 aircraft crashed and nearly detonated two 4mt nuclear bombs over which US city?",
+      "question": "What is the name given to the series of confrontations between the UK and Iceland over North Atlantic fishing rights?",
       "options": [
-        "Hicksville, New York",
-        "Jacksonville, Florida",
-        "Conway, Arkansas",
-        "Goldsboro, North Carolina"
+        "The Cod Wars",
+        "The Mackerel Wars",
+        "The Halibut Wars",
+        "The Lobster Wars"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-43",
       "category": "histoire",
       "difficulty": "facile",
-      "question": "The RMS Titanic sunk during her maiden voyage from Southampton, England to which American city?",
+      "question": "When did the Byzantine Empire collapse?",
       "options": [
-        "Boston ",
-        "New York City",
-        "Philadelphia",
-        "Washington"
+        "1299",
+        "1453",
+        "1353",
+        "1498"
       ],
       "correctIndex": 1
     },
     {
       "id": "net-44",
       "category": "histoire",
-      "difficulty": "moyen",
-      "question": "During the Mongolian invasions of Japan, what were the Mongol boats mostly stopped by?",
+      "difficulty": "difficile",
+      "question": "During the Wars of the Roses (1455 - 1487) which Englishman was dubbed \"the Kingmaker\"?",
       "options": [
-        "Economic depression",
-        "Typhoons",
-        "Tornados",
-        "Samurai"
+        "Richard III",
+        "Henry V",
+        "Thomas Warwick",
+        "Richard Neville"
       ],
-      "correctIndex": 1
+      "correctIndex": 3
     },
     {
       "id": "net-45",
       "category": "histoire",
-      "difficulty": "difficile",
-      "question": "What Southeast Asian country was formerly known as 'Lan Xang'?",
+      "difficulty": "moyen",
+      "question": "Which of the following snipers has the highest amount of confirmed kills?",
       "options": [
-        "Laos",
-        "Thailand",
-        "Vietnam",
-        "Cambodia"
+        "Simo Häyhä",
+        "Craig Harrison",
+        "Vasily Zaytsev",
+        "Chris Kyle"
       ],
       "correctIndex": 0
     },
@@ -603,207 +603,207 @@
       "id": "net-46",
       "category": "histoire",
       "difficulty": "moyen",
-      "question": "Which U.S. President was in office when the Gulf War began?",
+      "question": "On which aircraft carrier did the Doolitte Raid launch from on April 18, 1942 during World War II?",
       "options": [
-        "George H. W. Bush",
-        "Richard Nixon",
-        "George W. Bush ",
-        "Ronald Regan"
+        "USS Saratoga",
+        "USS Hornet",
+        "USS Lexington",
+        "USS Enterprise"
       ],
-      "correctIndex": 0
+      "correctIndex": 1
     },
     {
       "id": "net-47",
       "category": "histoire",
-      "difficulty": "difficile",
-      "question": "What was the real name of the Albanian national leader Skanderbeg?",
+      "difficulty": "facile",
+      "question": "The \"Trail of Tears\" was a result of which United States President's Indian Removal Policy?",
       "options": [
-        "Gjergj Kastrioti",
-        "Mirash Krasniki",
-        "Iskander Bejko",
-        "Diturak Zhulati"
+        "Andrew Jackson",
+        "John Quincy Adams",
+        "Martin Van Buren",
+        "Harry S. Truman"
       ],
       "correctIndex": 0
     },
     {
       "id": "net-48",
       "category": "histoire",
-      "difficulty": "difficile",
-      "question": "What was Napoleon Bonaparte's name before he changed it?",
+      "difficulty": "facile",
+      "question": "Which German field marshal was known as the `Desert Fox`?",
       "options": [
-        "Naapolion van Bonijpaart",
-        "Napole&atilde;o do Boaparte",
-        "Napoleona de Buenoparte",
-        "Napoleone di Buonaparte"
+        "Erwin Rommel",
+        "Wilhelm List",
+        "Wolfram Freiherr von Richthofen",
+        "Ernst Busch"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-49",
       "category": "histoire",
       "difficulty": "difficile",
-      "question": "How many women joined the United States Armed Services during World War II?",
+      "question": "Bohdan Khmelnytsky was which of the following?",
       "options": [
-        "225,000",
-        "100,000",
-        "500,000",
-        "350,000"
+        "General Secretary of the Communist Party of the USSR",
+        "Prince of Wallachia",
+        "Grand Prince of Novgorod",
+        "Leader of the Ukrainian Cossacks"
       ],
       "correctIndex": 3
     },
     {
       "id": "net-50",
       "category": "sciences",
-      "difficulty": "facile",
-      "question": "How many planets are there in the Solar System?",
+      "difficulty": "difficile",
+      "question": "The word \"science\" stems from the word \"scire\" meaning what?",
       "options": [
-        "8",
-        "10",
-        "11",
-        "9"
+        "To count",
+        "To know",
+        "To live",
+        "To measure"
       ],
-      "correctIndex": 0
+      "correctIndex": 1
     },
     {
       "id": "net-51",
       "category": "sciences",
-      "difficulty": "moyen",
-      "question": "Deionized water is water with which of the following removed?",
+      "difficulty": "facile",
+      "question": "Who is the chemical element Curium named after?",
       "options": [
-        "Oxygen",
-        "Hydrogen",
-        "Uncharged atoms",
-        "Iron"
+        "The Curiosity Rover",
+        "Marie & Pierre Curie",
+        "Curious George",
+        "Stephen Curry"
       ],
-      "correctIndex": 3
+      "correctIndex": 1
     },
     {
       "id": "net-52",
       "category": "sciences",
-      "difficulty": "facile",
-      "question": "How many laws of thermodynamics are there?",
+      "difficulty": "moyen",
+      "question": "How old is the universe?",
       "options": [
-        "Three",
-        "Two",
-        "Four",
-        "Five"
+        "7.9 Billion Years",
+        "13.8 Billion Years",
+        "16.2 Billion Years",
+        "4.5 Billion Years"
       ],
-      "correctIndex": 2
+      "correctIndex": 1
     },
     {
       "id": "net-53",
       "category": "sciences",
-      "difficulty": "moyen",
-      "question": "When the Falcon Heavy was launched on it's test flight, what was the only part of the operation that failed?",
+      "difficulty": "difficile",
+      "question": "What is \"Stenoma\"?",
       "options": [
-        "Center Core Landing",
-        "Ignition and Liftoff",
-        "Deployment of Starman",
-        "Side Booster Landing"
+        "A genus of moths",
+        "A combat stimulant from WW2",
+        "A type of seasoning",
+        "A port city in the carribean"
       ],
       "correctIndex": 0
     },
     {
       "id": "net-54",
       "category": "sciences",
-      "difficulty": "facile",
-      "question": "How many bones are in the human body?",
+      "difficulty": "moyen",
+      "question": "At what depth should you make a decompression stop, or safety stop, on a typical scuba dive?",
       "options": [
-        "203",
-        "206",
-        "209",
-        "200"
+        "75 Feet / 23 Meters",
+        "50 Feet / 15 Meters",
+        "25 Feet / 7.5 Meters",
+        "15 Feet / 5 Meters"
       ],
-      "correctIndex": 1
+      "correctIndex": 3
     },
     {
       "id": "net-55",
       "category": "sciences",
       "difficulty": "facile",
-      "question": "What is the powerhouse of the cell?",
+      "question": "The human heart has how many chambers?",
       "options": [
-        "Redbull",
-        "Ribosome",
-        "Nucleus",
-        "Mitochondria"
+        "3",
+        "4",
+        "6",
+        "2"
       ],
-      "correctIndex": 3
+      "correctIndex": 1
     },
     {
       "id": "net-56",
       "category": "sciences",
-      "difficulty": "difficile",
-      "question": "The core of the Sun can reach which temperature?",
+      "difficulty": "moyen",
+      "question": "Approximately what percentage of Earth's atmosphere is Oxygen?",
       "options": [
-        "938,000° F (521093.3° C)",
-        "8° Billion F (°4.4 Billion C)",
-        "27° Million F (15° Million C)",
-        "Absolute Zero (Both F and C)"
+        "54%",
+        "21%",
+        "78%",
+        "7%"
       ],
-      "correctIndex": 2
+      "correctIndex": 1
     },
     {
       "id": "net-57",
       "category": "sciences",
-      "difficulty": "moyen",
-      "question": "Who made the discovery of X-rays?",
+      "difficulty": "facile",
+      "question": "What was the name of the first artificial Earth satellite, launched by the Soviet Union in 1957?",
       "options": [
-        "Thomas Alva Edison",
-        "James Watt",
-        "Wilhelm Conrad Röntgen",
-        "Albert Einstein"
+        "Voskhod 3KV",
+        "Sputnik 1",
+        "Zenit-2",
+        "Soyuz 7K-OK"
       ],
-      "correctIndex": 2
+      "correctIndex": 1
     },
     {
       "id": "net-58",
       "category": "sciences",
-      "difficulty": "difficile",
-      "question": "The Western Lowland Gorilla is scientifically know as?",
+      "difficulty": "facile",
+      "question": "What is the standard SI unit for time?",
       "options": [
-        "Gorilla Beringei Graueri",
-        "Gorilla Gorilla Diehli",
-        "Gorilla Gorilla Gorilla",
-        "Gorilla Beringei Beringei"
+        "Second",
+        "Hour",
+        "Minute",
+        "Day"
       ],
-      "correctIndex": 2
+      "correctIndex": 0
     },
     {
       "id": "net-59",
       "category": "sciences",
       "difficulty": "moyen",
-      "question": "What is the chemical symbol for lead?",
+      "question": "What mineral has the lowest number on the Mohs scale?",
       "options": [
-        "Pm",
-        "Le",
-        "Ld",
-        "Pb"
+        "Quartz",
+        "Talc",
+        "Diamond",
+        "Gypsum"
       ],
-      "correctIndex": 3
+      "correctIndex": 1
     },
     {
       "id": "net-60",
       "category": "sciences",
-      "difficulty": "difficile",
-      "question": "How much radiation does a banana emit?",
+      "difficulty": "moyen",
+      "question": "In aeronautics, flaps and slats are used to control what on an aircraft?",
       "options": [
-        "0.1 Microsievert",
-        "0.7 Microsievert",
-        "0.5 Microsievert",
-        "0.3 Microsievert"
+        "Lift",
+        "Weight ",
+        "Drag",
+        "Thrust"
       ],
       "correctIndex": 0
     },
     {
       "id": "net-61",
       "category": "sciences",
-      "difficulty": "moyen",
-      "question": "The humerus, paired radius, and ulna come together to form what joint?",
+      "difficulty": "facile",
+      "question": "What lies at the center of our galaxy?",
       "options": [
-        "Elbow",
-        "Ankle",
-        "Sholder",
-        "Knee"
+        "A black hole",
+        "A quasar",
+        "A supernova",
+        "A wormhole"
       ],
       "correctIndex": 0
     },
@@ -811,238 +811,212 @@
       "id": "net-62",
       "category": "sciences",
       "difficulty": "difficile",
-      "question": "Which is not a type of neuron?",
+      "question": "What physics principle relates the net electric flux out of a closed surface to the charge enclosed by that surface?",
       "options": [
-        "Perceptual Neuron",
-        "Motor Neuron",
-        "Sensory Neuron",
-        "Interneuron"
+        "Biot-Savart Law",
+        "Ampere's Law",
+        "Faraday's Law",
+        "Gauss's Law"
       ],
-      "correctIndex": 0
+      "correctIndex": 3
     },
     {
       "id": "net-63",
       "category": "sciences",
-      "difficulty": "facile",
-      "question": "What is the \"powerhouse\" of the Eukaryotic animal cell?",
+      "difficulty": "moyen",
+      "question": "What part of the brain takes its name from the Greek for seahorse?",
       "options": [
-        "Nucleus",
-        "Chloroplast",
-        "Endoplasmic Reticulum",
-        "Mitochondria"
+        "Amygdala",
+        "Hippocampus",
+        "Thalamus",
+        "Cerebellum"
       ],
-      "correctIndex": 3
+      "correctIndex": 1
     },
     {
       "id": "net-64",
       "category": "sciences",
       "difficulty": "difficile",
-      "question": "Botanically speaking, which of these fruits is NOT a berry?",
+      "question": "Which of the following are cells of the adaptive immune system?",
       "options": [
-        "Blueberry",
-        "Banana",
-        "Concord Grape",
-        "Strawberry"
+        "Dendritic cells",
+        "Natural killer cells",
+        "White blood cells",
+        "Cytotoxic T cells"
       ],
       "correctIndex": 3
     },
     {
       "id": "net-65",
       "category": "sciences",
-      "difficulty": "moyen",
-      "question": "Which continent do sweet potatoes originally come from?",
+      "difficulty": "difficile",
+      "question": "Which constellation contains the center of the Milky Way?",
       "options": [
-        "Africa",
-        "South America",
-        "Asia",
-        "Europe"
+        "Scorpius",
+        "Capricornus",
+        "Sagittarius",
+        "Ophiuchus"
       ],
-      "correctIndex": 1
+      "correctIndex": 2
     },
     {
       "id": "net-66",
       "category": "sciences",
       "difficulty": "facile",
-      "question": "What is the speed of light in a vacuum?",
+      "question": "The asteroid belt is located between which two planets?",
       "options": [
-        "299,792,458 m/s",
-        "751,665,014,151 m/s",
-        "50,461 m/s",
-        "308,215,043 m/s"
-      ],
-      "correctIndex": 0
-    },
-    {
-      "id": "net-67",
-      "category": "sciences",
-      "difficulty": "facile",
-      "question": "What organelle aids in synthesis of DNA in cells?",
-      "options": [
-        "Lysosomes",
-        "Nuclei",
-        "Ribosomes",
-        "Mitochondria"
-      ],
-      "correctIndex": 2
-    },
-    {
-      "id": "net-68",
-      "category": "sciences",
-      "difficulty": "facile",
-      "question": "What animal takes part in Schrödinger's most famous thought experiment?",
-      "options": [
-        "Cat",
-        "Butterfly",
-        "Bat",
-        "Dog"
-      ],
-      "correctIndex": 0
-    },
-    {
-      "id": "net-69",
-      "category": "sciences",
-      "difficulty": "moyen",
-      "question": "Which of these two plates are best know for forming earthquakes and tsunami's? ",
-      "options": [
-        "Transform Plate Boundaries/Divergent Plate Boundaries",
-        "Divergent Plate Boundaries/Convergent/Oceanic Crust",
-        "Convergent Plate Boundaries/Oceanic Crust",
-        "Oceanic & Continental Crust/Transform Plate Boundaries"
-      ],
-      "correctIndex": 2
-    },
-    {
-      "id": "net-70",
-      "category": "sciences",
-      "difficulty": "moyen",
-      "question": "What was the category of the 2005 hurricane, Hurricane Katrina, in the Saffir-Simpson hurricane wind scale?",
-      "options": [
-        "Category 1",
-        "Category 4",
-        "Category 2",
-        "Category 5"
+        "Jupiter and Saturn",
+        "Mercury and Venus",
+        "Earth and Mars",
+        "Mars and Jupiter"
       ],
       "correctIndex": 3
     },
     {
-      "id": "net-71",
+      "id": "net-67",
       "category": "sciences",
-      "difficulty": "difficile",
-      "question": "What is considered the rarest form of color blindness?",
+      "difficulty": "moyen",
+      "question": "What causes Lyme disease?",
       "options": [
-        "Blue",
-        "Purple",
-        "Green",
-        "Red"
+        "A bacteria",
+        "A virus",
+        "An amoeba",
+        "A parasitic worm"
       ],
       "correctIndex": 0
     },
     {
-      "id": "net-72",
+      "id": "net-68",
       "category": "sciences",
       "difficulty": "moyen",
-      "question": "The medical condition osteoporosis affects which part of the body?",
+      "question": "What cell organelle is known as \"the powerhouse of the cell?\"",
       "options": [
-        "Skin",
-        "Brain",
-        "Bones",
-        "Heart"
+        "Endoplasmic reticulum",
+        "Nucleus",
+        "Golgi apparatus",
+        "Mitochondria"
       ],
-      "correctIndex": 2
+      "correctIndex": 3
+    },
+    {
+      "id": "net-69",
+      "category": "sciences",
+      "difficulty": "difficile",
+      "question": "Which of the following is NOT a word used to describe an earthquake?",
+      "options": [
+        "Foreshock",
+        "Drop-slide",
+        "Strike-slip",
+        "Temblor"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "net-70",
+      "category": "sciences",
+      "difficulty": "facile",
+      "question": "What produces the green colour of most plant leaves?",
+      "options": [
+        "Chlorophyll",
+        "UV radiation",
+        "Natural pigments",
+        "Light refraction"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-71",
+      "category": "sciences",
+      "difficulty": "moyen",
+      "question": "Which of the following is NOT a passive electrical component?",
+      "options": [
+        "Resistor",
+        "Capacitor",
+        "Inductor",
+        "Transistor"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-72",
+      "category": "sciences",
+      "difficulty": "difficile",
+      "question": "Coulrophobia is the irrational fear of what?",
+      "options": [
+        "Clowns",
+        "Tunnels",
+        "Cemeteries",
+        "Needles"
+      ],
+      "correctIndex": 0
     },
     {
       "id": "net-73",
       "category": "sciences",
       "difficulty": "moyen",
-      "question": "Which of the following is NOT a passive electrical component?",
+      "question": "Tetsuya Fujita was a scientist that developed the scale for which natural disaster?",
       "options": [
-        "Inductor",
-        "Transistor",
-        "Capacitor",
-        "Resistor"
+        "Hurricanes",
+        "Earthquakes",
+        "Volcanoes",
+        "Tornadoes"
       ],
-      "correctIndex": 1
+      "correctIndex": 3
     },
     {
       "id": "net-74",
       "category": "sciences",
-      "difficulty": "moyen",
-      "question": "To the nearest minute, how long does it take for light to travel from the Sun to the Earth?",
+      "difficulty": "facile",
+      "question": "Dry ice is the solid form of what substance?",
       "options": [
-        "6 Minutes",
-        "2 Minutes",
-        "12 Minutes",
-        "8 Minutes"
+        "Nitrogen",
+        "Ammonia",
+        "Oxygen",
+        "Carbon dioxide"
       ],
       "correctIndex": 3
     },
     {
       "id": "net-75",
       "category": "informatique",
-      "difficulty": "moyen",
-      "question": "What is the main CPU is the Sega Mega Drive / Sega Genesis?",
-      "options": [
-        "Zilog Z80",
-        "Yamaha YM2612",
-        "Motorola 68000",
-        "Intel 8088"
-      ],
-      "correctIndex": 2
-    },
-    {
-      "id": "net-76",
-      "category": "informatique",
-      "difficulty": "facile",
-      "question": "In computing, how many bits are in a nibble?",
-      "options": [
-        "16",
-        "32",
-        "2",
-        "4"
-      ],
-      "correctIndex": 3
-    },
-    {
-      "id": "net-77",
-      "category": "informatique",
       "difficulty": "difficile",
-      "question": "What was the name of the security vulnerability found in Bash in 2014?",
+      "question": "The Harvard architecture for micro-controllers added which additional bus?",
       "options": [
-        "Shellshock",
-        "Stagefright",
-        "Bashbug",
-        "Heartbleed"
+        "Instruction",
+        "Control",
+        "Data",
+        "Address"
       ],
       "correctIndex": 0
     },
     {
-      "id": "net-78",
-      "category": "informatique",
-      "difficulty": "facile",
-      "question": "What is the name of Layer 7 of the OSI model?",
-      "options": [
-        "Session",
-        "Network",
-        "Present",
-        "Application"
-      ],
-      "correctIndex": 3
-    },
-    {
-      "id": "net-79",
+      "id": "net-76",
       "category": "informatique",
       "difficulty": "moyen",
-      "question": "What does \"LCD\" stand for?",
+      "question": "Which operating system was released first?",
       "options": [
-        "Language Control Design",
-        "Last Common Difference",
-        "Long Continuous Design",
-        "Liquid Crystal Display"
+        "Windows",
+        "Mac OS",
+        "Linux",
+        "OS/2"
       ],
-      "correctIndex": 3
+      "correctIndex": 1
     },
     {
-      "id": "net-80",
+      "id": "net-77",
+      "category": "informatique",
+      "difficulty": "moyen",
+      "question": "What was the first Android version specifically optimized for tablets?",
+      "options": [
+        "Froyo",
+        "Eclair",
+        "Honeycomb",
+        "Marshmellow"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-78",
       "category": "informatique",
       "difficulty": "difficile",
       "question": "The acronym \"RIP\" stands for which of these?",
@@ -1055,184 +1029,210 @@
       "correctIndex": 3
     },
     {
-      "id": "net-81",
-      "category": "informatique",
-      "difficulty": "difficile",
-      "question": "Australia, Japan, and Southeast Asia are in which ITU Region?",
-      "options": [
-        "Region 1",
-        "Region 2",
-        "Region 3",
-        "Region 4"
-      ],
-      "correctIndex": 2
-    },
-    {
-      "id": "net-82",
+      "id": "net-79",
       "category": "informatique",
       "difficulty": "difficile",
       "question": "Who is the original author of the realtime physics engine called PhysX?",
       "options": [
-        "NovodeX",
-        "Nvidia",
         "AMD",
+        "Nvidia",
+        "NovodeX",
         "Ageia"
       ],
+      "correctIndex": 2
+    },
+    {
+      "id": "net-80",
+      "category": "informatique",
+      "difficulty": "moyen",
+      "question": "Which of these programming languages is a low-level language?",
+      "options": [
+        "Pascal",
+        "Python",
+        "C#",
+        "Assembly"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-81",
+      "category": "informatique",
+      "difficulty": "difficile",
+      "question": "Dutch computer scientist Mark Overmars is known for creating which game development engine?",
+      "options": [
+        "Game Maker",
+        "Torque 2D",
+        "Construct",
+        "Stencyl"
+      ],
       "correctIndex": 0
+    },
+    {
+      "id": "net-82",
+      "category": "informatique",
+      "difficulty": "moyen",
+      "question": "What does \"LCD\" stand for?",
+      "options": [
+        "Language Control Design",
+        "Last Common Difference",
+        "Liquid Crystal Display",
+        "Long Continuous Design"
+      ],
+      "correctIndex": 2
     },
     {
       "id": "net-83",
       "category": "informatique",
-      "difficulty": "facile",
-      "question": "In \"Hexadecimal\", what color would be displayed from the color code? \"#00FF00\"?",
+      "difficulty": "difficile",
+      "question": "Lenovo acquired IBM's personal computer division, including the ThinkPad line of laptops and tablets, in what year?",
       "options": [
-        "Green",
-        "Blue",
-        "Red",
-        "Yellow"
+        "2002",
+        "2005",
+        "1999",
+        "2008"
       ],
-      "correctIndex": 0
+      "correctIndex": 1
     },
     {
       "id": "net-84",
       "category": "informatique",
-      "difficulty": "difficile",
-      "question": "Who is the founder of Palantir?",
+      "difficulty": "moyen",
+      "question": "In the server hosting industry IaaS stands for...",
       "options": [
-        "Peter Thiel",
-        "Jack Dorsey",
-        "Marc Benioff",
-        "Mark Zuckerberg"
+        "Internet as a Service",
+        "Internet and a Server",
+        "Infrastructure as a Service",
+        "Infrastructure as a Server"
       ],
-      "correctIndex": 0
+      "correctIndex": 2
     },
     {
       "id": "net-85",
       "category": "informatique",
       "difficulty": "difficile",
-      "question": "Which of these was the name of a bug found in April 2014 in the publicly available OpenSSL cryptography library?",
+      "question": "What internet protocol was documented in RFC 1459?",
       "options": [
-        "Shellshock",
-        "Corrupted Blood",
-        "Heartbleed",
-        "Shellscript"
+        "HTTP",
+        "IRC",
+        "HTTPS",
+        "FTP"
       ],
-      "correctIndex": 2
+      "correctIndex": 1
     },
     {
       "id": "net-86",
       "category": "informatique",
-      "difficulty": "facile",
-      "question": "What does the Prt Sc button do?",
+      "difficulty": "moyen",
+      "question": "While Apple was formed in California, in which western state was Microsoft founded?",
       "options": [
-        "Captures what's on the screen and copies it to your clipboard",
-        "Closes all windows",
-        "Saves a .png file of what's on the screen in your screenshots folder in photos",
-        "Nothing"
+        "Washington",
+        "New Mexico",
+        "Arizona",
+        "Colorado"
       ],
-      "correctIndex": 0
+      "correctIndex": 1
     },
     {
       "id": "net-87",
       "category": "informatique",
-      "difficulty": "moyen",
-      "question": "What is the correct term for the metal object in between the CPU and the CPU fan within a computer system?",
+      "difficulty": "difficile",
+      "question": "What vulnerability ranked #1 on the OWASP Top 10 in 2013?",
       "options": [
-        "Heat Sink",
-        "Temperature Decipator",
-        "CPU Vent",
-        "Heat Vent"
+        "Insecure Direct Object References",
+        "Injection ",
+        "Broken Authentication",
+        "Cross-Site Scripting"
       ],
-      "correctIndex": 0
+      "correctIndex": 1
     },
     {
       "id": "net-88",
       "category": "informatique",
       "difficulty": "moyen",
-      "question": "Which of these programming languages is a low-level language?",
+      "question": "When was the programming language \"C#\" released?",
       "options": [
-        "Python",
-        "Assembly",
-        "C#",
-        "Pascal"
+        "1998",
+        "1999",
+        "2000",
+        "2001"
       ],
-      "correctIndex": 1
+      "correctIndex": 2
     },
     {
       "id": "net-89",
       "category": "informatique",
-      "difficulty": "facile",
-      "question": "When Gmail first launched, how much storage did it provide for your email?",
+      "difficulty": "moyen",
+      "question": "The name of technology company HP stands for what?",
       "options": [
-        "1GB",
-        "Unlimited",
-        "5GB",
-        "512MB"
+        "Howard Packmann",
+        "Husker-Pollosk",
+        "Hellman-Pohl",
+        "Hewlett-Packard"
       ],
-      "correctIndex": 0
+      "correctIndex": 3
     },
     {
       "id": "net-90",
       "category": "informatique",
       "difficulty": "facile",
-      "question": "The C programming language was created by this American computer scientist. ",
+      "question": "What is the code name for the mobile operating system Android 7.0?",
       "options": [
-        "Willis Ware",
-        "al-Khwārizmī",
-        "Tim Berners Lee",
-        "Dennis Ritchie"
+        "Marshmallow",
+        "Nougat",
+        "Ice Cream Sandwich",
+        "Jelly Bean"
       ],
-      "correctIndex": 3
+      "correctIndex": 1
     },
     {
       "id": "net-91",
       "category": "informatique",
-      "difficulty": "moyen",
-      "question": "What does the 'S' in the RSA encryption algorithm stand for?",
+      "difficulty": "facile",
+      "question": "How many bits are commonly in a single byte?",
       "options": [
-        "Secure",
-        "Schottky",
-        "Stable",
-        "Shamir"
+        " Fifteen bits",
+        "Twelve bits",
+        "Eight bits",
+        "Six bits"
       ],
-      "correctIndex": 3
+      "correctIndex": 2
     },
     {
       "id": "net-92",
       "category": "informatique",
-      "difficulty": "difficile",
-      "question": "Which of the following is the oldest of these computers by release date?",
+      "difficulty": "moyen",
+      "question": "Moore's law originally stated that the number of transistors on a microprocessor chip would double every...",
       "options": [
-        "Commodore 64",
-        "ZX Spectrum",
-        "Apple 3",
-        "TRS-80"
+        "Four Years",
+        "Two Years",
+        "Eight Years",
+        "Year"
       ],
       "correctIndex": 3
     },
     {
       "id": "net-93",
       "category": "informatique",
-      "difficulty": "difficile",
-      "question": "According to DeMorgan's Theorem, the Boolean expression (AB)' is equivalent to:",
+      "difficulty": "facile",
+      "question": "The Windows OS was delevoped by which company?",
       "options": [
-        "A'B + B'A",
-        "A'B'",
-        "AB' + AB",
-        "A' + B'"
+        "IBM",
+        "Microsoft",
+        "Apple",
+        "Nokia"
       ],
-      "correctIndex": 3
+      "correctIndex": 1
     },
     {
       "id": "net-94",
       "category": "informatique",
-      "difficulty": "moyen",
-      "question": "Which operating system was released first?",
+      "difficulty": "facile",
+      "question": "In \"Hexadecimal\", what color would be displayed from the color code? \"#00FF00\"?",
       "options": [
-        "OS/2",
-        "Mac OS",
-        "Linux",
-        "Windows"
+        "Blue",
+        "Green",
+        "Red",
+        "Yellow"
       ],
       "correctIndex": 1
     },
@@ -1240,66 +1240,66 @@
       "id": "net-95",
       "category": "informatique",
       "difficulty": "facile",
-      "question": "Which SQL keyword is used to fetch data from a database?",
+      "question": "What does SSD stand for?",
       "options": [
-        "VALUES",
-        "INDEX",
-        "SELECT",
-        "EXEC"
+        "Solid State Disk",
+        "Source Solution Drive",
+        "Solid State Drive",
+        "Solution Source Disk"
       ],
       "correctIndex": 2
     },
     {
       "id": "net-96",
       "category": "informatique",
-      "difficulty": "difficile",
-      "question": "The internet domain .fm is the country-code top-level domain for which Pacific Ocean island nation?",
+      "difficulty": "moyen",
+      "question": "How many bytes are in a single Kibibyte?",
       "options": [
-        "Micronesia",
-        "Marshall Islands",
-        "Tuvalu",
-        "Fiji"
+        "1000",
+        "2400",
+        "1024",
+        "1240"
       ],
-      "correctIndex": 0
+      "correctIndex": 2
     },
     {
       "id": "net-97",
       "category": "informatique",
-      "difficulty": "difficile",
-      "question": "Which of these names was an actual codename for a cancelled Microsoft project?",
+      "difficulty": "facile",
+      "question": "Which company was established on April 1st, 1976 by Steve Jobs, Steve Wozniak and Ronald Wayne?",
       "options": [
-        "Enceladus",
-        "Pollux",
-        "Neptune",
-        "Saturn"
+        "Apple",
+        "Commodore",
+        "Atari",
+        "Microsoft"
       ],
-      "correctIndex": 2
+      "correctIndex": 0
     },
     {
       "id": "net-98",
       "category": "informatique",
       "difficulty": "difficile",
-      "question": "What port does HTTP run on?",
+      "question": "According to DeMorgan's Theorem, the Boolean expression (AB)' is equivalent to:",
       "options": [
-        "53",
-        "443",
-        "23",
-        "80"
+        "A' + B'",
+        "AB' + AB",
+        "A'B'",
+        "A'B + B'A"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-99",
       "category": "informatique",
-      "difficulty": "moyen",
-      "question": "What does the term GPU stand for?",
+      "difficulty": "facile",
+      "question": "The series of the Intel HD graphics generation succeeding that of the 5000 and 6000 series (Broadwell) is called:",
       "options": [
-        "Graphics Processing Unit",
-        "Graphical Proprietary Unit",
-        "Graphite Producing Unit",
-        "Gaming Processor Unit"
+        "HD Graphics 600",
+        "HD Graphics 700 ",
+        "HD Graphics 7000",
+        "HD Graphics 500"
       ],
-      "correctIndex": 0
+      "correctIndex": 3
     }
   ]
 }

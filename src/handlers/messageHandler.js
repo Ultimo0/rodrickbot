@@ -13,6 +13,15 @@ import { runAgentTurn } from '../agent/index.js';
 import { handleAnswerText, hasActiveSession } from '../core/quiz/QuizEngine.js';
 import { handleTextReply, hasPendingReset, handleGlobalTextReply, hasPendingGlobalReset } from '../core/quiz/QuizResetService.js';
 import { handleAnswerText as handleCalcAnswerText, hasActiveSession as hasActiveCalcSession } from '../core/calc/CalcEngine.js';
+import { handleWizardText as handlePollWizardText } from '../core/poll/PollManager.js';
+import { handleDeleteConfirmText as handlePollDeleteConfirmText, handleVoteText as handlePollVoteText } from '../core/poll/PollManager.js';
+import { hasDraft as hasPollDraft } from '../core/poll/PollSessionManager.js';
+import { hasDeleteConfirmation as hasPollDeleteConfirmation } from '../core/poll/PollSessionManager.js';
+import { handleWizardText as handleRemindWizardText, handleCancelAllConfirmText as handleRemindCancelAllConfirmText } from '../core/remind/RemindManager.js';
+import { hasDraft as hasRemindDraft, hasCancelAllConfirmation as hasRemindCancelAllConfirmation } from '../core/remind/RemindSessionManager.js';
+import { getQuotedInfo } from '../utils/quotedContent.js';
+import { recordActivity } from '../core/activityStore.js';
+import { hasResetConfirmation as hasActivityResetConfirmation, handleResetConfirmText as handleActivityResetConfirmText } from '../core/activityResetSession.js';
 
 export function createMessageHandler(sock, commands) {
   return async ({ messages, type }) => {
@@ -63,6 +72,20 @@ async function handleSingleMessage(sock, commands, msg) {
   const chatId = msg.key.remoteJid;
   const sender = isGroup(chatId) ? msg.key.participant : chatId;
 
+  // Activité (!activity / !inactive) : comptage best-effort, un seul
+  // point d'entrée pour tous les messages de groupe traités (commandes
+  // incluses), AVANT tout le reste du pipeline pour ne dépendre d'aucun
+  // early-return ultérieur. Isolé dans son propre try/catch : une panne
+  // ici (disque plein, JSON corrompu, etc.) ne doit jamais empêcher le
+  // traitement normal du message — voir core/activityStore.js.
+  if (isGroup(chatId) && !isSelfTest) {
+    try {
+      recordActivity(chatId, sender);
+    } catch (err) {
+      logger.error({ err }, "Échec du comptage d'activité (non bloquant)");
+    }
+  }
+
   // Vérifié avant extractText() : une notification de mention de statut
   // n'est ni un `conversation` ni un `extendedTextMessage`, donc `text`
   // serait vide de toute façon — inutile d'attendre son extraction.
@@ -100,6 +123,68 @@ async function handleSingleMessage(sock, commands, msg) {
       if (handled) return;
     } else if (hasActiveCalcSession(sender)) {
       const handled = await handleCalcAnswerText(sock, { sender, chatId, messageId: msg.key.id, text });
+      if (handled) return;
+    }
+  }
+
+  // Poll (/poll) : trois cas gérés ici, tous scopés par expéditeur+chat, avec
+  // le même contrat "renvoie false si le texte n'était pas pertinent" que le
+  // bloc quiz/calcul ci-dessus — donc jamais de commande normale avalée par
+  // erreur (ex: "/poll cancel" pendant un brouillon en cours, voir
+  // PollManager.handleWizardText qui ne capture jamais un texte préfixé).
+  // Placé APRÈS le bloc quiz/calcul (jamais avant) pour ne rien changer à sa
+  // priorité existante : si un même utilisateur avait improbablement une
+  // session quiz/calcul ET un sondage en cours à la fois, quiz/calcul
+  // resterait prioritaire, exactement comme avant ce changement.
+  //  1. Brouillon de création en cours (titre, options, "fin").
+  //  2. Confirmation "1"/"2" en attente avant suppression définitive.
+  //  3. Réponse (reply) à une carte de sondage = vote, identifié par
+  //     l'id du message cité (stanzaId), jamais par un simple chiffre nu
+  //     envoyé dans le vide — c'est ce qui permet plusieurs sondages actifs
+  //     en même temps dans le même chat sans ambiguïté sur celui visé.
+  if (!(isLockdownMode() && !(isSelfTest || isAdmin(sender)))) {
+    if (hasPollDraft(chatId, sender)) {
+      const handled = await handlePollWizardText(sock, { sender, chatId, text });
+      if (handled) return;
+    } else if (hasPollDeleteConfirmation(chatId, sender)) {
+      const handled = await handlePollDeleteConfirmText(sock, { sender, chatId, text });
+      if (handled) return;
+    } else {
+      const stanzaId = getQuotedInfo(msg)?.stanzaId;
+      if (stanzaId) {
+        const handled = await handlePollVoteText(sock, { sender, chatId, messageId: msg.key.id, text, stanzaId });
+        if (handled) return;
+      }
+    }
+  }
+
+  // Remind (/remind) : même contrat "renvoie false si le texte n'était pas
+  // pertinent" que les blocs quiz/calcul/poll ci-dessus. Placé APRÈS le
+  // bloc poll (jamais avant) pour ne rien changer à sa priorité existante
+  // — en pratique les deux états sont mutuellement exclusifs par
+  // utilisateur (personne n'a un brouillon de sondage ET un assistant de
+  // rappel en même temps), donc l'ordre entre les deux blocs ne crée pas
+  // d'ambiguïté réelle, seulement une garde de sécurité par défaut, comme
+  // pour poll vis-à-vis de quiz/calcul.
+  //  1. Brouillon de l'assistant en cours (menu 1-4, puis message).
+  //  2. Confirmation "1"/"2" en attente avant "/remind cancel all".
+  if (!(isLockdownMode() && !(isSelfTest || isAdmin(sender)))) {
+    if (hasRemindDraft(chatId, sender)) {
+      const handled = await handleRemindWizardText(sock, { sender, chatId, text });
+      if (handled) return;
+    } else if (hasRemindCancelAllConfirmation(chatId, sender)) {
+      const handled = await handleRemindCancelAllConfirmText(sock, { sender, chatId, text });
+      if (handled) return;
+    }
+  }
+
+  // Activity (!activity reset) : même contrat "renvoie false si le texte
+  // n'était pas une réponse oui/non reconnue" que les blocs précédents.
+  // Placé après remind, avant antilink/downloadReply — pas de conflit
+  // d'état possible (map dédiée, scopée chatId+sender comme les autres).
+  if (!(isLockdownMode() && !(isSelfTest || isAdmin(sender)))) {
+    if (hasActivityResetConfirmation(chatId, sender)) {
+      const handled = await handleActivityResetConfirmText(sock, { sender, chatId, text });
       if (handled) return;
     }
   }

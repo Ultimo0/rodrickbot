@@ -168,4 +168,74 @@ export default {
     lines.push(footer(data.footer));
     return lines.join('\n');
   },
+
+  renderActivityGroup(data) {
+    const lines = [boxTop(19, BOX), `   📊 ${bold('ACTIVITE DU GROUPE')}`, boxBottom(19, BOX), ''];
+
+    if (data.mode === 'summary') {
+      lines.push(`◆ ${bold('Membres')}    ${data.memberCount}`);
+      lines.push(`◆ ${bold('Aujourdhui')} ${data.today} messages`);
+      lines.push(`◆ ${bold('Semaine')}    ${data.week} messages`);
+      lines.push(`◆ ${bold('Mois')}       ${data.month} messages`);
+    } else if (data.mode === 'period') {
+      lines.push(`◆ ${bold(data.periodLabel)} : ${data.periodCount} messages`);
+    } else if (data.mode === 'top') {
+      lines.push(`✦ ${bold('Top membres')} · ${data.periodLabel} ✦`);
+    }
+
+    if (data.top.length) {
+      lines.push('', `✦ ${bold('Membres les plus actifs')} ✦`, '');
+      data.top.forEach((u, i) => lines.push(`◆ ${bold(String(i + 1))}. ${u.label} — ${u.count} messages`));
+    } else if (data.mode !== 'summary') {
+      lines.push('', 'Aucune activité sur cette période.');
+    }
+
+    if (data.lastActivityLabel) {
+      lines.push('', `◆ ${bold('Derniere activite')}`, `  ${data.lastActivityLabel}`);
+    }
+
+    lines.push('', footer(data.footer));
+    return lines.join('\n');
+  },
+
+  renderActivityUser(data) {
+    const lines = [
+      boxTop(19, BOX),
+      `   📊 ${bold(`ACTIVITE DE ${data.userLabel}`)}`,
+      boxBottom(19, BOX),
+      '',
+      `◆ ${bold('Messages')} : ${data.total}`,
+      '',
+      `◆ ${bold('Aujourdhui')}  ${data.today}`,
+      `◆ ${bold('Semaine')}     ${data.week}`,
+      `◆ ${bold('Mois')}        ${data.month}`,
+      '',
+      `◆ ${bold('Derniere activite')}`,
+      `  ${data.lastActivityLabel}`,
+      '',
+      footer(data.footer),
+    ];
+    return lines.join('\n');
+  },
+
+  renderInactive(data) {
+    const lines = [boxTop(19, BOX), `   👻 ${bold('MEMBRES INACTIFS')}`, boxBottom(19, BOX), ''];
+
+    lines.push(`◆ Aucune activité depuis ${data.minDaysLabel} :`, '');
+    if (!data.inactive.length) {
+      lines.push('✦ Aucun membre inactif sur cette période ✦');
+    } else {
+      for (const m of data.inactive) lines.push(`◆ ${m.label}`);
+    }
+
+    if (data.unknownCount > 0) {
+      lines.push(
+        '',
+        `${data.unknownCount} membre(s) sans donnée connue (non pris en compte ci-dessus).`
+      );
+    }
+
+    lines.push('', footer(data.footer));
+    return lines.join('\n');
+  },
 };

@@ -14,6 +14,8 @@ import { startTelemetry } from './core/telemetry.js';
 import { sendStartupMessage } from './utils/startupMessage.js';
 import { initQuizCleanupService } from './core/quiz/QuizCleanupService.js';
 import { cleanupStaleSessionsOnBoot as cleanupStaleCalcSessions } from './core/calc/CalcEngine.js';
+import { initPollCleanupService } from './core/poll/PollCleanupService.js';
+import { initRemindScheduler } from './core/remind/RemindScheduler.js';
 
 async function main() {
   logger.info(`Démarrage de ${config.botName}...`);
@@ -33,6 +35,8 @@ async function main() {
     initDeletedMessageCache(sock);
     initQuizCleanupService(sock); // reprend les sessions quiz actives + démarre le balayage périodique
     cleanupStaleCalcSessions(); // clôture toute partie de calcul mental restée active avant ce redémarrage
+    initPollCleanupService(sock); // reprend les sondages actifs (expiration) + démarre le balayage périodique
+    initRemindScheduler(sock); // balayage périodique des rappels arrivés à échéance (voir RemindScheduler.js — pas de setTimeout par rappel, volontairement)
     sock.ev.on('messages.upsert', createMessageHandler(sock, commands));
     sock.ev.on('group-participants.update', createGroupParticipantsHandler(sock));
     startTelemetry();

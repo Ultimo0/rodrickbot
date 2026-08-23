@@ -1,4 +1,4 @@
-import { searchYoutubeData, downloadYoutubeAudio } from '../utils/youtube.js';
+import { searchYoutubeData, downloadYoutubeAudio, explainYoutubeError } from '../utils/youtube.js';
 
 /** Formate une durée en secondes au format mm:ss. */
 function formatDuration(totalSeconds) {
@@ -69,7 +69,7 @@ export default {
 
       await ctx.success();
     } catch (err) {
-      await ctx.error(`Échec du téléchargement : ${err.message}`);
+      await ctx.error(`Échec du téléchargement : ${explainYoutubeError(err)}`);
     }
   },
 };

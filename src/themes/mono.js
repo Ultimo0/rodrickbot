@@ -118,4 +118,67 @@ export default {
     lines.push(SEP, footer(data.footer));
     return block(lines);
   },
+
+  renderActivityGroup(data) {
+    const lines = ['activite du groupe', SEP];
+
+    if (data.mode === 'summary') {
+      lines.push(`${pad('membres')}${data.memberCount}`);
+      lines.push(`${pad("aujourd'hui")}${data.today} msg`);
+      lines.push(`${pad('semaine')}${data.week} msg`);
+      lines.push(`${pad('mois')}${data.month} msg`);
+    } else if (data.mode === 'period') {
+      lines.push(`${pad(data.periodLabel.toLowerCase())}${data.periodCount} msg`);
+    } else if (data.mode === 'top') {
+      lines.push(`top membres - ${data.periodLabel.toLowerCase()}`);
+    }
+
+    if (data.top.length) {
+      lines.push(SEP, 'classement');
+      data.top.forEach((u, i) => lines.push(`${i + 1}. ${u.label} - ${u.count} msg`));
+    } else if (data.mode !== 'summary') {
+      lines.push('(aucune activite sur cette periode)');
+    }
+
+    if (data.lastActivityLabel) {
+      lines.push(SEP, `${pad('derniere activite')}${data.lastActivityLabel}`);
+    }
+
+    lines.push(SEP, footer(data.footer));
+    return block(lines);
+  },
+
+  renderActivityUser(data) {
+    const lines = [
+      `activite de ${data.userLabel}`,
+      SEP,
+      `${pad('messages')}${data.total}`,
+      SEP,
+      `${pad("aujourd'hui")}${data.today}`,
+      `${pad('semaine')}${data.week}`,
+      `${pad('mois')}${data.month}`,
+      SEP,
+      `${pad('derniere activite')}${data.lastActivityLabel}`,
+      SEP,
+      footer(data.footer),
+    ];
+    return block(lines);
+  },
+
+  renderInactive(data) {
+    const lines = ['membres inactifs', SEP, `aucune activite depuis ${data.minDaysLabel} :`, SEP];
+
+    if (!data.inactive.length) {
+      lines.push('(aucun membre inactif)');
+    } else {
+      for (const m of data.inactive) lines.push(`- ${m.label}`);
+    }
+
+    if (data.unknownCount > 0) {
+      lines.push(SEP, `${data.unknownCount} membre(s) sans donnee connue (ignore)`);
+    }
+
+    lines.push(SEP, footer(data.footer));
+    return block(lines);
+  },
 };
