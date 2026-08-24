@@ -5,6 +5,21 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/), versionneme
 
 ## [Unreleased]
 
+## [1.30.0] - 2026-08-24
+
+### Ajouté
+- Nouvelle commande `/convert` (alias `conv`, `unite`) pour convertir des unités de mesure :
+  - Température (°C, °F, K)
+  - Longueur (m, km, cm, mm, mi, yd, ft, in)
+  - Masse (g, kg, mg, lb, oz)
+  - Volume (l, ml, cl, gal, qt, pt)
+  - Surface (m², km², cm², ha, acre, ft², mi²)
+  - Vitesse (km/h, m/s, mph, kn)
+  - Durée (s, min, h, d, semaine, mois, année)
+- Lecture automatique d'un fichier audio (MP3, M4A, OGG, WAV, AAC) après l'envoi du menu principal (`/menu` ou `/help` seul)
+  - Le fichier doit être placé dans le dossier `assets/` ; le bot envoie le premier fichier audio trouvé en note vocale.
+
+
 ## [1.29.1]
 ### Fixed
 - **`!play`/`!youtube` : `ImportError: You are using an unsupported version of Python. Only Python versions 3.10 and above are supported by yt-dlp` sur certains hébergeurs (Katabump notamment).** Cause : `youtube-dl-exec` télécharge par défaut la variante `yt-dlp` de yt-dlp — un script/zipapp qui s'exécute via le `python3` **du système hôte**. Or yt-dlp exige désormais Python 3.10+, alors que Katabump (et d'autres panels d'hébergement similaires) fournissent Python 3.9, sans possibilité pour l'utilisateur de le mettre à jour lui-même (pas d'accès root sur ce type d'hébergement).

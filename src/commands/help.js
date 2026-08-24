@@ -1,10 +1,12 @@
 import { readFileSync } from 'fs';
+import fs from 'fs';
 import path from 'path';
 import { config } from '../config/index.js';
 import { groupByCategory, formatUptime } from '../utils/helpers.js';
 import { isLockdownMode } from '../core/state.js';
 import { sendWithChannelCard } from '../utils/channelCard.js';
 import { getCurrentTheme } from '../themes/engine.js';
+import { logger } from '../utils/logger.js';
 
 const pkg = JSON.parse(readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8'));
 
@@ -45,16 +47,76 @@ function getVisibleCommands(ctx) {
   return uniqueCommands.filter((cmd) => {
     if (cmd.name === 'help') return false;
     if (cmd.adminOnly && !ctx.isAdmin) return false;
-    // privateOnly !== false => bloquée en groupe par le handler (voir
-    // pluginLoader.js) : inutile de l'afficher dans le menu si on est
-    // justement en groupe, ça évite de faire taper une commande vouée à
-    // être refusée.
     if (ctx.isGroup && cmd.privateOnly !== false) return false;
     return true;
   });
 }
 
-/** Menu principal : infos du bot + liste des catégories. Le thème actif décide entièrement de la mise en forme. */
+/**
+ * Recherche un fichier audio dans le dossier `assets/` avec l'une des
+ * extensions supportées (mp3, m4a, ogg, wav, aac). Retourne le chemin
+ * complet du premier trouvé, ou null.
+ */
+function findAudioFile() {
+  const assetsDir = path.join(process.cwd(), 'assets');
+  if (!fs.existsSync(assetsDir)) return null;
+
+  const supportedExtensions = ['.mp3', '.m4a', '.ogg', '.wav', '.aac'];
+  const files = fs.readdirSync(assetsDir);
+  for (const file of files) {
+    const ext = path.extname(file).toLowerCase();
+    if (supportedExtensions.includes(ext)) {
+      const fullPath = path.join(assetsDir, file);
+      // Vérifier que c'est bien un fichier (pas un dossier)
+      if (fs.statSync(fullPath).isFile()) {
+        return fullPath;
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Envoie un fichier audio (note vocale) dans le chat courant.
+ * Fonction appelée uniquement pour le menu principal.
+ */
+async function sendMenuAudio(ctx) {
+  try {
+    const audioPath = findAudioFile();
+    if (!audioPath) {
+      logger.debug('Aucun fichier audio trouvé pour le menu principal (assets/ avec .mp3/.m4a/.ogg/.wav/.aac)');
+      return;
+    }
+
+    const audioBuffer = fs.readFileSync(audioPath);
+    const fileName = path.basename(audioPath);
+    // Déterminer le mimetype en fonction de l'extension
+    const ext = path.extname(audioPath).toLowerCase();
+    let mimetype = 'audio/mpeg'; // par défaut
+    if (ext === '.m4a') mimetype = 'audio/mp4';
+    else if (ext === '.ogg') mimetype = 'audio/ogg';
+    else if (ext === '.wav') mimetype = 'audio/wav';
+    else if (ext === '.aac') mimetype = 'audio/aac';
+
+    await ctx.sock.sendMessage(
+      ctx.chatId,
+      {
+        audio: audioBuffer,
+        mimetype,
+        ptt: false, // note vocale (lecteur intégré WhatsApp)
+        fileName,
+      },
+      { quoted: ctx.msg }
+    );
+
+    logger.info(`Audio du menu principal envoyé : ${fileName}`);
+  } catch (err) {
+    // Une erreur ici ne doit pas faire planter l'envoi du menu
+    logger.warn({ err }, "Impossible d'envoyer l'audio du menu principal");
+  }
+}
+
+/** Menu principal : infos du bot + liste des catégories. */
 async function sendMainMenu(ctx, visibleCommands) {
   const senderName = ctx.msg.pushName || ctx.sender.split('@')[0];
   const now = new Date();
@@ -92,7 +154,11 @@ async function sendMainMenu(ctx, visibleCommands) {
     footer: footerData(),
   });
 
+  // Envoi du menu (texte avec image éventuelle)
   await sendWithChannelCard(ctx, text, { asImage: true });
+
+  // Envoi de l'audio (uniquement pour le menu principal)
+  await sendMenuAudio(ctx);
 }
 
 /** Sous-menu : uniquement les commandes de la catégorie demandée. */
@@ -115,7 +181,7 @@ async function sendCategoryMenu(ctx, entry, visibleCommands) {
   await sendWithChannelCard(ctx, text);
 }
 
-/** Détail d'une commande précise (comportement historique de !help <commande>). */
+/** Détail d'une commande précise. */
 async function sendCommandDetail(ctx, cmd) {
   const theme = getCurrentTheme();
 
@@ -157,7 +223,7 @@ export default {
       return;
     }
 
-    // 2) "!menu <commande>" — détail d'une commande (comportement historique)
+    // 2) "!menu <commande>" — détail d'une commande
     const cmd = ctx.commands.get(query);
     if (!cmd || (cmd.adminOnly && !ctx.isAdmin)) {
       await ctx.error(`❌ "${query}" n'est ni une catégorie ni une commande connue. Tape ${config.prefix}menu pour voir les catégories.`);
