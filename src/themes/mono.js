@@ -181,4 +181,32 @@ export default {
     lines.push(SEP, footer(data.footer));
     return block(lines);
   },
+
+  renderStats(data) {
+    const lines = [
+      'statistiques',
+      SEP,
+      `${pad('uptime')}${data.uptime}`,
+      `${pad('messages')}${data.messages}`,
+      `${pad('commands')}${data.totalCommands}`,
+      `${pad('unique_cmds')}${data.uniqueCommands}`,
+      `${pad('mode')}${data.mode.toLowerCase()}`,
+      `${pad('instance')}${data.instanceId}`,
+      `${pad('owner')}${data.instanceOwner}`,
+      SEP,
+    ];
+
+    if (data.topCommands.length) {
+      lines.push('top commands');
+      data.topCommands.forEach((cmd, i) => {
+        const medal = ['🥇', '🥈', '🥉'][i] || `${i + 1}.`;
+        lines.push(`${medal} ${cmd.name} - ${cmd.count}`);
+      });
+    } else {
+      lines.push('(aucune commande executee)');
+    }
+
+    lines.push(SEP, footer(data.footer));
+    return block(lines);
+  },
 };

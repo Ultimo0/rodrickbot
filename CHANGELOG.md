@@ -5,6 +5,24 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/), versionneme
 
 ## [Unreleased]
 
+## [1.32.0] - 2026-08-24
+
+### Ajouté
+- Nouvelle commande publique `/stats` pour afficher les statistiques d'utilisation du bot :
+  - Uptime, messages traités, commandes exécutées, commandes uniques
+  - Top 5 des commandes les plus utilisées
+  - Mode (Public/Privé), instance configurée
+  - Intégration avec tous les thèmes visuels
+
+## [1.31.0] - 2026-08-24
+
+### Ajouté
+- Nouvelle commande `/meteo` (alias `weather`, `météo`) pour afficher la météo actuelle et les prévisions 5 jours.
+  - Température, ressenti, humidité, pression, vent, lever/coucher du soleil
+  - Prévisions par jour (min/max, description, icône, humidité, vent)
+  - Cache de 10 minutes pour limiter les appels API
+  - Utilisation de l'API OpenWeatherMap (clé requise dans `.env`)
+
 ## [1.30.0] - 2026-08-24
 
 ### Ajouté

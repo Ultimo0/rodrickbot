@@ -210,4 +210,32 @@ export default {
     lines.push('', footer(data.footer));
     return lines.join('\n');
   },
-};
+
+  renderStats(data) {
+    const lines = [
+      titleBlock('STATISTIQUES'),
+      '',
+      `🪐 Uptime : ${data.uptime}`,
+      `🌠 Messages traités : ${data.messages}`,
+      `✨ Commandes exécutées : ${data.totalCommands}`,
+      `📋 Commandes uniques : ${data.uniqueCommands}`,
+      `🔭 Mode : ${data.mode}`,
+      `🛰 Instance : ${data.instanceId}`,
+      `🌍 Propriétaire : ${data.instanceOwner}`,
+      '',
+    ];
+
+    if (data.topCommands.length) {
+      lines.push(`✦ ${script('Top commandes')} ✦`, '');
+      data.topCommands.forEach((cmd, i) => {
+        const medal = ['🥇', '🥈', '🥉'][i] || `${i + 1}.`;
+        lines.push(`${medal} ${script(cmd.name)} — ${cmd.count} étoiles ✨`);
+      });
+    } else {
+      lines.push('🌑 Aucune étoile n\'a encore brillé.');
+    }
+
+    lines.push('', footer(data.footer));
+    return lines.join('\n');
+  },
+}; 

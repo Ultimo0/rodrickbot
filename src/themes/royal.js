@@ -238,4 +238,34 @@ export default {
     lines.push('', footer(data.footer));
     return lines.join('\n');
   },
+
+  renderStats(data) {
+    const lines = [
+      boxTop(19, BOX),
+      `   📊 ${bold('STATISTIQUES')}`,
+      boxBottom(19, BOX),
+      '',
+      `◆ ${bold('Uptime')}          ${data.uptime}`,
+      `◆ ${bold('Messages')}        ${data.messages}`,
+      `◆ ${bold('Commandes exec')}  ${data.totalCommands}`,
+      `◆ ${bold('Commandes uniques')} ${data.uniqueCommands}`,
+      `◆ ${bold('Mode')}            ${data.mode}`,
+      `◆ ${bold('Instance')}        ${data.instanceId}`,
+      `◆ ${bold('Proprietaire')}    ${data.instanceOwner}`,
+      '',
+    ];
+
+    if (data.topCommands.length) {
+      lines.push(`✦ ${bold('Top commandes')} ✦`, '');
+      data.topCommands.forEach((cmd, i) => {
+        const medal = ['🥇', '🥈', '🥉'][i] || `${i + 1}.`;
+        lines.push(`${medal} ${bold(cmd.name)} — ${cmd.count} exécution(s)`);
+      });
+    } else {
+      lines.push('◆ Aucune commande exécutée pour le moment.');
+    }
+
+    lines.push('', footer(data.footer));
+    return lines.join('\n');
+  },
 };

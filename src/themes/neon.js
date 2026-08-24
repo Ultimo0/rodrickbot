@@ -230,4 +230,34 @@ export default {
     lines.push('', footer(data.footer));
     return lines.join('\n');
   },
+
+  renderStats(data) {
+    const lines = [
+      boxTop(19, BOX),
+      `  ⚡ ${upper('STATISTIQUES')}`,
+      boxBottom(19, BOX),
+      '',
+      `> UPTIME.......... ${data.uptime}`,
+      `> MESSAGES........ ${data.messages}`,
+      `> COMMANDS........ ${data.totalCommands}`,
+      `> UNIQUE_CMDS..... ${data.uniqueCommands}`,
+      `> MODE............ ${data.mode.toUpperCase()}`,
+      `> INSTANCE........ ${data.instanceId}`,
+      `> OWNER........... ${data.instanceOwner}`,
+      '',
+    ];
+
+    if (data.topCommands.length) {
+      lines.push(`>> ${upper('TOP COMMANDS')}`);
+      data.topCommands.forEach((cmd, i) => {
+        const medal = ['🥇', '🥈', '🥉'][i] || `${i + 1}.`;
+        lines.push(`[${medal}] ${cmd.name} :: ${cmd.count}`);
+      });
+    } else {
+      lines.push('>> AUCUNE COMMANDE EXECUTEE.');
+    }
+
+    lines.push('', footer(data.footer));
+    return lines.join('\n');
+  },
 };
