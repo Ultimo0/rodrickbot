@@ -35,3 +35,5 @@ instance.json
 # local, pas fait pour être versionné (ce serait dupliquer tout le code
 # source dans git à chaque snapshot).
 releases/
+
+auth_info2/

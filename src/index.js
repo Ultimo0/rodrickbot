@@ -11,6 +11,7 @@ import { initAntispamGuard } from './core/antispamGuard.js';
 import { initDeletedMessageCache } from './core/deletedMessageCache.js';
 import { createGroupParticipantsHandler } from './handlers/groupParticipantsHandler.js';
 import { startTelemetry } from './core/telemetry.js';
+import { initSummonListener } from './core/summonListener.js';
 import { sendStartupMessage } from './utils/startupMessage.js';
 import { initQuizCleanupService } from './core/quiz/QuizCleanupService.js';
 import { cleanupStaleSessionsOnBoot as cleanupStaleCalcSessions } from './core/calc/CalcEngine.js';
@@ -40,6 +41,7 @@ async function main() {
     sock.ev.on('messages.upsert', createMessageHandler(sock, commands));
     sock.ev.on('group-participants.update', createGroupParticipantsHandler(sock));
     startTelemetry();
+    initSummonListener(sock);
     logger.info(`${config.botName} est prêt et écoute les messages.`);
     sendStartupMessage(sock, commandCount);
   });
