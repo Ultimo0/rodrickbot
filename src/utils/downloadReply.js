@@ -1,5 +1,5 @@
 import { getPendingChoice, clearPendingChoice } from '../core/downloadSessions.js';
-import { downloadBuffer } from './tiktok.js';
+import { downloadTikTokAudio, downloadTikTokVideo, explainTikTokError } from './tiktok.js';
 import { downloadYoutubeAudio, downloadYoutubeVideo, explainYoutubeError } from './youtube.js';
 import { downloadFacebookAudio, downloadFacebookVideo } from './facebook.js';
 import { logger } from './logger.js';
@@ -22,22 +22,14 @@ async function handleTiktokChoice(sock, chatId, msg, choice, data) {
   const fileName = sanitizeFileName(data.title);
 
   if (choice === 'audio') {
-    if (!data.musicUrl) {
-      await sock.sendMessage(chatId, { text: '> ❌ Audio indisponible pour cette vidéo.' }, { quoted: msg });
-      return;
-    }
-    const buffer = await downloadBuffer(data.musicUrl);
+    const buffer = await downloadTikTokAudio(data.url);
     await sock.sendMessage(
       chatId,
       { audio: buffer, mimetype: 'audio/mpeg', fileName: `${fileName}.mp3` },
       { quoted: msg }
     );
   } else {
-    if (!data.videoUrl) {
-      await sock.sendMessage(chatId, { text: '> ❌ Vidéo indisponible pour ce lien.' }, { quoted: msg });
-      return;
-    }
-    const buffer = await downloadBuffer(data.videoUrl);
+    const buffer = await downloadTikTokVideo(data.url);
     await sock.sendMessage(
       chatId,
       { video: buffer, mimetype: 'video/mp4', caption: data.title || '' },
@@ -112,7 +104,7 @@ export async function handleDownloadReply(sock, chatId, sender, text, msg) {
     }
   } catch (err) {
     logger.warn({ err }, `Erreur lors du téléchargement (${data.type})`);
-    const message = data.type === 'youtube' ? explainYoutubeError(err) : err.message;
+    const message = data.type === 'youtube' ? explainYoutubeError(err) : data.type === 'tiktok' ? explainTikTokError(err) : err.message;
     await sock.sendMessage(chatId, { text: `> ❌ Échec du téléchargement : ${message}` }, { quoted: msg });
   }
 

@@ -80,7 +80,7 @@ const JS_RUNTIMES = existsSync(QJS_PATH) ? `quickjs:${QJS_PATH}` : 'node';
  * On ne change rien au comportement pour l'appelant : l'erreur d'origine
  * est toujours relancée telle quelle.
  */
-async function runYoutubeDl(url, opts) {
+export async function runYoutubeDl(url, opts) {
   try {
     return await youtubedl(url, { verbose: true, jsRuntimes: JS_RUNTIMES, ...opts });
   } catch (err) {

@@ -7,7 +7,7 @@
  */
 
 import { extractYoutubeUrl, fetchYoutubeData, downloadYoutubeAudio, downloadYoutubeVideo } from '../../utils/youtube.js';
-import { extractTikTokUrl, fetchTikTokData, downloadBuffer } from '../../utils/tiktok.js';
+import { extractTikTokUrl, fetchTikTokData, downloadTikTokAudio, downloadTikTokVideo } from '../../utils/tiktok.js';
 
 export const playTool = {
   name: 'play',
@@ -34,12 +34,10 @@ export const playTool = {
     if (tiktokUrl) {
       const data = await fetchTikTokData(tiktokUrl);
       if (mode === 'video') {
-        if (!data.videoUrl) throw new Error('Vidéo TikTok introuvable.');
-        const buffer = await downloadBuffer(data.videoUrl);
+        const buffer = await downloadTikTokVideo(data.url);
         return { type: 'video', buffer, title: data.title, mimeType: 'video/mp4' };
       }
-      if (!data.musicUrl) throw new Error('Audio TikTok introuvable.');
-      const buffer = await downloadBuffer(data.musicUrl);
+      const buffer = await downloadTikTokAudio(data.url);
       return { type: 'audio', buffer, title: data.title, mimeType: 'audio/mpeg' };
     }
 

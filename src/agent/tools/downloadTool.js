@@ -5,7 +5,7 @@
  * téléchargement TikTok/YouTube déjà existants dans le projet.
  */
 
-import { extractTikTokUrl, fetchTikTokData, downloadBuffer } from '../../utils/tiktok.js';
+import { extractTikTokUrl, fetchTikTokData, downloadTikTokAudio, downloadTikTokVideo } from '../../utils/tiktok.js';
 import { extractYoutubeUrl, fetchYoutubeData, downloadYoutubeAudio, downloadYoutubeVideo } from '../../utils/youtube.js';
 
 export const downloadTool = {
@@ -39,18 +39,16 @@ export const downloadTool = {
     if (tiktokUrl) {
       const data = await fetchTikTokData(tiktokUrl);
       if (format === 'video') {
-        if (!data.videoUrl) throw new Error('Aucune vidéo directe disponible.');
         return {
           type: 'video',
-          buffer: await downloadBuffer(data.videoUrl),
+          buffer: await downloadTikTokVideo(data.url),
           title: data.title,
           mimeType: 'video/mp4',
         };
       }
-      if (!data.musicUrl) throw new Error('Aucun audio direct disponible.');
       return {
         type: 'audio',
-        buffer: await downloadBuffer(data.musicUrl),
+        buffer: await downloadTikTokAudio(data.url),
         title: data.title,
         mimeType: 'audio/mpeg',
       };

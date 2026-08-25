@@ -17,6 +17,7 @@ const MIN_DELAY_BETWEEN_GROUPS_MS = 1500;
 const MAX_DELAY_BETWEEN_GROUPS_MS = 3500;
 
 let intervalHandle = null;
+let currentSock = null; // toujours resynchronisé à chaque connexion (voir initSummonListener)
 let running = false; // évite deux invocations en parallèle si le poll tombe pendant un envoi encore en cours
 
 function sleep(ms) {
@@ -52,8 +53,9 @@ async function broadcastToAllGroups(sock, text) {
   logger.info('Invocation: diffusion terminée.');
 }
 
-async function pollSummon(sock) {
+async function pollSummon() {
   if (running) return;
+  if (!currentSock) return; // pas encore (re)connecté
 
   const { telemetryUrl, telemetryApiKey } = config;
 
@@ -78,7 +80,7 @@ async function pollSummon(sock) {
 
     running = true;
     const text = toScriptFont(summon.message || "Je m'incline devant votre sagesse, Seigneur.");
-    await broadcastToAllGroups(sock, text);
+    await broadcastToAllGroups(currentSock, text);
   } catch (err) {
     logger.debug({ err }, 'Invocation: poll impossible (réseau).');
   } finally {
@@ -86,15 +88,26 @@ async function pollSummon(sock) {
   }
 }
 
+/**
+ * Appelée à CHAQUE connexion réussie (initiale ET après reconnexion — voir
+ * core/client.js, qui rappelle onReady(sock) avec un nouveau socket à
+ * chaque fois que la connexion WhatsApp est rétablie). Il est essentiel de
+ * toujours resynchroniser currentSock ici : sans ça, après une
+ * reconnexion, le poll continuerait à utiliser l'ancien socket fermé et
+ * les invocations échoueraient silencieusement (visible seulement dans les
+ * logs, en warning par groupe).
+ */
 export function initSummonListener(sock) {
+  currentSock = sock;
+
   if (!config.telemetryUrl || !config.telemetryApiKey) {
     logger.debug('Écoute des invocations désactivée (télémétrie non configurée).');
     return;
   }
 
-  if (intervalHandle) return; // déjà démarrée (ex: reconnexion)
+  if (intervalHandle) return; // l'intervalle tourne déjà — seul currentSock avait besoin d'être rafraîchi
 
-  intervalHandle = setInterval(() => pollSummon(sock), SUMMON_POLL_INTERVAL_MS);
+  intervalHandle = setInterval(pollSummon, SUMMON_POLL_INTERVAL_MS);
   intervalHandle.unref?.();
   logger.info('Écoute des invocations du dashboard activée.');
 }

@@ -23,12 +23,7 @@ export default {
     try {
       data = await fetchTikTokData(url);
     } catch (err) {
-      await ctx.error(`Impossible de récupérer cette vidéo : ${err.message}`);
-      return;
-    }
-
-    if (!data.videoUrl && !data.musicUrl) {
-      await ctx.error('Aucun média trouvé pour ce lien.');
+      await ctx.error(err.message);
       return;
     }
 
