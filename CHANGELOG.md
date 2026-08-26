@@ -5,6 +5,17 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/), versionneme
 
 ## [Unreleased]
 
+## [1.33.0] - 2026-08-26
+
+### Ajouté
+- **Nouvelle commande `!pingall`** (alias `!testall`, `!enligne`) : réservée aux admins, fait répondre "🟢 En ligne — `<identifiant de l'instance>`" par chaque copie de RodrickBOT présente dans le chat où la commande est tapée. Ne passe par aucun relais serveur : chaque copie active dans le même groupe/chat reçoit indépendamment le message entrant et y réagit de son côté (réaction 🟢 + texte). Utile pour vérifier d'un coup d'œil, dans un groupe de test, lesquelles des copies déployées sont bien en ligne.
+
+### Corrigé
+- **`!tiktok`/`!tt` : erreur `403` permanente lors de la récupération des vidéos.** Cause : l'API tierce utilisée jusqu'ici (tikwm.com) s'est refermée derrière une offre payante (tikwmapi.com) et rejette désormais toute requête gratuite, quel que soit le `User-Agent` envoyé.
+  - **Correctif** : `utils/tiktok.js` réécrit pour s'appuyer sur **yt-dlp** (extracteur TikTok natif) au lieu d'une API tierce — même moteur, déjà fiabilisé (cookies, runtime QuickJS), que celui utilisé pour YouTube et Facebook. `utils/youtube.js` exporte désormais `runYoutubeDl` pour être réutilisé par `tiktok.js` (diagnostics et configuration partagés).
+  - **Deuxième cause détectée en cours de route** : yt-dlp lui-même a un problème connu et récurrent avec TikTok (`Unable to extract universal data for rehydration`), TikTok changeant régulièrement la structure de ses pages — corrigé côté yt-dlp en quelques jours à chaque fois (ex. release 2026.08.19, `tiktok: Fix extractor (#17452)`). `fetchTikTokData` retente désormais automatiquement une fois après une courte pause si cette erreur précise survient (documentée comme intermittente même à jour), et le message renvoyé à l'utilisateur explique la situation au lieu d'afficher l'erreur brute de yt-dlp.
+  - **Point d'attention opérationnel (pas un correctif de code)** : `fix-ytdlp.cjs` télécharge la dernière release GitHub de yt-dlp au moment où il tourne (`postinstall`), pas à chaque démarrage du bot — si l'erreur ci-dessus revient malgré le retry, relancer `node fix-ytdlp.cjs` puis redémarrer le bot.
+
 ## [1.32.0] - 2026-08-24
 
 ### Ajouté
