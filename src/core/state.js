@@ -12,11 +12,6 @@ let state = {
   // à processedMessageCount ci-dessous) — sert aux statistiques envoyées
   // au dashboard de suivi (voir core/telemetry.js).
   commandStats: {},
-  // Id de la dernière "invocation" (bouton du dashboard) déjà traitée — voir
-  // core/summonListener.js. Persisté pour ne pas rejouer une invocation déjà
-  // envoyée si le bot redémarre pendant qu'elle est encore la plus récente
-  // sur le serveur.
-  lastSummonId: null,
 };
 
 function loadState() {
@@ -108,13 +103,4 @@ export function incrementCommandCount(name) {
 /** Copie des statistiques d'usage par commande: { nomCommande: nombreDExecutions }. */
 export function getCommandStats() {
   return { ...state.commandStats };
-}
-
-export function getLastSummonId() {
-  return state.lastSummonId;
-}
-
-export function setLastSummonId(id) {
-  state.lastSummonId = id;
-  saveState();
 }

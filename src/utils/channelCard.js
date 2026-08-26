@@ -19,7 +19,7 @@ let cachedBanner;
  * sur la chaîne : WhatsApp l'utilise seulement pour l'affichage du badge de
  * transfert, pas pour retrouver un message précis.
  */
-export function buildChannelForwardContext() {
+function buildChannelForwardContext() {
   if (!config.channelJid) return undefined;
 
   return {
@@ -90,15 +90,4 @@ export async function sendWithChannelCard(ctx, text, { asImage = false } = {}) {
   }
 
   await ctx.sock.sendMessage(ctx.chatId, { text, contextInfo }, { quoted: ctx.msg });
-}
-
-/**
- * Même badge "Transféré depuis la chaîne officielle" que sendWithChannelCard,
- * mais sans dépendre d'un ctx de commande (pas de message à quoter) : utile
- * pour les envois initiés par le bot lui-même plutôt que par une commande
- * d'un utilisateur (ex: core/summonListener.js).
- */
-export async function sendChannelText(sock, chatId, text) {
-  const contextInfo = buildChannelForwardContext();
-  await sock.sendMessage(chatId, { text, contextInfo });
 }
