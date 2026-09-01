@@ -1,4 +1,5 @@
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
+import { atomicWriteFileSync } from '../utils/atomicWrite.js';
 import path from 'path';
 import { logger } from '../utils/logger.js';
 
@@ -26,7 +27,7 @@ function loadState() {
 
 function saveState() {
   try {
-    writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
+    atomicWriteFileSync(STATE_FILE, JSON.stringify(state, null, 2));
   } catch (err) {
     logger.error({ err }, 'Impossible d\'écrire state.json');
   }

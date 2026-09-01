@@ -1,4 +1,5 @@
-import { readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync } from 'fs';
+import { readFileSync, existsSync, mkdirSync, unlinkSync } from 'fs';
+import { atomicWriteFileSync } from '../utils/atomicWrite.js';
 import path from 'path';
 import { logger } from '../utils/logger.js';
 
@@ -27,7 +28,7 @@ function load() {
 
 function persist() {
   try {
-    writeFileSync(DATA_FILE, JSON.stringify(items, null, 2));
+    atomicWriteFileSync(DATA_FILE, JSON.stringify(items, null, 2));
   } catch (err) {
     logger.error({ err }, "Impossible d'écrire saved_items.json");
   }
@@ -91,7 +92,7 @@ export function saveMediaItem(name, { mediaType, buffer, mimetype, caption, save
   const ext = extensionFor(mediaType, mimetype);
   const fileName = `${key}_${Date.now()}.${ext}`;
   const filePath = path.join(MEDIA_DIR, fileName);
-  writeFileSync(filePath, buffer);
+  atomicWriteFileSync(filePath, buffer);
 
   items[key] = {
     type: mediaType,

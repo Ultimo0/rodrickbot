@@ -1,4 +1,5 @@
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
+import { atomicWriteFileSync } from '../utils/atomicWrite.js';
 import path from 'path';
 import { logger } from '../utils/logger.js';
 
@@ -21,7 +22,7 @@ function loadInstance() {
 
 function saveInstance() {
   try {
-    writeFileSync(INSTANCE_FILE, JSON.stringify(instance, null, 2));
+    atomicWriteFileSync(INSTANCE_FILE, JSON.stringify(instance, null, 2));
   } catch (err) {
     logger.error({ err }, 'Impossible d\'écrire instance.json');
   }

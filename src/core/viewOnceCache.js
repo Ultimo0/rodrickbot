@@ -20,16 +20,20 @@ export function initViewOnceCache(sock) {
   sock.ev.on('messages.upsert', async ({ messages, type }) => {
     if (type !== 'notify') return;
     for (const msg of messages) {
-      if (!msg.message) continue;
-      const mediaType = getMediaType(msg.message);
-      if (mediaType) {
-        const id = msg.key.id;
-        viewOnceMessages.set(id, msg);
-        logger.info(`[ViewOnceCache] ✅ Stocké (ID: ${id.slice(0, 10)}..., type: ${mediaType})`);
-        setTimeout(() => {
-          viewOnceMessages.delete(id);
-          logger.debug(`[ViewOnceCache] ⏳ Expiré: ${id.slice(0, 10)}...`);
-        }, CACHE_DURATION_MS);
+      try {
+        if (!msg.message) continue;
+        const mediaType = getMediaType(msg.message);
+        if (mediaType) {
+          const id = msg.key.id;
+          viewOnceMessages.set(id, msg);
+          logger.info(`[ViewOnceCache] ✅ Stocké (ID: ${id.slice(0, 10)}..., type: ${mediaType})`);
+          setTimeout(() => {
+            viewOnceMessages.delete(id);
+            logger.debug(`[ViewOnceCache] ⏳ Expiré: ${id.slice(0, 10)}...`);
+          }, CACHE_DURATION_MS);
+        }
+      } catch (err) {
+        logger.warn({ err }, "[ViewOnceCache] Erreur sur un message (ignoré, les suivants continuent)");
       }
     }
   });

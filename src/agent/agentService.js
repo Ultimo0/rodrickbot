@@ -23,7 +23,7 @@ import { getMediaType, getQuotedInfo } from '../utils/quotedContent.js';
 import { extractYoutubeUrl } from '../utils/youtube.js';
 import { extractTikTokUrl } from '../utils/tiktok.js';
 
-const INTENT_MODEL = config.groqModel || 'llama-3.3-70b-versatile';
+const INTENT_MODEL = config.groqModel || 'openai/gpt-oss-120b';
 
 // Liste des tools que le classifieur Groq est autorisé à choisir. Générée
 // dynamiquement depuis le registre réel (toolRegistry.js::getIntentToolNames)

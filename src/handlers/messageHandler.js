@@ -23,6 +23,37 @@ import { getQuotedInfo } from '../utils/quotedContent.js';
 import { recordActivity } from '../core/activityStore.js';
 import { hasResetConfirmation as hasActivityResetConfirmation, handleResetConfirmText as handleActivityResetConfirmText } from '../core/activityResetSession.js';
 
+// Déduplication des messages : Baileys peut REJOUER des messages.upsert
+// déjà traités après une reconnexion (comportement documenté, voir
+// WhiskeySockets/Baileys#2415 — "Baileys queues message events during
+// disconnect and replays them on reconnect"). Sans ça, un simple aléa
+// réseau peut faire exécuter une commande deux fois (double téléchargement
+// TikTok/YouTube, double kick, double comptage d'activité...) — le genre
+// de bug qui ressemble à "le bot répond deux fois" sans cause évidente.
+// Fenêtre volontairement courte : un rejeu après reconnexion arrive en
+// général dans les secondes/minutes qui suivent, pas des heures après.
+const DEDUP_WINDOW_MS = 5 * 60 * 1000;
+const processedMessageIds = new Map(); // clé "chatId:messageId" -> timestamp d'expiration
+
+function isDuplicateMessage(chatId, messageId) {
+  if (!messageId) return false; // pas d'id exploitable : on ne peut pas dédupliquer, on laisse passer
+
+  const key = `${chatId}:${messageId}`;
+  const now = Date.now();
+
+  // Purge paresseuse des entrées expirées à chaque appel plutôt qu'un
+  // setInterval dédié — suffisant vu le faible volume, pas besoin d'un
+  // minuteur de plus à gérer pour ce cache.
+  for (const [k, expiresAt] of processedMessageIds) {
+    if (expiresAt <= now) processedMessageIds.delete(k);
+  }
+
+  if (processedMessageIds.has(key)) return true;
+
+  processedMessageIds.set(key, now + DEDUP_WINDOW_MS);
+  return false;
+}
+
 export function createMessageHandler(sock, commands) {
   return async ({ messages, type }) => {
     if (type !== 'notify') return;
@@ -57,6 +88,17 @@ export function createMessageHandler(sock, commands) {
 async function handleSingleMessage(sock, commands, msg) {
   if (!msg.message) return;
 
+  const chatId = msg.key.remoteJid;
+
+  // Voir le commentaire au-dessus de isDuplicateMessage() plus haut dans ce
+  // fichier — doit passer AVANT tout le reste (y compris le comptage
+  // d'activité) pour qu'un message rejoué soit un no-op complet, pas juste
+  // une commande non ré-exécutée.
+  if (isDuplicateMessage(chatId, msg.key.id)) {
+    logger.debug(`Message dupliqué ignoré (rejeu Baileys probable): ${msg.key.id}`);
+    return;
+  }
+
   // Interrupteur à distance
   if (isRemotelyDisabled()) return;
 
@@ -69,7 +111,6 @@ async function handleSingleMessage(sock, commands, msg) {
   const isSelfTest = msg.key.fromMe && config.allowSelfTest;
   if (msg.key.fromMe && !isSelfTest) return;
 
-  const chatId = msg.key.remoteJid;
   const sender = isGroup(chatId) ? msg.key.participant : chatId;
 
   // Activité (!activity / !inactive) : comptage best-effort, un seul
@@ -266,4 +307,3 @@ async function handleSingleMessage(sock, commands, msg) {
   logger.info(`Commande exécutée: ${parsed.command} par ${sender}`);
   await command.execute(ctx);
 }
-

@@ -16,11 +16,25 @@ export const ttsTool = {
   execute: async ({ text, language = 'fr' }) => {
     if (!text?.trim()) throw new Error('Texte vide pour la synthèse vocale.');
     const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${encodeURIComponent(language)}&client=tw-ob`;
-    const res = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0',
-      },
-    });
+
+    const controller = new AbortController();
+    const timeoutHandle = setTimeout(() => controller.abort(), 15_000);
+
+    let res;
+    try {
+      res = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0',
+        },
+        signal: controller.signal,
+      });
+    } catch (err) {
+      if (err.name === 'AbortError') throw new Error('Synthèse vocale : délai de réponse dépassé.');
+      throw err;
+    } finally {
+      clearTimeout(timeoutHandle);
+    }
+
     if (!res.ok) throw new Error(`Erreur TTS (${res.status}).`);
     const arrayBuffer = await res.arrayBuffer();
     return Buffer.from(arrayBuffer);

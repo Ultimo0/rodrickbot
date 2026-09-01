@@ -75,9 +75,22 @@ function sanitizeChatId(chatId) {
 async function fetchBuffer(url) {
   // WhatsApp bloque/renvoie une réponse inexploitable sur un fetch() nu sans
   // en-têtes — même technique que utils/... voir commands/reveal.js.
-  const res = await fetch(url, {
-    headers: { 'User-Agent': 'WhatsApp/2.24.15.21', Accept: '*/*' },
-  });
+  const controller = new AbortController();
+  const timeoutHandle = setTimeout(() => controller.abort(), 15_000);
+
+  let res;
+  try {
+    res = await fetch(url, {
+      headers: { 'User-Agent': 'WhatsApp/2.24.15.21', Accept: '*/*' },
+      signal: controller.signal,
+    });
+  } catch (err) {
+    if (err.name === 'AbortError') throw new Error('Téléchargement média : délai de réponse dépassé.');
+    throw err;
+  } finally {
+    clearTimeout(timeoutHandle);
+  }
+
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return Buffer.from(await res.arrayBuffer());
 }
@@ -292,51 +305,59 @@ export function initGroupGuardian(sock) {
   // --- Nom, description, réglages (qui peut écrire / modifier les infos) ---
   sock.ev.on('groups.update', async (updates) => {
     for (const update of updates) {
-      const chatId = update.id;
-      if (!chatId) continue;
+      try {
+        const chatId = update.id;
+        if (!chatId) continue;
 
-      const settings = getGroupSettings(chatId);
-      if (!settings.guardian.enabled || !settings.guardian.snapshot) continue;
+        const settings = getGroupSettings(chatId);
+        if (!settings.guardian.enabled || !settings.guardian.snapshot) continue;
 
-      const snapshot = settings.guardian.snapshot;
-      const changed = [];
+        const snapshot = settings.guardian.snapshot;
+        const changed = [];
 
-      if ('subject' in update && update.subject !== snapshot.subject) changed.push('subject');
-      if ('desc' in update && (update.desc || '') !== (snapshot.desc || '')) changed.push('desc');
-      if ('announce' in update && Boolean(update.announce) !== snapshot.announce) changed.push('announce');
-      if ('restrict' in update && Boolean(update.restrict) !== snapshot.restrict) changed.push('restrict');
+        if ('subject' in update && update.subject !== snapshot.subject) changed.push('subject');
+        if ('desc' in update && (update.desc || '') !== (snapshot.desc || '')) changed.push('desc');
+        if ('announce' in update && Boolean(update.announce) !== snapshot.announce) changed.push('announce');
+        if ('restrict' in update && Boolean(update.restrict) !== snapshot.restrict) changed.push('restrict');
 
-      if (!changed.length) continue;
+        if (!changed.length) continue;
 
-      // ADMIN_JIDS exempté — best-effort : 'groups.update' ne fournit pas
-      // l'auteur, on regarde si un message système récent (voir
-      // messages.upsert plus bas) en a identifié un pour ce groupe.
-      const recentActor = recentActors.get(chatId);
-      if (recentActor && isAdmin(normalizeJid(recentActor))) continue;
+        // ADMIN_JIDS exempté — best-effort : 'groups.update' ne fournit pas
+        // l'auteur, on regarde si un message système récent (voir
+        // messages.upsert plus bas) en a identifié un pour ce groupe.
+        const recentActor = recentActors.get(chatId);
+        if (recentActor && isAdmin(normalizeJid(recentActor))) continue;
 
-      await restoreMetadata(sock, chatId, snapshot, changed);
+        await restoreMetadata(sock, chatId, snapshot, changed);
+      } catch (err) {
+        logger.warn({ err }, '[Guardian] Erreur sur une mise à jour de groupe (ignorée, les suivantes continuent)');
+      }
     }
   });
 
   // --- Photo + lien d'invitation (pas dans 'groups.update') + auteur ---
   sock.ev.on('messages.upsert', async ({ messages }) => {
     for (const msg of messages) {
-      const chatId = msg.key?.remoteJid;
-      if (!chatId?.endsWith('@g.us')) continue;
-      if (msg.messageStubType == null) continue; // pas un message système
+      try {
+        const chatId = msg.key?.remoteJid;
+        if (!chatId?.endsWith('@g.us')) continue;
+        if (msg.messageStubType == null) continue; // pas un message système
 
-      const actor = msg.participant || msg.key.participant || null;
-      if (actor) rememberActor(chatId, actor);
+        const actor = msg.participant || msg.key.participant || null;
+        if (actor) rememberActor(chatId, actor);
 
-      const settings = getGroupSettings(chatId);
-      if (!settings.guardian.enabled || !settings.guardian.snapshot) continue;
+        const settings = getGroupSettings(chatId);
+        if (!settings.guardian.enabled || !settings.guardian.snapshot) continue;
 
-      if (ICON_STUB_TYPES.includes(msg.messageStubType)) {
-        if (actor && isAdmin(normalizeJid(actor))) continue; // ADMIN_JIDS exempté
-        await checkAndRestoreIcon(sock, chatId, settings.guardian.snapshot);
-      } else if (INVITE_STUB_TYPES.includes(msg.messageStubType)) {
-        if (actor && isAdmin(normalizeJid(actor))) continue; // ADMIN_JIDS exempté
-        await handleInviteChange(sock, chatId);
+        if (ICON_STUB_TYPES.includes(msg.messageStubType)) {
+          if (actor && isAdmin(normalizeJid(actor))) continue; // ADMIN_JIDS exempté
+          await checkAndRestoreIcon(sock, chatId, settings.guardian.snapshot);
+        } else if (INVITE_STUB_TYPES.includes(msg.messageStubType)) {
+          if (actor && isAdmin(normalizeJid(actor))) continue; // ADMIN_JIDS exempté
+          await handleInviteChange(sock, chatId);
+        }
+      } catch (err) {
+        logger.warn({ err }, '[Guardian] Erreur sur un message (ignoré, les suivants continuent)');
       }
     }
   });

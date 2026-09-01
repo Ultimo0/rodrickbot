@@ -6,6 +6,6 @@
   "logLevel": "info",
   "authMethod": "code",
   "allowSelfTest": true,
-  "groqModel": "llama-3.3-70b-versatile",
+  "groqModel": "openai/gpt-oss-120b",
   "groqVisionModel": "qwen/qwen3.6-27b"
 }

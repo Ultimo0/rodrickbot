@@ -135,12 +135,20 @@ export default {
           const inner = extractInnerMessage(quoted);
           const mediaObj = inner[`${mediaType}Message`];
           if (mediaObj?.url) {
-            const response = await fetch(mediaObj.url, {
-              headers: {
-                'User-Agent': 'WhatsApp/2.24.15.21',
-                'Accept': '*/*',
-              },
-            });
+            const controller = new AbortController();
+            const timeoutHandle = setTimeout(() => controller.abort(), 15_000);
+            let response;
+            try {
+              response = await fetch(mediaObj.url, {
+                headers: {
+                  'User-Agent': 'WhatsApp/2.24.15.21',
+                  'Accept': '*/*',
+                },
+                signal: controller.signal,
+              });
+            } finally {
+              clearTimeout(timeoutHandle);
+            }
             if (response.ok) {
               buffer = Buffer.from(await response.arrayBuffer());
               if (buffer && buffer.length > 0) {

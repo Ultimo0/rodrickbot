@@ -16,6 +16,30 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const { ensureYtDlpBinary } = require('./fix-ytdlp.cjs');
 
+// Filet de sécurité au niveau du process — À PLACER EN PREMIER, avant tout
+// le reste. Sans ça, une seule exception non rattrapée N'IMPORTE OÙ dans le
+// code (y compris dans un listener d'évènement Baileys tiers sans son
+// propre try/catch) tue le process entier : depuis Node.js 15, une
+// "unhandledRejection" provoque un crash par défaut (comportement qui a
+// changé — avant c'était juste un warning). Concrètement, ça veut dire
+// qu'un cas limite dans UN SEUL message (structure inattendue, timeout
+// réseau pendant une restauration Guardian, etc.) peut faire tomber tout
+// le bot pour tous les groupes, pas juste échouer sur ce message précis.
+//
+// On logge et on continue plutôt que de laisser planter : pour un bot
+// WhatsApp de ce type (pas d'état partagé critique qui risquerait de
+// devenir incohérent), rester en vie et dégrader localement est presque
+// toujours préférable à un crash complet suivi d'un redémarrage (qui,
+// avec Baileys, veut dire une reconnexion — donc une coupure visible et un
+// motif de reconnexion répété, ce qui est justement ce que WhatsApp
+// repère comme suspect).
+process.on('unhandledRejection', (reason) => {
+  console.error('[process] Promise rejetée non gérée (le bot continue) :', reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('[process] Exception non rattrapée (le bot continue) :', err);
+});
+
 try {
   await ensureYtDlpBinary();
 } catch (err) {

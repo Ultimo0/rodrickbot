@@ -67,6 +67,19 @@ async function loadBanner() {
 }
 
 /**
+ * Variante de sendWithChannelCard qui ne dépend pas d'un ctx de commande —
+ * utile pour les messages envoyés par le bot lui-même en dehors du cycle
+ * commande/réponse (ex: message de bienvenue/départ, qui n'a pas de
+ * message "déclencheur" d'un utilisateur à quoter). `content` est fusionné
+ * tel quel avec le contextInfo — accepte donc aussi bien { text } que
+ * { text, mentions } ou toute autre forme acceptée par sock.sendMessage.
+ */
+export async function sendChannelMessage(sock, chatId, content) {
+  const contextInfo = buildChannelForwardContext();
+  await sock.sendMessage(chatId, { ...content, contextInfo });
+}
+
+/**
  * Envoie un message (menu, ping, etc.) marqué comme provenant de la chaîne
  * WhatsApp officielle du bot (badge natif "Transféré depuis"), en un seul
  * message — plus de second message avec le lien de la chaîne. Si `asImage`

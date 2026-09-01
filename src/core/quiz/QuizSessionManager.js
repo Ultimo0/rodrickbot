@@ -1,4 +1,5 @@
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
+import { atomicWriteFileSync } from '../../utils/atomicWrite.js';
 import path from 'path';
 import { randomUUID } from 'crypto';
 import { logger } from '../../utils/logger.js';
@@ -34,7 +35,7 @@ function load() {
 
 function persist() {
   try {
-    writeFileSync(DATA_FILE, JSON.stringify(sessions, null, 2));
+    atomicWriteFileSync(DATA_FILE, JSON.stringify(sessions, null, 2));
   } catch (err) {
     logger.error({ err }, "Impossible d'écrire quiz_sessions.json");
   }

@@ -1,4 +1,5 @@
-import { readFileSync, writeFileSync, existsSync, unlinkSync } from 'fs';
+import { readFileSync, existsSync, unlinkSync } from 'fs';
+import { atomicWriteFileSync } from '../../utils/atomicWrite.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { logger } from '../../utils/logger.js';
@@ -127,7 +128,7 @@ function loadCacheIfFresh() {
 
 function persistCache(list) {
   try {
-    writeFileSync(CACHE_FILE, JSON.stringify({ fetchedAt: Date.now(), questions: list }, null, 2));
+    atomicWriteFileSync(CACHE_FILE, JSON.stringify({ fetchedAt: Date.now(), questions: list }, null, 2));
   } catch (err) {
     logger.warn({ err }, "Impossible d'écrire le cache de questions Internet (quiz_questions_cache.json)");
   }

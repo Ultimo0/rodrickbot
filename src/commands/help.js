@@ -207,6 +207,11 @@ export default {
     "Affiche le menu principal (catégories), un sous-menu ({prefix}menu <categorie>), ou le détail d'une commande ({prefix}menu <commande>).",
   privateOnly: false,
   execute: async (ctx) => {
+    // Réaction "parchemin" sur le message !menu lui-même — repère visuel
+    // immédiat que la commande a bien été reçue, avant même l'envoi du
+    // menu (même esprit que le 🟢 de !pingall).
+    await ctx.sock.sendMessage(ctx.chatId, { react: { text: '📜', key: ctx.msg.key } });
+
     const visibleCommands = getVisibleCommands(ctx);
 
     if (!ctx.args.length) {

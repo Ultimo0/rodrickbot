@@ -16,6 +16,15 @@ async function sendHeartbeat() {
   const { telemetryUrl, telemetryApiKey } = config;
   const { instanceId, instanceOwner } = getInstance();
 
+  // Timeout indispensable ici : ce heartbeat tourne dans un setInterval qui
+  // relance l'appel toutes les 5 minutes SANS attendre que le précédent
+  // soit terminé. Sans timeout, un dashboard qui ne répond jamais (arrêté,
+  // réseau coupé...) ferait s'empiler un fetch() bloqué de plus toutes les
+  // 5 minutes, indéfiniment — une fuite lente de connexions ouvertes, du
+  // genre qui ne se voit qu'après plusieurs jours d'uptime.
+  const controller = new AbortController();
+  const timeoutHandle = setTimeout(() => controller.abort(), 10_000);
+
   try {
     const res = await fetch(`${telemetryUrl.replace(/\/$/, '')}/api/heartbeat`, {
       method: 'POST',
@@ -35,6 +44,7 @@ async function sendHeartbeat() {
         prefix: config.prefix,
         nodeVersion: process.version,
       }),
+      signal: controller.signal,
     });
 
     if (!res.ok) {
@@ -56,6 +66,8 @@ async function sendHeartbeat() {
     }
   } catch (err) {
     logger.warn({ err }, 'Télémétrie: envoi du heartbeat impossible');
+  } finally {
+    clearTimeout(timeoutHandle);
   }
 }
 

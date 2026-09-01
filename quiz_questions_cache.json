@@ -1,159 +1,159 @@
 {
-  "fetchedAt": 1787678641155,
+  "fetchedAt": 1788239564923,
   "questions": [
     {
       "id": "net-0",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Quel est le cinquième plus grand pays par région ?",
+      "difficulty": "facile",
+      "question": "Quel est le deuxième plus grand pays du monde ?",
       "options": [
-        "Inde",
-        "Australie",
-        "Brésil",
-        "États-Unis"
+        "Canada",
+        "Chine",
+        "Fédération de Russie",
+        "Brésil"
       ],
       "correctIndex": 2
     },
     {
       "id": "net-1",
       "category": "geographie",
-      "difficulty": "facile",
-      "question": "Quel État américain a la population la plus élevée ?",
+      "difficulty": "moyen",
+      "question": "Dans quel comté anglais se trouve Stonehenge ?",
       "options": [
-        "New York",
-        "California",
-        "Texas",
-        "Florida"
+        "Cumbria",
+        "Herefordshire",
+        "Somerset",
+        "Wiltshire"
       ],
-      "correctIndex": 1
+      "correctIndex": 3
     },
     {
       "id": "net-2",
       "category": "geographie",
       "difficulty": "difficile",
-      "question": "Bir Tawil, une piste inhabitée de terres revendiquée par aucun pays, est située le long de la frontière de quels deux pays ?",
+      "question": "Quelle est la plus haute montagne du Canada ?",
       "options": [
-        "Israël et Jordanie",
-        "Égypte et Soudan",
-        "Tchad et Libye",
-        "Arabie saoudite, Iraq"
+        "Mont Logan",
+        "Blue Mountain",
+        "Whistler Mountain",
+        "Mont-TremblantCity in Quebec Canada"
       ],
-      "correctIndex": 1
+      "correctIndex": 0
     },
     {
       "id": "net-3",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Les provinces espagnoles suivantes sont situées dans la région nord de l'Espagne, à l'exception de :",
+      "difficulty": "facile",
+      "question": "Quelle est la 15ème lettre de l'alphabet grec ?",
       "options": [
-        "Asturies",
-        "Navarre",
-        "Murcie",
-        "Le&oacute;n"
+        "Sigma (Σ)",
+        "Pi (Π)",
+        "Omicron (Ο)",
+        "Nu (Ν)"
       ],
       "correctIndex": 2
     },
     {
       "id": "net-4",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Bridgetown est la capitale de quel pays insulaire des Caraïbes ?",
+      "difficulty": "facile",
+      "question": "Lequel des pays arabes suivants N'a pas de drapeau ne contenant que des couleurs panarabes ?",
       "options": [
-        "Cuba",
-        "Jamaïque‎",
-        "Dominique",
-        "Les Barbades"
+        "Koweït",
+        "Qatar",
+        "Emirats Arabes Unis",
+        "Jordanie"
       ],
-      "correctIndex": 3
+      "correctIndex": 1
     },
     {
       "id": "net-5",
       "category": "geographie",
       "difficulty": "moyen",
-      "question": "Quelle est la capitale de la Slovénie ?",
+      "question": "Sur une carte du métro de Londres, de quelle couleur est la ligne Circle ?",
       "options": [
-        "Maribor",
-        "Ljubljana",
-        "Velenje",
-        "Trbovlje Trbovlje"
+        "Vert",
+        "Bleu",
+        "Red",
+        "Yellow"
       ],
-      "correctIndex": 1
+      "correctIndex": 3
     },
     {
       "id": "net-6",
       "category": "geographie",
-      "difficulty": "facile",
-      "question": "Quel est le plus grand désert chaud du monde ?",
+      "difficulty": "moyen",
+      "question": "Laquelle des familles de langues suivantes est la plus controversée parmi les linguistes modernes ?",
       "options": [
-        "Mojave",
-        "Occidentale",
-        "Kalahari",
-        "Le désert de Gobi"
+        "Sino-tibétain",
+        "Altaic",
+        "Dravidien",
+        "Indo-européenne"
       ],
       "correctIndex": 1
     },
     {
       "id": "net-7",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "La masse terrestre de la Turquie moderne s'appelle comment ?",
+      "difficulty": "difficile",
+      "question": "Combien d'îles possède le Koweït ?",
       "options": [
-        "Ottoma",
-        "Ismuth d'Anatolie",
-        "Anatolie",
-        "Ismuth d'Ottoma"
-      ],
-      "correctIndex": 2
-    },
-    {
-      "id": "net-8",
-      "category": "geographie",
-      "difficulty": "facile",
-      "question": "La Cité du Vatican, le plus petit pays du monde, est entièrement fermée par quel pays ?",
-      "options": [
-        "Allemagne",
-        "Italie",
-        "Espagne",
-        "France"
+        "2",
+        "9",
+        "6",
+        "3"
       ],
       "correctIndex": 1
     },
     {
+      "id": "net-8",
+      "category": "geographie",
+      "difficulty": "difficile",
+      "question": "Le préfixe sino- (Comme en sino-américain) est utilisé pour désigner quelle nationalité ?",
+      "options": [
+        "Japanese",
+        "Russe",
+        "Chinois",
+        "Indienne"
+      ],
+      "correctIndex": 2
+    },
+    {
       "id": "net-9",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Lequel des pays suivants fait partie de la zone euro mais ne fait pas partie de l'espace Schengen ?",
+      "difficulty": "difficile",
+      "question": "Quelle rivière a été endiguée pour créer le lac Gatun et le canal de Panama ?",
       "options": [
-        "Malte",
-        "Grèce",
-        "Portugal",
-        "Chypre"
+        "Río Chagres",
+        "Rivière Chepo",
+        "Rivière Chucunaque",
+        "Rivière Tuira"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-10",
       "category": "geographie",
       "difficulty": "moyen",
-      "question": "Quelle est la capitale de la Biélorussie ?",
+      "question": "Quel est le premier parc national désigné aux États-Unis ?",
       "options": [
-        "Kiev",
-        "Minsk",
-        "Varsovie",
-        "Vilnius"
+        "Séquoia",
+        "Yosemite",
+        "Montagnes rocheuses",
+        "Yellowstone"
       ],
-      "correctIndex": 1
+      "correctIndex": 3
     },
     {
       "id": "net-11",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Les Pyrénées sont situées à la frontière de quels deux pays ?",
+      "difficulty": "difficile",
+      "question": "Combien de stations la ligne centrale a-t-elle sur le métro de Londres ?",
       "options": [
-        "Italie et Suisse",
-        "Norvège et Suède",
-        "Russie et Ukraine",
-        "France et Espagne"
+        "51",
+        "43",
+        "47",
+        "<g id=\"1\">49%</g>"
       ],
       "correctIndex": 3
     },
@@ -161,337 +161,337 @@
       "id": "net-12",
       "category": "geographie",
       "difficulty": "facile",
-      "question": "Quel est le plus petit pays du monde ?",
+      "question": "Quel est le nom de l'océan dans lequel se trouve Hawaï ?",
       "options": [
-        "Maldives",
-        "Monaco",
-        "Cité du Vatican",
-        "Malte"
+        "Atlantique",
+        "Indienne",
+        "Antarctique",
+        "Pacifique"
       ],
-      "correctIndex": 2
+      "correctIndex": 3
     },
     {
       "id": "net-13",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Lequel de ces pays borde la Pologne ?",
+      "difficulty": "difficile",
+      "question": "Le canal de Suez est situé dans quel pays africain ?",
       "options": [
-        "France",
-        "Norvège",
-        "Pays-Bas",
-        "Lituanie"
+        "Libye",
+        "Ghana",
+        "Egypte",
+        "Nigeria"
       ],
-      "correctIndex": 3
+      "correctIndex": 2
     },
     {
       "id": "net-14",
       "category": "geographie",
       "difficulty": "moyen",
-      "question": "Quelle est la taille du One World Trade Center à New York ?",
+      "question": "Où se trouve la zone communément appelée le Triangle des Bermudes ?",
       "options": [
-        "1 776 pi",
-        "1 225 pi",
-        "1 888 pi",
-        "1 960 pi"
+        "En mer des Caraibes",
+        "Océan Atlantique Nord, entre la Floride et Porto Rico",
+        "Océan Pacifique Nord, entre le Japon et les États-Unis",
+        "Océan Pacifique Sud, loin du Chili"
       ],
-      "correctIndex": 0
+      "correctIndex": 1
     },
     {
       "id": "net-15",
       "category": "geographie",
       "difficulty": "facile",
-      "question": "Combien d'étoiles figurent sur le drapeau de la Nouvelle-Zélande ?",
+      "question": "Le corps du sphinx égyptien était basé sur quel animal ?",
       "options": [
-        "5",
-        "2",
-        "0",
-        "4"
+        "Lion",
+        "Chien",
+        "Cheval",
+        "Taureau"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-16",
       "category": "geographie",
-      "difficulty": "moyen",
-      "question": "Quelle est la capitale de l'État américain du Texas ?",
+      "difficulty": "difficile",
+      "question": "Bir Tawil, une piste inhabitée de terres revendiquée par aucun pays, est située le long de la frontière de quels deux pays ?",
       "options": [
-        "Santa Fe",
-        "Austin",
-        "Dallas",
-        "Houston"
+        "Égypte et Soudan",
+        "Tchad et Libye",
+        "Arabie saoudite, Iraq",
+        "Israël et Jordanie"
       ],
-      "correctIndex": 1
+      "correctIndex": 0
     },
     {
       "id": "net-17",
       "category": "geographie",
-      "difficulty": "facile",
-      "question": "Quel arrondissement est le plus éloigné au nord de New York ?",
-      "options": [
-        "Brooklyn",
-        "Queens",
-        "Bronx",
-        "Manhattan"
-      ],
-      "correctIndex": 2
-    },
-    {
-      "id": "net-18",
-      "category": "geographie",
       "difficulty": "moyen",
-      "question": "Quelle est la capitale de l'Estonie ?",
+      "question": "Comment s'appelait autrefois la nation africaine du Zimbabwe ?",
       "options": [
-        "Riga",
-        "Tartu",
-        "Tallinn",
-        "Helsinki"
-      ],
-      "correctIndex": 2
-    },
-    {
-      "id": "net-19",
-      "category": "geographie",
-      "difficulty": "difficile",
-      "question": "Dans quelle partie du Pays de Galles trouverez-vous le village Llanfairpwllgwyngyllgogerychwyrndrobwllantysiliogogoch ?",
-      "options": [
-        "Wrexham",
-        "Anglesey",
-        "Bridgend",
-        "Pembrokeshire"
+        "Mozambique",
+        "Zimbabwe",
+        "Bulawayo",
+        "Zambie"
       ],
       "correctIndex": 1
     },
     {
+      "id": "net-18",
+      "category": "geographie",
+      "difficulty": "facile",
+      "question": "Combien de fuseaux horaires la Chine a-t-elle ?",
+      "options": [
+        "1",
+        "3",
+        "4",
+        "2"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-19",
+      "category": "geographie",
+      "difficulty": "moyen",
+      "question": "Lequel de ces pays a la population la moins importante",
+      "options": [
+        "Norvège",
+        "Hong Kong",
+        "Finlande",
+        "Slovaquie"
+      ],
+      "correctIndex": 0
+    },
+    {
       "id": "net-20",
       "category": "geographie",
-      "difficulty": "difficile",
-      "question": "Où se trouve le siège de la chaîne de restauration rapide « Panda Express » ?",
+      "difficulty": "moyen",
+      "question": "Tous les pays suivants ont des revendications territoriales officielles en Antarctique, à l'EXCEPTION de :",
       "options": [
-        "San Diego, Californie (États-Unis)",
-        "Fresno, Californie",
-        "Rosemead, Californie",
-        "Sacramento, Californie"
+        "Australie",
+        "Chili",
+        "Norvège",
+        "États-Unis"
       ],
-      "correctIndex": 2
+      "correctIndex": 3
     },
     {
       "id": "net-21",
       "category": "geographie",
       "difficulty": "difficile",
-      "question": "Quelle est la voie d'escalade la plus courante pour la deuxième plus haute montagne du monde, le K2 ?",
+      "question": "Où se trouve Tombouctou ?",
       "options": [
-        "Ligne magique",
-        "Ligne polonaise",
-        "Route de Cesen",
-        "Éperon des Abruzzes"
+        "Mali, Afrique",
+        "Mauritanie/Afrique",
+        "Azerbaïdjan, Asie",
+        "Bangladesh, Asie"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-22",
       "category": "geographie",
       "difficulty": "moyen",
-      "question": "Quelle ville du Texas est surnommée « La rose jaune du Texas » ?",
+      "question": "Quelle est la capitale du Brésil ?",
       "options": [
-        "AmarilloCity in Texas USA",
-        "Houston",
-        "Frisco",
-        "Fête-Dieu"
+        "Rio de Janeiro",
+        "São Paulo",
+        "Curitiba",
+        "Brésil"
       ],
-      "correctIndex": 0
+      "correctIndex": 3
     },
     {
       "id": "net-23",
       "category": "geographie",
       "difficulty": "moyen",
-      "question": "Quelles îles ci-dessous ont été revendiquées par le Japon et la Russie ?",
+      "question": "Kuala Lumpur est la capitale de quel pays ?",
       "options": [
-        "Les Îles Paracels",
-        "Îles Chagos",
-        "Iles Kouriles",
-        "Îles des Spratleys"
+        "Indonésie",
+        "Singapour",
+        "Thaïlande",
+        "Malaisie"
       ],
-      "correctIndex": 2
+      "correctIndex": 3
     },
     {
       "id": "net-24",
       "category": "geographie",
       "difficulty": "moyen",
-      "question": "Dans quel comté anglais se trouve la ville de Portsmouth ?",
+      "question": "Où se trouve le mur d'Hadrien ?",
       "options": [
-        "Oxfordshire",
-        "Buckinghamshire",
-        "Hampshire",
-        "Surrey"
+        "Carlisle, Angleterre",
+        "Dublin, Irlande",
+        "Alexandrie (Égypte)",
+        "Rome, Italie"
       ],
-      "correctIndex": 2
+      "correctIndex": 0
     },
     {
       "id": "net-25",
       "category": "histoire",
-      "difficulty": "moyen",
-      "question": "En quelle année l'Australie est-elle devenue une fédération ?",
+      "difficulty": "facile",
+      "question": "Le premier Américain dans l’espace",
       "options": [
-        "1910",
-        "1899",
-        "1901",
-        "1911"
+        "John Glenn",
+        "Neil Armstrong",
+        "Jim Lovell",
+        "Alan Shephard"
       ],
-      "correctIndex": 2
+      "correctIndex": 3
     },
     {
       "id": "net-26",
       "category": "histoire",
-      "difficulty": "moyen",
-      "question": "En quelle année Constantinople a-t-elle été conquise par les Turcs ?",
+      "difficulty": "facile",
+      "question": "Quel était le surnom de Manfred von Richthofen ?",
       "options": [
-        "1 453",
-        "1 440",
-        "1435",
-        "1454."
+        "L'Allemand Gunner",
+        "THE RED BARON.",
+        "Le serpent bleu",
+        "The High Flying Ace"
       ],
-      "correctIndex": 0
+      "correctIndex": 1
     },
     {
       "id": "net-27",
       "category": "histoire",
       "difficulty": "moyen",
-      "question": "Quel bâtiment a été incendié le 24 août 1812 ?",
+      "question": "Tous les noms suivants sont des noms des sept États belligérants, à l'EXCEPTION de :",
       "options": [
-        "Palais de la Nation",
-        "La Maison Blanche",
-        "Bâtiment du Parlement",
-        "Assemblée Nationale"
+        "Zhao (趙)",
+        "Qin (秦)",
+        "Qi (齊)",
+        "Zhai (翟)"
       ],
-      "correctIndex": 1
+      "correctIndex": 3
     },
     {
       "id": "net-28",
       "category": "histoire",
       "difficulty": "difficile",
-      "question": "En quelle année le premier restaurant Pizza Hut a-t-il ouvert ses portes ?",
+      "question": "Quel était le vrai nom du dirigeant national albanais Skanderbeg ?",
       "options": [
-        "1942",
-        "1965",
-        "1958",
-        "1976"
+        "Diturak Zhulati",
+        "Mirash Krasniki",
+        "Iskander Bejko",
+        "Gjergj Kastrioti"
       ],
-      "correctIndex": 2
+      "correctIndex": 3
     },
     {
       "id": "net-29",
       "category": "histoire",
-      "difficulty": "moyen",
-      "question": "La guerre de Trente Ans s'est terminée avec quel traité ?",
+      "difficulty": "facile",
+      "question": "En quelle année le Titanic a-t-il coulé ?",
       "options": [
-        "Traité de Paris",
-        "Les traités de Westphalie",
-        "Le traité de Versailles",
-        "La paix de Prague"
+        "1930",
+        "1912",
+        "1 917",
+        "1941"
       ],
       "correctIndex": 1
     },
     {
       "id": "net-30",
       "category": "histoire",
-      "difficulty": "moyen",
-      "question": "Après sa défaite à la bataille de Waterloo, Napoléon Bonaparte a été exilé sur quelle île ?",
+      "difficulty": "facile",
+      "question": "Une collection d'hymnes et de versets sanskrits connus sous le nom de Védas sont des textes sacrés dans quelle religion ?",
       "options": [
-        "St. Helena",
-        "Îles Canaries",
-        "Corse",
-        "Elba"
+        "Judaïsme",
+        "Hindouisme",
+        "Bouddhisme",
+        "Islam"
       ],
-      "correctIndex": 0
+      "correctIndex": 1
     },
     {
       "id": "net-31",
       "category": "histoire",
       "difficulty": "difficile",
-      "question": "En quelle année la Déclaration d'indépendance des États-Unis a-t-elle été signée ?",
+      "question": "Quel était le nom de code de l'invasion alliée du sud de la France le 15 août 1944 ?",
       "options": [
-        "1777",
-        "1774",
-        "1775",
-        "1776"
+        "Opération Dragoon",
+        "Opération Torche",
+        "Opération Market Garden",
+        "Opération Overlord"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-32",
       "category": "histoire",
       "difficulty": "moyen",
-      "question": "Quand la Norvège s'est-elle libérée de la Suède ?",
+      "question": "À qui est attribué le mérite d'avoir enregistré le poème épique L'Odyssée ?",
       "options": [
-        "1814",
-        "1905",
-        "1925",
-        "* 1834."
+        "Homère",
+        "» Socrate",
+        "Ulysse",
+        "Aristote"
       ],
-      "correctIndex": 1
+      "correctIndex": 0
     },
     {
       "id": "net-33",
       "category": "histoire",
-      "difficulty": "difficile",
-      "question": "Quand la Lituanie a-t-elle déclaré son indépendance de l'Union soviétique ?",
+      "difficulty": "facile",
+      "question": "En 1453, quelle ville importante est tombée ?",
       "options": [
-        "20 avril 1989",
-        "11 mars 1990",
-        "(5 décembre)",
-        "25 décembre 1991"
+        "Rome",
+        "Hamburg",
+        "Athènes",
+        "Constantinople"
       ],
-      "correctIndex": 1
+      "correctIndex": 3
     },
     {
       "id": "net-34",
       "category": "histoire",
-      "difficulty": "facile",
-      "question": "À quel parti politique appartenait Abraham Lincoln lorsqu'il a été élu POTUS ?",
+      "difficulty": "moyen",
+      "question": "Quelle nation n'avait PAS de colonie dans l'Amérique du Nord moderne ?",
       "options": [
-        "Démocrate",
-        "Républicain",
-        "Indépendante",
-        "Whig"
+        "Espagne",
+        "Pays-Bas",
+        "Portugal",
+        "Suède"
       ],
-      "correctIndex": 1
+      "correctIndex": 2
     },
     {
       "id": "net-35",
       "category": "histoire",
       "difficulty": "facile",
-      "question": "Pol Pot était l'ancien dictateur de quel pays ?",
+      "question": "Qui était le Premier ministre du Japon lorsque le Japon a déclaré la guerre aux États-Unis ?",
       "options": [
-        "Cambodge",
-        "Vietnam",
-        "Corée du Nord",
-        "Laos"
+        "Hideki Tōjō",
+        "Fumimaro Konoe",
+        "Isoroku Yamamoto",
+        "Michinomiya Hirohito"
       ],
       "correctIndex": 0
     },
     {
       "id": "net-36",
       "category": "histoire",
-      "difficulty": "difficile",
-      "question": "Lequel des physiciens suivants n'a PAS travaillé sur le projet Manhattan ?",
+      "difficulty": "facile",
+      "question": "Combien de navires sœurs étaient liés au TItanic ?",
       "options": [
-        "John Von-Neumann",
-        "J. Robert Oppenheimer",
-        "Murray Gell-Mann",
-        "Feynman"
+        "4",
+        "3",
+        "1",
+        "2"
       ],
-      "correctIndex": 2
+      "correctIndex": 3
     },
     {
       "id": "net-37",
       "category": "histoire",
-      "difficulty": "moyen",
-      "question": "Adolf Hitler est né à quelle date ?",
+      "difficulty": "facile",
+      "question": "En 1720, l'Angleterre s'est endettée massivement et s'est impliquée dans la bulle de la mer du Sud. Qui était le cerveau principal derrière cela ?",
       "options": [
-        "20 avril 1889",
-        "12 juin 1889",
-        "6 février 1889",
-        "16 avril 1889"
+        "John Blunt",
+        "Daniel De Foë",
+        "Robert Harley",
+        "John Churchill"
       ],
       "correctIndex": 0
     },
@@ -499,157 +499,157 @@
       "id": "net-38",
       "category": "histoire",
       "difficulty": "moyen",
-      "question": "Dans quelle prison Adolf Hitler était-il détenu en 1924 ?",
+      "question": "Quand la bataille des Ardennes s'est-elle terminée ?",
       "options": [
-        "Prison de Spandau",
-        "Abbaye d'Ebrach",
-        "Hohenasperg",
-        "Prison de Landsberg"
-      ],
-      "correctIndex": 3
-    },
-    {
-      "id": "net-39",
-      "category": "histoire",
-      "difficulty": "moyen",
-      "question": "En quelle année le mur de Berlin est-il tombé ?",
-      "options": [
-        "1987",
-        "1991",
-        "1989",
-        "1993"
+        "16 décembre 1944",
+        "7 décembre 1941",
+        "25 janvier 1945",
+        "6 août 1945"
       ],
       "correctIndex": 2
     },
     {
-      "id": "net-40",
+      "id": "net-39",
       "category": "histoire",
       "difficulty": "facile",
-      "question": "Quel a été le premier sport à avoir été pratiqué sur la lune ?",
+      "question": "Quel pays moderne est connu comme « Le cimetière des empires » ?",
       "options": [
-        "Golf",
-        "Tennis",
-        "Football américain",
-        "Football"
+        "Irak",
+        "Chine",
+        "Russie",
+        "Afghanistan"
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": "net-40",
+      "category": "histoire",
+      "difficulty": "difficile",
+      "question": "Qui a été le premier homme à voyager dans l'espace ?",
+      "options": [
+        "Yuri Gagarin",
+        "Buzz Aldrin",
+        "Neil Armstrong",
+        "Virgil Ivan « Gus » Grissom"
       ],
       "correctIndex": 0
     },
     {
       "id": "net-41",
       "category": "histoire",
-      "difficulty": "difficile",
-      "question": "Lequel de ces souverains n'appartenait pas à la dynastie des Habsbourg ?",
+      "difficulty": "moyen",
+      "question": "Quel pays était une puissance alliée pendant la Seconde Guerre mondiale ?",
       "options": [
-        "Philippe II",
-        "Francis Joseph",
-        "Charles V",
-        "Philippe V"
+        "Italie",
+        "Union Soviétique",
+        "Allemagne",
+        "Japon"
       ],
-      "correctIndex": 3
+      "correctIndex": 1
     },
     {
       "id": "net-42",
       "category": "histoire",
-      "difficulty": "facile",
-      "question": "Quel était le surnom de Manfred von Richthofen ?",
+      "difficulty": "difficile",
+      "question": "L'ancienne ville de Chichén Itzá a été construite par quelle civilisation ?",
       "options": [
-        "Le serpent bleu",
-        "L'Allemand Gunner",
-        "THE RED BARON.",
-        "The High Flying Ace"
+        "Toltèques.",
+        "Civilisation maya",
+        "Inca",
+        "Aztèques"
       ],
-      "correctIndex": 2
+      "correctIndex": 1
     },
     {
       "id": "net-43",
       "category": "histoire",
       "difficulty": "moyen",
-      "question": "Lequel des rois assyriens suivants n'a PAS régné pendant l'Empire néo-assyrien ?",
+      "question": "Dans quelle prison Adolf Hitler était-il détenu en 1924 ?",
       "options": [
-        "Shamshi-Adad III",
-        "Ashur-nasir-pal II",
-        "Esharhaddon",
-        "Shalmaneser V"
+        "Abbaye d'Ebrach",
+        "Prison de Spandau",
+        "Hohenasperg",
+        "Prison de Landsberg"
       ],
-      "correctIndex": 0
+      "correctIndex": 3
     },
     {
       "id": "net-44",
       "category": "histoire",
       "difficulty": "moyen",
-      "question": "Qui a été le seul président américain à être élu quatre fois ?",
+      "question": "Laquelle de ces installations n'était pas présente sur le Titanic ?",
       "options": [
-        "Theodore Roosevelt",
-        "George Washington",
-        "Abraham Lincoln",
-        "Franklin Roosevelt"
+        "Salle d'évanouissement",
+        "Bain turc",
+        "Niche",
+        "Cour de squash"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-45",
       "category": "histoire",
       "difficulty": "moyen",
-      "question": "À quelle date a eu lieu le premier vol du P-40 Warhawk ?",
+      "question": "Quand O, Canada est-il officiellement devenu l'hymne national ?",
       "options": [
-        "21 août",
-        "1er juin 1939",
-        "12 janvier",
-        "14 octobre"
+        "1880",
+        "1980",
+        "1920",
+        "1950"
       ],
-      "correctIndex": 3
+      "correctIndex": 1
     },
     {
       "id": "net-46",
       "category": "histoire",
-      "difficulty": "facile",
-      "question": "Quand l'Empire byzantin s'est-il effondré ?",
+      "difficulty": "difficile",
+      "question": "Le terme Luddite s'appliquait à l'origine aux travailleurs mécontents dans quelle industrie ?",
       "options": [
-        "1 453",
-        "1353.",
-        "1498",
-        "1299"
+        "Textile",
+        "Céramique",
+        "Secteur minier",
+        "Agriculture"
       ],
       "correctIndex": 0
     },
     {
       "id": "net-47",
       "category": "histoire",
-      "difficulty": "facile",
-      "question": "Lequel de ces pays est resté neutre pendant la Seconde Guerre mondiale ?",
+      "difficulty": "difficile",
+      "question": "Lequel des physiciens suivants n'a PAS travaillé sur le projet Manhattan ?",
       "options": [
-        "France",
-        "Italie",
-        "Suisse",
-        "Royaume-Uni"
+        "J. Robert Oppenheimer",
+        "Murray Gell-Mann",
+        "Feynman",
+        "John Von-Neumann"
       ],
-      "correctIndex": 2
+      "correctIndex": 1
     },
     {
       "id": "net-48",
       "category": "histoire",
-      "difficulty": "moyen",
-      "question": "Quel était le nom de l'un des palais survivants d'Henry VIII situé près de Richmond, à Londres ?",
+      "difficulty": "facile",
+      "question": "Quand sont les ides de mars ?",
       "options": [
-        "Hampton Court",
-        "Coughton Court",
-        "Palais de Buckingham",
-        "La Palais de St. James (V)***"
+        "1er mars",
+        "14 avril",
+        "15 mars",
+        "31 mars"
       ],
-      "correctIndex": 0
+      "correctIndex": 2
     },
     {
       "id": "net-49",
       "category": "histoire",
-      "difficulty": "difficile",
-      "question": "Quel était le nom de l'opération offensive allemande en octobre 1941 pour prendre Moscou avant l'hiver ?",
+      "difficulty": "facile",
+      "question": "Dans quel pays est né Josef Staline ?",
       "options": [
-        "Opération Typhon",
-        "Case Blue",
-        "Opération Barbarossa",
-        "Opération Tournesol"
+        "Allemagne",
+        "Pologne",
+        "Géorgie",
+        "Russie"
       ],
-      "correctIndex": 0
+      "correctIndex": 2
     },
     {
       "id": "net-50",
@@ -657,9 +657,9 @@
       "difficulty": "facile",
       "question": "Combien de lunes possède Pluton ?",
       "options": [
-        "1)",
         "2)",
         "3)",
+        "1)",
         "Cinq"
       ],
       "correctIndex": 3
@@ -667,52 +667,52 @@
     {
       "id": "net-51",
       "category": "sciences",
-      "difficulty": "difficile",
-      "question": "Qu'est-ce que le « sténome » ?",
+      "difficulty": "moyen",
+      "question": "En psychologie, quel besoin apparaît le plus haut dans la pyramide des « besoins hiérarchiques de Maslow » ?",
       "options": [
-        "Une ville portuaire dans les Caraïbes",
-        "Un type d'assaisonnement",
-        "Un genre de papillons",
-        "Un stimulant de combat de la Seconde Guerre mondiale"
+        "Besoins d'Estime",
+        "Physiologique",
+        "Sécurité",
+        "Amour"
       ],
-      "correctIndex": 2
+      "correctIndex": 0
     },
     {
       "id": "net-52",
       "category": "sciences",
       "difficulty": "difficile",
-      "question": "Quelle est l'unité d'inductance électrique ?",
+      "question": "Lequel d'entre eux est un dispositif amplificateur à semi-conducteur ?",
       "options": [
-        "Weber",
-        "Henry",
-        "coulomb",
-        "Mho"
+        "transistor\ntransistor",
+        "Jonction P-N",
+        "diode",
+        "approprié"
       ],
-      "correctIndex": 1
+      "correctIndex": 0
     },
     {
       "id": "net-53",
       "category": "sciences",
-      "difficulty": "facile",
-      "question": "Combien y a-t-il de planètes dans notre système solaire ?",
+      "difficulty": "difficile",
+      "question": "Où se trouve le muscle Gluteus Maximus ?",
       "options": [
-        "Neuf",
-        "Sept",
-        "10",
-        "Huit"
+        "Torse",
+        "Tête",
+        "Bout",
+        "Bras"
       ],
-      "correctIndex": 3
+      "correctIndex": 2
     },
     {
       "id": "net-54",
       "category": "sciences",
       "difficulty": "facile",
-      "question": "Quel est le nom commun du composé chimique « monoxyde de dihydrogène » ?",
+      "question": "Quel est le poids atomique standard d'un noyau de plutonium ?",
       "options": [
-        "Méthane",
-        "Ammoniac",
-        "Eau",
-        "Gaz hilarant"
+        "94",
+        "481",
+        "244",
+        "128"
       ],
       "correctIndex": 2
     },
@@ -720,51 +720,51 @@
       "id": "net-55",
       "category": "sciences",
       "difficulty": "moyen",
-      "question": "À quelle profondeur devez-vous effectuer un arrêt de décompression, ou un arrêt de sécurité, lors d'une plongée sous-marine typique ?",
+      "question": "Quelle navette spatiale de la NASA s'est brisée lors de la rentrée atmosphérique le 1er février 2003 ?",
       "options": [
-        "15 pieds / 5 mètres",
-        "75 pieds / 23 mètres",
-        "50 pieds / 15 mètres",
-        "25 pieds / 7,5 mètres"
+        "Challengeur",
+        "Découverte",
+        "Endeavour",
+        "Brésil"
       ],
-      "correctIndex": 0
+      "correctIndex": 3
     },
     {
       "id": "net-56",
       "category": "sciences",
       "difficulty": "difficile",
-      "question": "Combien de protons y a-t-il dans un atome d'oxygène ?",
+      "question": "Lequel de ces composés chimiques NE se trouve PAS dans l'acide gastrique ?",
       "options": [
-        "Quatre",
-        "2)",
-        "Six",
-        "Huit"
+        "Acide sulfurique",
+        "Chlorure de sodium",
+        "Chlorure de potassium",
+        "Acide chlorhydrique"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-57",
       "category": "sciences",
       "difficulty": "moyen",
-      "question": "Quel est le nom de la couche la plus basse de l'atmosphère terrestre ?",
+      "question": "Quel est le numéro atomique de l'uranium",
       "options": [
-        "Stratosphère",
-        "Mésosphère",
-        "Troposphère",
-        "Thermosphère"
+        "167",
+        "17",
+        "92",
+        "235"
       ],
       "correctIndex": 2
     },
     {
       "id": "net-58",
       "category": "sciences",
-      "difficulty": "difficile",
-      "question": "La fibre musculaire est constituée de faisceaux de petits organites longs appelés quoi ?",
+      "difficulty": "moyen",
+      "question": "Quelle est la formule moléculaire du composant actif des piments(capsaïcine) ?",
       "options": [
-        "Myofibrilles",
-        "Myofiaments",
-        "Muscle cardiaque",
-        "Épimysium"
+        "C18H27NO3",
+        "C21H23NO3",
+        "C6H4Cl2",
+        "C13H25NO4"
       ],
       "correctIndex": 0
     },
@@ -772,64 +772,64 @@
       "id": "net-59",
       "category": "sciences",
       "difficulty": "facile",
-      "question": "Quelle mission Apollo a été la première à atterrir sur la Lune ?",
+      "question": "71% de la surface de la Terre est composée de",
       "options": [
-        "Apollo",
-        "Apollo 11",
-        "Apollo 9",
-        "Apollo 13"
+        "Continents",
+        "Douceurs",
+        "Eau",
+        "Forêts"
       ],
-      "correctIndex": 1
+      "correctIndex": 2
     },
     {
       "id": "net-60",
       "category": "sciences",
-      "difficulty": "facile",
-      "question": "Combien de lunes la Terre a-t-elle ?",
+      "difficulty": "difficile",
+      "question": "Lequel des termes suivants désigne les « complications chirurgicales résultant d'éponges chirurgicales laissées à l'intérieur du corps du patient ?",
       "options": [
-        "0",
-        "1",
-        "2",
-        "3"
+        "Gongoozler",
+        "Meuparéunie",
+        "Gossypiboma",
+        "Jentaculaire"
       ],
-      "correctIndex": 1
+      "correctIndex": 2
     },
     {
       "id": "net-61",
       "category": "sciences",
       "difficulty": "moyen",
-      "question": "Lequel de ces éléments NE FAIT PAS partie de la structure d'un neurone typique ?",
+      "question": "Dans quoi mesure-t-on le rayonnement ?",
       "options": [
-        "Gaine de myéline",
-        "Ilots de Langerhans",
-        "Cellule de Schwann",
-        "Noeud de Ranvier"
-      ],
-      "correctIndex": 1
-    },
-    {
-      "id": "net-62",
-      "category": "sciences",
-      "difficulty": "facile",
-      "question": "Vénus est la planète la plus chaude du système solaire.",
-      "options": [
-        "Jupiter",
-        "Mars",
-        "Mercure",
-        "Venus"
+        "Watt",
+        "Décibel",
+        "Kelvin",
+        "Gris"
       ],
       "correctIndex": 3
     },
     {
-      "id": "net-63",
+      "id": "net-62",
       "category": "sciences",
       "difficulty": "moyen",
-      "question": "L'eau désionisée est de l'eau avec laquelle des substances suivantes a été retirée ?",
+      "question": "Quel terme psychologique fait référence au stress d'avoir des croyances contrastées ?",
       "options": [
-        "Atomes non chargés",
+        "Dissonance cognitive",
+        "extinction",
+        "Cerveau divisé",
+        "Syndrome de la bascule"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "net-63",
+      "category": "sciences",
+      "difficulty": "facile",
+      "question": "L'élément impliqué dans la rougeur du sang humain est lequel des éléments suivants ?",
+      "options": [
+        "Cobalt",
         "Fer",
-        "Hydrogène",
-        "Oxygène"
+        "Cuivre",
+        "2. Marquage des numéros ONU sur les colis 69 15"
       ],
       "correctIndex": 1
     },
@@ -837,116 +837,116 @@
       "id": "net-64",
       "category": "sciences",
       "difficulty": "moyen",
-      "question": "Quelle était la catégorie de l'ouragan de 2005, l'ouragan Katrina, dans l'échelle de vent de l'ouragan Saffir-Simpson ?",
+      "question": "Quel désert est le seul désert au monde où pousse localement le cactus « Saguaro » ?",
       "options": [
-        "Catégorie 1",
-        "Catégorie 4",
-        "Catégorie 2",
-        "Catégorie 5"
+        "Le désert de Gobi",
+        "Le désert de Yuma",
+        "Désert d'Arabie",
+        "Désert de Sonora"
       ],
       "correctIndex": 3
     },
     {
       "id": "net-65",
       "category": "sciences",
-      "difficulty": "moyen",
-      "question": "Le ménisque médial forme quelle partie de quelle articulation du corps humain ?",
+      "difficulty": "difficile",
+      "question": "Lequel des éléments suivants est considéré comme un conditionnement classique ?",
       "options": [
-        "Coude",
-        "Genou",
-        "Épaule",
-        "Cheville"
-      ],
-      "correctIndex": 1
-    },
-    {
-      "id": "net-66",
-      "category": "sciences",
-      "difficulty": "facile",
-      "question": "Cet élément, lorsqu'il est surmonté par une chaleur et une pression extrêmes, crée des diamants.",
-      "options": [
-        "Hydrogène",
-        "Oxygène",
-        "Azote",
-        "c"
+        "Expérience de boîte Skinner",
+        "Expérience chat de Schrödinger",
+        "Expériences sur les singes de Harlow",
+        "Expériences sur les chiens de Pavlov"
       ],
       "correctIndex": 3
     },
     {
+      "id": "net-66",
+      "category": "sciences",
+      "difficulty": "moyen",
+      "question": "Qui a fait la découverte des rayons X ?",
+      "options": [
+        "Wilhelm Conrad Röntgen",
+        "Albert Einstein",
+        "Thomas Alva Edison",
+        "James Watt"
+      ],
+      "correctIndex": 0
+    },
+    {
       "id": "net-67",
       "category": "sciences",
-      "difficulty": "facile",
-      "question": "Que signifie LASER ?",
+      "difficulty": "moyen",
+      "question": "Lequel des éléments suivants est la partie reproductrice productrice de pollen mâle d'une fleur ?",
       "options": [
-        "Amplification de la lumière par émission stimulée de rayonnement",
-        "Analyse Lite par stéréo ecorazer",
-        "Amplificateur de lumière par énergie de veille de la radio",
-        "Anti-matière de vie par entrée debout de la gamme"
+        "L’étamine",
+        "Pétale",
+        "Pistil",
+        "Sépale"
       ],
       "correctIndex": 0
     },
     {
       "id": "net-68",
       "category": "sciences",
-      "difficulty": "moyen",
-      "question": "Quel élément chimique a le point d'ébullition le plus bas ?",
+      "difficulty": "difficile",
+      "question": "Combien y a-t-il de types de quarks dans le modèle standard de la physique ?",
       "options": [
-        "- - - Néon",
-        "Hydrogène",
-        "Azote",
-        "Hélium"
+        "6",
+        "4",
+        "3",
+        "2"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-69",
       "category": "sciences",
-      "difficulty": "moyen",
-      "question": "Lequel des éléments suivants N'EST PAS un composant électrique passif ?",
+      "difficulty": "difficile",
+      "question": "En physique, la conservation de l'énergie et la conservation de l'élan sont les deux conséquences de laquelle des suivantes ?",
       "options": [
-        "Inductance",
-        "Résistance",
-        "Transistor",
-        "Condensateur"
+        "Théorème de Bell",
+        "Théorème de Noether",
+        "Théorème de Wick",
+        "Théorème de Carnot"
       ],
-      "correctIndex": 2
+      "correctIndex": 1
     },
     {
       "id": "net-70",
       "category": "sciences",
-      "difficulty": "difficile",
-      "question": "Qu'est-ce qui n'est pas un type de neurone ?",
+      "difficulty": "moyen",
+      "question": "Combien de degrés Fahrenheit fait 100 degrés Celsius ?",
       "options": [
-        "Cellules réceptrices sensorielles",
-        "Motoneurones",
-        "Interneurones",
-        "Neurone perceptuel"
+        "326",
+        "212",
+        "100",
+        "451"
       ],
-      "correctIndex": 3
+      "correctIndex": 1
     },
     {
       "id": "net-71",
       "category": "sciences",
-      "difficulty": "moyen",
-      "question": "Combien de degrés Fahrenheit fait 100 degrés Celsius ?",
+      "difficulty": "facile",
+      "question": "Quel est le nom donné à tous les bébés marsupiaux ?",
       "options": [
-        "212",
-        "451",
-        "100",
-        "326"
+        "Le mollet",
+        "Joey",
+        "chiot",
+        "Ourson"
       ],
-      "correctIndex": 0
+      "correctIndex": 1
     },
     {
       "id": "net-72",
       "category": "sciences",
       "difficulty": "moyen",
-      "question": "Environ combien de temps dure une année sur Uranus ?",
+      "question": "Laquelle de ces étoiles est la plus grande ?",
       "options": [
-        "84,01 années terrestres",
-        "109 années terrestres",
-        "62 années terrestres",
-        "47 années terrestres"
+        "UY Scuti",
+        "Betelgeusestar name",
+        "RW Cephei",
+        "VY Canis Majoris"
       ],
       "correctIndex": 0
     },
@@ -954,129 +954,129 @@
       "id": "net-73",
       "category": "sciences",
       "difficulty": "moyen",
-      "question": "Quand le premier mammifère a-t-il été cloné avec succès ?",
+      "question": "Quelle partie du corps produit de l'insuline ?",
       "options": [
-        "1996",
-        "1985",
-        "1999",
-        "2009"
+        "Rein",
+        "Pancréas",
+        "Foie",
+        "Estomac"
       ],
-      "correctIndex": 0
+      "correctIndex": 1
     },
     {
       "id": "net-74",
       "category": "sciences",
-      "difficulty": "moyen",
-      "question": "Laquelle de ces deux plaques est la mieux connue pour former des tremblements de terre et des tsunamis ?",
+      "difficulty": "facile",
+      "question": "La maladie d'Alzheimer affecte principalement quelle partie du corps humain ?",
       "options": [
-        "Limites des plaques divergentes/Croûte convergente/océanique",
-        "Limites des plaques convergentes/Croûte océanique",
-        "Transformer les limites des plaques/limites des plaques divergentes",
-        "Limites des plaques de la croûte océanique et continentale/transformation"
+        "Peau",
+        "Cerveau",
+        "Poumons",
+        "J'aime"
       ],
       "correctIndex": 1
     },
     {
       "id": "net-75",
       "category": "informatique",
-      "difficulty": "facile",
-      "question": "Lorsque Gmail a été lancé pour la première fois, quelle quantité de stockage fournissait-il pour votre courrier électronique ?",
+      "difficulty": "difficile",
+      "question": "Quel type de réseau RAID est associé à la mise en miroir des données ?",
       "options": [
-        "5 Go",
-        "1 Go",
-        "512MB",
-        "Illimité"
+        "RAID 1",
+        "RAID 0.",
+        "RAID 10",
+        "RAID 5"
       ],
-      "correctIndex": 1
+      "correctIndex": 0
     },
     {
       "id": "net-76",
       "category": "informatique",
       "difficulty": "difficile",
-      "question": "Quel était le nom du premier ordinateur personnel bulgare ?",
+      "question": "Sur quel port HTTP s'exécute-t-il ?",
       "options": [
-        "Pravetz 82",
-        "Pravetz 8D",
-        "IZOT 1030",
-        "IMKO-1"
+        "53",
+        "443",
+        "23",
+        "80"
       ],
       "correctIndex": 3
     },
     {
       "id": "net-77",
       "category": "informatique",
-      "difficulty": "facile",
-      "question": "Avec quel langage informatique associeriez-vous le framework Django ?",
+      "difficulty": "moyen",
+      "question": "Que signifie l'acronyme CDN en termes de réseautage ?",
       "options": [
-        "Python",
-        "C++",
-        "C#",
-        "Java"
+        "Réseau de données compressées",
+        "Réseau de données computationnelles",
+        "Réseau de distribution de contenu",
+        "Réseau de distribution de contenu"
       ],
-      "correctIndex": 0
+      "correctIndex": 2
     },
     {
       "id": "net-78",
       "category": "informatique",
       "difficulty": "moyen",
-      "question": ".at est le domaine de premier niveau pour quel pays ?",
+      "question": "Quel est le nombre de touches sur un clavier Windows standard ?",
       "options": [
-        "Argentine",
-        "Australie",
-        "Angola",
-        "L'Autriche"
+        "104",
+        "64",
+        "76",
+        "94"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-79",
       "category": "informatique",
       "difficulty": "moyen",
-      "question": "Quel mot de cinq lettres est la devise de la société IBM Computer ?",
+      "question": "Quand le service de streaming en ligne « Mixer » a-t-il été lancé ?",
       "options": [
-        "Cliquer",
-        "Pixel",
-        "Logique",
-        "Think"
+        "2009",
+        "2013",
+        "2016",
+        "2011"
       ],
-      "correctIndex": 3
+      "correctIndex": 2
     },
     {
       "id": "net-80",
       "category": "informatique",
-      "difficulty": "moyen",
-      "question": "La loi de Moore indiquait à l'origine que le nombre de transistors sur une puce de microprocesseur doublerait tous les...",
+      "difficulty": "facile",
+      "question": "Combien de bits y a-t-il généralement dans un seul octet ?",
       "options": [
-        "Quatre ans",
-        "Deux années",
-        "Encore une.",
-        "Années"
+        "Huit bits",
+        "Quinze bits",
+        "Douze bits",
+        "Six bits"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-81",
       "category": "informatique",
       "difficulty": "facile",
-      "question": "En informatique, que signifie midi ?",
+      "question": "Quel type de mémoire est utilisé sur le cache mémoire ?",
       "options": [
-        "MIDI",
-        "Interface modulaire des instruments numériques",
-        "Interface de données d'instrument de musique",
-        "interface MIDI"
+        "Clignotant",
+        "ROM",
+        "SRAM",
+        "DRAM"
       ],
-      "correctIndex": 3
+      "correctIndex": 2
     },
     {
       "id": "net-82",
       "category": "informatique",
-      "difficulty": "facile",
-      "question": "La série de la génération graphique Intel HD succédant à celle des séries 5000 et 6000 (Broadwell) s'appelle :",
+      "difficulty": "moyen",
+      "question": "Lequel des langages suivants est utilisé comme langage de script dans le moteur de jeu Unity 3D ?",
       "options": [
-        "Graphiques HD",
-        "Graphiques HD",
-        "Graphiques HD",
-        "Graphiques HD"
+        "C#",
+        "Objective-C",
+        "C++",
+        "Java"
       ],
       "correctIndex": 0
     },
@@ -1084,51 +1084,51 @@
       "id": "net-83",
       "category": "informatique",
       "difficulty": "moyen",
-      "question": "En programmation, comment appelez-vous les fonctions portant le même nom mais des implémentations différentes ?",
+      "question": "Quel est le nom donné à Android 4.3 ?",
       "options": [
-        "Héritage...",
-        "Bibliographies analytiques",
-        "Surcharge",
-        "Écrasement"
+        "Sucette",
+        "Jelly Bean",
+        "Nutella",
+        "Froyo"
       ],
-      "correctIndex": 2
+      "correctIndex": 1
     },
     {
       "id": "net-84",
       "category": "informatique",
-      "difficulty": "facile",
-      "question": "Que signifie l'acronyme du logiciel informatique JVM ?",
+      "difficulty": "difficile",
+      "question": "Lequel de ces interrupteurs à clavier mécaniques Cherry MX est à la fois tactile et cliquable ?",
       "options": [
-        "Machine virtuelle",
-        "Machine visuelle Java",
-        "Machine virtuelle Java",
-        "Machine de fournisseur Java"
+        "Bleu cerise MX",
+        "Marron cerise MX",
+        "Cherry MX Red",
+        "Cherry MX - Noir"
       ],
-      "correctIndex": 2
+      "correctIndex": 0
     },
     {
       "id": "net-85",
       "category": "informatique",
       "difficulty": "moyen",
-      "question": "Quel est le nom donné à Android 4.3 ?",
+      "question": "Tous les programmes suivants sont classés comme éditeurs graphiques raster SAUF :",
       "options": [
-        "Jelly Bean",
-        "Froyo",
-        "Nutella",
-        "Sucette"
+        "Paint.NET",
+        "GIMP",
+        "Adobe Photoshop",
+        "Inkscape"
       ],
-      "correctIndex": 0
+      "correctIndex": 3
     },
     {
       "id": "net-86",
       "category": "informatique",
       "difficulty": "moyen",
-      "question": "Quelle société Internet a commencé sa vie en tant que librairie en ligne appelée « Cadabra » ?",
+      "question": "Quelle est la vitesse théorique de l'USB 3.1 Gen 2 ?",
       "options": [
-        "Shopify",
-        "Amazon",
-        "Stock",
-        "eBay"
+        "1 Gb/s",
+        "<g id=\"1\">☐<x id=\"2\"/></g><g id=\"3\"> 10 Gb/s</g>",
+        "8 Gbit/s",
+        "5 Gbit/s"
       ],
       "correctIndex": 1
     },
@@ -1136,103 +1136,103 @@
       "id": "net-87",
       "category": "informatique",
       "difficulty": "moyen",
-      "question": "Tous les programmes suivants sont classés comme éditeurs graphiques raster SAUF :",
+      "question": "Que signifie le terme MIME en ce qui concerne l'informatique ?",
       "options": [
-        "GIMP",
-        "Paint.NET",
-        "Adobe Photoshop",
-        "Inkscape"
+        "Échange de courrier entrelacé polyvalent",
+        "MIME",
+        "Mail Internet Mail Exchange",
+        "Échange de méthode d'entrelacement de courrier"
       ],
-      "correctIndex": 3
+      "correctIndex": 1
     },
     {
       "id": "net-88",
       "category": "informatique",
-      "difficulty": "moyen",
-      "question": "À l'origine utilisé dans les adaptateurs PCM, quelle est la fréquence standard pour l'échantillonnage audio au format Compact Disc Digital Audio ?",
+      "difficulty": "facile",
+      "question": "Que signifie le « MP » en MP3 ?",
       "options": [
-        "32,0 kHz",
-        "1,5 MHz",
-        "20,5 kHz",
-        "44,1 Hz"
+        "du Soleil",
+        "image en mouvement",
+        "Music Player",
+        "Micro Point"
       ],
-      "correctIndex": 3
+      "correctIndex": 1
     },
     {
       "id": "net-89",
       "category": "informatique",
-      "difficulty": "difficile",
-      "question": "Quel est le principal langage de programmation utilisé par Unreal Engine 4 ?",
+      "difficulty": "facile",
+      "question": "Dans n'importe quel langage de programmation, quelle est la façon la plus courante d'itérer à travers un tableau ?",
       "options": [
-        "Assemblage",
-        "C#",
-        "ECMAScript",
-        "C++"
+        "boucles for",
+        "boucles while",
+        "Déclarations « Si »",
+        "Boucles « Do-while »"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-90",
       "category": "informatique",
       "difficulty": "difficile",
-      "question": "Quel type de réseau RAID est associé à la mise en miroir des données ?",
+      "question": "L'acronyme « RIP » signifie lequel d'entre eux ?",
       "options": [
-        "RAID 1",
-        "RAID 0.",
-        "RAID 5",
-        "RAID 10"
+        "protocole RIP",
+        "Protocole d'inspection de routine",
+        "Processus d'intervalle régulier",
+        "Processus d'instance d'exécution"
       ],
       "correctIndex": 0
     },
     {
       "id": "net-91",
       "category": "informatique",
-      "difficulty": "facile",
-      "question": "Dans quel langage de programmation GitHub a-t-il été écrit ?",
+      "difficulty": "moyen",
+      "question": "Les imprimantes à jet laser et à jet d'encre sont toutes deux des exemples de quel type d'imprimante ?",
       "options": [
-        "Python",
-        "JavaScript",
-        "Ruby",
-        "Lua"
+        "Imprimante par impact",
+        "Imprimante à marguerite",
+        "imprimante sans impact",
+        "Imprimante matricielle par points."
       ],
       "correctIndex": 2
     },
     {
       "id": "net-92",
       "category": "informatique",
-      "difficulty": "facile",
-      "question": "Sur un clavier QWERTY américain standard, quel symbole allez-vous entrer si vous maintenez la touche Shift enfoncée et appuyez sur 1 ?",
+      "difficulty": "moyen",
+      "question": "Quel est le nom du thème par défaut installé avec Windows XP ?",
       "options": [
-        "Symbole du dollar",
-        "Astérisque",
-        "Point d'exclamation",
-        "Symbole du pourcentage"
+        "Whistler",
+        "Luna",
+        "Neptune",
+        "Béatitude"
       ],
-      "correctIndex": 2
+      "correctIndex": 1
     },
     {
       "id": "net-93",
       "category": "informatique",
-      "difficulty": "facile",
-      "question": "Quel est le nom de la couche 7 du modèle OSI ?",
+      "difficulty": "moyen",
+      "question": "Qu'est-ce qui est largement considéré comme le précurseur du format USB ?",
       "options": [
-        "Session",
-        "Réseau",
-        "Application",
-        "Poste actuel"
+        "FireWire",
+        "PS/2",
+        "PCIe",
+        "SVGA"
       ],
-      "correctIndex": 2
+      "correctIndex": 1
     },
     {
       "id": "net-94",
       "category": "informatique",
-      "difficulty": "difficile",
-      "question": "Quel est le nom du processus qui envoie un qubit d'information en utilisant deux bits d'information classique ?",
+      "difficulty": "moyen",
+      "question": "Quel système d'exploitation a été lancé en premier ?",
       "options": [
-        "Codage super dense",
-        "Intrication quantique",
-        "Programmation quantique",
-        "Téléportation quantique"
+        "Fenêtres",
+        "Linux",
+        "OS/2",
+        "Mac OS"
       ],
       "correctIndex": 3
     },
@@ -1240,12 +1240,12 @@
       "id": "net-95",
       "category": "informatique",
       "difficulty": "facile",
-      "question": "Quel est le format d'image préféré utilisé pour les logos dans la base de données Wikimedia ?",
+      "question": "En informatique, combien de bits y a-t-il dans un grignotage ?",
       "options": [
-        ".gif",
-        "Taille des icônes SVG",
-        ".png",
-        ".jpeg"
+        "16",
+        "4",
+        "2",
+        "32"
       ],
       "correctIndex": 1
     },
@@ -1253,53 +1253,53 @@
       "id": "net-96",
       "category": "informatique",
       "difficulty": "moyen",
-      "question": "Quel système d'exploitation a été lancé en premier ?",
+      "question": "La théière souvent vue dans de nombreuses applications de modélisation 3D s'appelle quoi ?",
       "options": [
-        "Mac OS",
-        "OS/2",
-        "Linux",
-        "Fenêtres"
+        "Théière Tennessee",
+        "Théière 3D",
+        "Théière Pixar",
+        "Théière Utah"
       ],
-      "correctIndex": 0
+      "correctIndex": 3
     },
     {
       "id": "net-97",
       "category": "informatique",
       "difficulty": "moyen",
-      "question": "Lequel des langages suivants est utilisé comme langage de script dans le moteur de jeu Unity 3D ?",
+      "question": "Quel jour le World Wide Web est-il passé en ligne ?",
       "options": [
-        "Java",
-        "C++",
-        "Objective-C",
-        "C#"
+        "20 décembre 1990",
+        "12 novembre 1990",
+        "17 décembre 1996",
+        "24 novembre 1995"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     },
     {
       "id": "net-98",
       "category": "informatique",
-      "difficulty": "moyen",
-      "question": "La théière souvent vue dans de nombreuses applications de modélisation 3D s'appelle quoi ?",
+      "difficulty": "facile",
+      "question": "Quel est le format d'image préféré utilisé pour les logos dans la base de données Wikimedia ?",
       "options": [
-        "Théière Utah",
-        "Théière Pixar",
-        "Théière 3D",
-        "Théière Tennessee"
+        ".gif",
+        ".png",
+        ".jpeg",
+        "Taille des icônes SVG"
       ],
-      "correctIndex": 0
+      "correctIndex": 3
     },
     {
       "id": "net-99",
       "category": "informatique",
       "difficulty": "moyen",
-      "question": "Quand le langage de programmation « C# » a-t-il été publié ?",
+      "question": "Le temps Unix est défini comme le nombre de secondes écoulées depuis quand ?",
       "options": [
-        "1998",
-        "1999",
-        "2001",
-        "2000"
+        "Minuit, le 1er janvier 1970",
+        "Minuit, le 4 juillet 1980",
+        "Minuit le jour de l'anniversaire du créateur d'Unix",
+        "Minuit, le 4 juillet 1976"
       ],
-      "correctIndex": 3
+      "correctIndex": 0
     }
   ]
 }

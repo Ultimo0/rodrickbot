@@ -108,7 +108,19 @@ function handleConnectionUpdate(update, sock, onReady) {
     stopped = false;
     if (!readyCalled) {
       readyCalled = true;
-      onReady(sock);
+      // onReady() n'est pas awaited ici par nature (ce callback n'est pas
+      // async) — s'il rejette (ex: sendStartupMessage échoue faute de
+      // réseau) sans ce .catch(), c'était une promesse rejetée jamais
+      // gérée : plantage de tout le process (voir boot.mjs pour le filet
+      // de sécurité global, mais autant intercepter ici avec un message
+      // d'erreur qui a du contexte plutôt que le générique).
+      try {
+        Promise.resolve(onReady(sock)).catch((err) => {
+          logger.error({ err }, "Erreur dans onReady() après connexion (le bot continue)");
+        });
+      } catch (err) {
+        logger.error({ err }, "Erreur synchrone dans onReady() après connexion (le bot continue)");
+      }
     }
   }
 

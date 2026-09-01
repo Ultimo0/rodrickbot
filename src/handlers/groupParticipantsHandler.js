@@ -2,6 +2,7 @@ import { getGroupSettings } from '../core/groupSettings.js';
 import { handlePromoteGuard } from '../utils/antipromote.js';
 import { handlePurgeGuard } from '../utils/antipurge.js';
 import { getCurrentTheme } from '../themes/engine.js';
+import { sendChannelMessage } from '../utils/channelCard.js';
 import { logger } from '../utils/logger.js';
 
 function applyPlaceholders(template, { number, groupName }) {
@@ -45,7 +46,7 @@ export function createGroupParticipantsHandler(sock) {
             ? theme.renderWelcome({ number, groupName: metadata.subject })
             : theme.renderBye({ number, groupName: metadata.subject });
 
-        await sock.sendMessage(chatId, { text, mentions: [jid] });
+        await sendChannelMessage(sock, chatId, { text, mentions: [jid] });
       }
     } catch (err) {
       logger.warn({ err }, 'Erreur lors du traitement de group-participants.update');
