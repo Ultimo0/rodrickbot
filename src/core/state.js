@@ -1,9 +1,9 @@
 import { readFileSync, existsSync } from 'fs';
 import { atomicWriteFileSync } from '../utils/atomicWrite.js';
-import path from 'path';
+import { dataFilePath } from '../utils/dataFile.js';
 import { logger } from '../utils/logger.js';
 
-const STATE_FILE = path.join(process.cwd(), 'state.json');
+const STATE_FILE = dataFilePath('state.json');
 
 let state = {
   // Si true: seul l'admin (défini dans ADMIN_JIDS) peut utiliser le bot,
@@ -93,6 +93,21 @@ export function incrementMessageCount() {
 
 export function getMessageCount() {
   return processedMessageCount;
+}
+
+// Heure de la dernière connexion réussie (voir core/client.js, événement
+// `connection === 'open'`). Volontairement non persisté non plus : sert
+// uniquement à filtrer les messages "de rattrapage" (envoyés pendant que
+// le bot était hors ligne) juste après CETTE connexion — voir
+// handlers/messageHandler.js.
+let connectedAt = 0;
+
+export function markConnectedNow() {
+  connectedAt = Date.now();
+}
+
+export function getConnectedAt() {
+  return connectedAt;
 }
 
 /** Incrémente le compteur d'usage d'une commande (par son nom canonique). */

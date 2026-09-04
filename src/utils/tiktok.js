@@ -5,6 +5,8 @@ const TIKTOK_URL_REGEX = /https?:\/\/(www\.|vt\.|vm\.|m\.)?tiktok\.com\/\S+/i;
 // Au-delà, le téléchargement devient trop lourd pour un bot WhatsApp.
 const MAX_DURATION_SECONDS = 20 * 60;
 
+const PAGE_STRUCTURE_ERROR_REGEX = /rehydration|universal data|webpage video data/i;
+
 /** true si le texte contient un lien TikTok. */
 export function isTikTokUrl(text) {
   return TIKTOK_URL_REGEX.test(text || '');
@@ -21,33 +23,22 @@ function sleep(ms) {
 }
 
 /**
- * Récupère les infos de la vidéo (titre, durée) via yt-dlp, sans la
- * télécharger.
+ * Récupère les infos de la vidéo (titre, durée) via yt-dlp.
  *
  * Historique :
- * 1. Ce module interrogeait au départ l'API tierce tikwm.com, qui a fini
- *    par se refermer derrière une offre payante (tikwmapi.com) — 403
- *    permanente, quel que soit le User-Agent envoyé.
- * 2. Bascule sur yt-dlp (extracteur TikTok natif, déjà fiabilisé pour
- *    YouTube/Facebook dans utils/youtube.js) — mais TikTok casse
- *    régulièrement son extracteur côté yt-dlp lui-même en changeant la
- *    structure de sa page ("Unable to extract universal data for
- *    rehydration"). C'est un problème CONNU et récurrent (voir
- *    yt-dlp/yt-dlp#16199, #15418, #14859...), corrigé à chaque fois côté
- *    yt-dlp en quelques jours. La release 2026.08.19 par exemple contient
- *    justement "tiktok: Fix extractor (#17452)".
- *
- * ⚠️ Si cette erreur revient : la CAUSE LA PLUS PROBABLE est un binaire
- * yt-dlp local devenu trop vieux. `fix-ytdlp.cjs` télécharge la dernière
- * release GitHub au moment où il tourne (postinstall), pas à chaque
- * lancement du bot — il faut donc le relancer manuellement de temps en
- * temps : `node fix-ytdlp.cjs` à la racine du projet, puis redémarrer le
- * bot. Ce n'est pas un correctif de code, c'est une mise à jour de binaire.
- *
- * En complément, on retente une fois automatiquement : plusieurs issues
- * yt-dlp décrivent ce problème comme intermittent (fonctionne au 2e essai
- * même sans rien changer), probablement lié à du rate-limiting ponctuel
- * côté TikTok.
+ * 1. API tierce tikwm.com au départ — fermée derrière une offre payante,
+ *    403 permanente quel que soit le User-Agent (voir CHANGELOG 1.32.0).
+ * 2. Bascule sur yt-dlp — TikTok casse régulièrement son extracteur en
+ *    changeant la structure de ses pages ("Unable to extract universal
+ *    data for rehydration"), corrigé côté yt-dlp en quelques jours à
+ *    chaque fois. Un rafraîchissement automatique du binaire toutes les
+ *    24h (core/ytdlpAutoUpdater.js) et un essai supplémentaire après une
+ *    courte pause couvrent la plupart des cas.
+ * 3. Repli navigateur headless (Playwright/Chromium) — retiré en 1.44.0
+ *    (trop lourd en RAM pour les hébergements contraints visés par ce
+ *    bot). Si yt-dlp échoue avec l'erreur de structure de page ci-dessus
+ *    après retry, il n'y a désormais plus de repli : voir
+ *    explainTikTokError pour le message renvoyé à l'utilisateur.
  */
 export async function fetchTikTokData(url) {
   const attempt = () =>
@@ -63,11 +54,11 @@ export async function fetchTikTokData(url) {
   try {
     info = await attempt();
   } catch (err) {
-    if (!/rehydration|universal data|webpage video data/i.test(err?.message || '')) {
+    if (!PAGE_STRUCTURE_ERROR_REGEX.test(err?.message || '')) {
       throw new Error(explainTikTokError(err));
     }
     // Erreur connue comme intermittente : une seconde tentative après une
-    // courte pause suffit souvent (voir commentaire ci-dessus).
+    // courte pause suffit souvent.
     await sleep(2000);
     try {
       info = await attempt();
@@ -90,10 +81,10 @@ export async function fetchTikTokData(url) {
  */
 export function explainTikTokError(err) {
   const raw = err?.message || String(err);
-  if (/rehydration|universal data|webpage video data/i.test(raw)) {
+  if (PAGE_STRUCTURE_ERROR_REGEX.test(raw)) {
     return (
-      "TikTok a changé la structure de ses pages et bloque momentanément l'extraction (erreur connue de yt-dlp). " +
-      "Le correctif vient généralement de yt-dlp en quelques jours — si ça persiste, le binaire du bot a besoin d'une mise à jour (node fix-ytdlp.cjs)."
+      "TikTok a changé la structure de ses pages et bloque momentanément l'extraction. " +
+      "Le correctif vient généralement de yt-dlp en quelques jours."
     );
   }
   if (/403/.test(raw) || /forbidden/i.test(raw)) {
@@ -105,15 +96,15 @@ export function explainTikTokError(err) {
   return raw.split('\n')[0]; // yt-dlp peut renvoyer un message très long, on garde la première ligne
 }
 
-/** Télécharge la piste audio, convertie en mp3. Réutilise runDownload de utils/youtube.js. */
-export async function downloadTikTokAudio(url) {
-  return runDownload(url, { extractAudio: true, audioFormat: 'mp3', audioQuality: 0 }, 'mp3');
+/** Télécharge la piste audio, convertie en mp3. */
+export async function downloadTikTokAudio(data) {
+  return runDownload(data.url, { extractAudio: true, audioFormat: 'mp3', audioQuality: 0 }, 'mp3');
 }
 
-/** Télécharge la vidéo (mp4, sans watermark : c'est le flux natif TikTok que récupère yt-dlp). */
-export async function downloadTikTokVideo(url) {
+/** Télécharge la vidéo (mp4). */
+export async function downloadTikTokVideo(data) {
   return runDownload(
-    url,
+    data.url,
     { format: 'best[ext=mp4]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best', mergeOutputFormat: 'mp4' },
     'mp4'
   );

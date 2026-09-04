@@ -9,6 +9,38 @@ import { writeFile, readFile, unlink, mkdir, rm } from 'fs/promises';
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 /**
+ * Extrait la piste audio (mp3) d'un buffer vidéo quelconque — générique,
+ * contrairement à extractAudioMp3/downloadTikTokAudio qui partent d'une
+ * URL téléchargée par yt-dlp. Utile quand la vidéo a déjà été récupérée
+ * autrement (ex: repli navigateur headless pour TikTok, voir
+ * utils/tiktokBrowser.js) et qu'il ne reste plus qu'à en isoler le son.
+ */
+export async function extractAudioFromVideoBuffer(videoBuffer) {
+  const id = randomUUID();
+  const inputPath = join(tmpdir(), `${id}-in.mp4`);
+  const outputPath = join(tmpdir(), `${id}-out.mp3`);
+
+  await writeFile(inputPath, videoBuffer);
+
+  try {
+    await new Promise((resolve, reject) => {
+      ffmpeg(inputPath)
+        .on('error', reject)
+        .on('end', resolve)
+        .noVideo()
+        .audioCodec('libmp3lame')
+        .audioQuality(0)
+        .toFormat('mp3')
+        .save(outputPath);
+    });
+
+    return await readFile(outputPath);
+  } finally {
+    await Promise.allSettled([unlink(inputPath).catch(() => {}), unlink(outputPath).catch(() => {})]);
+  }
+}
+
+/**
  * Convertit un sticker (webp) en image PNG. Pour un sticker animé, seule
  * la première image de l'animation est conservée (une image reste une
  * image, pas une vidéo).

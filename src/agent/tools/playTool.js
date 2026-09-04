@@ -34,10 +34,10 @@ export const playTool = {
     if (tiktokUrl) {
       const data = await fetchTikTokData(tiktokUrl);
       if (mode === 'video') {
-        const buffer = await downloadTikTokVideo(data.url);
+        const buffer = await downloadTikTokVideo(data);
         return { type: 'video', buffer, title: data.title, mimeType: 'video/mp4' };
       }
-      const buffer = await downloadTikTokAudio(data.url);
+      const buffer = await downloadTikTokAudio(data);
       return { type: 'audio', buffer, title: data.title, mimeType: 'audio/mpeg' };
     }
 

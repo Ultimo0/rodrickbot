@@ -1,11 +1,16 @@
+import { readFileSync, existsSync } from 'fs';
+import { dataFilePath } from '../utils/dataFile.js';
 import { config, isAdmin } from '../config/index.js';
 import { logger } from '../utils/logger.js';
+import { atomicWriteFileSync } from '../utils/atomicWrite.js';
 import { extractText, isGroup, parseCommand, toQuoteBlock } from '../utils/helpers.js';
 import { runMiddlewares } from '../middlewares/index.js';
 import { attachReplyHelpers } from '../utils/reply.js';
-import { isLockdownMode, incrementMessageCount, incrementCommandCount } from '../core/state.js';
+import { isLockdownMode, incrementMessageCount, incrementCommandCount, getConnectedAt } from '../core/state.js';
+import { isAntibugEnabled, isAutoBlockEnabled, analyzeSuspiciousPayload } from '../core/antibugGuard.js';
 import { isRemotelyDisabled } from '../core/remoteControl.js';
 import { handleAntilink } from '../utils/antilink.js';
+import { handleAntiflood } from '../utils/antiflood.js';
 import { handleAntistatut } from '../utils/antistatut.js';
 import { handleDownloadReply } from '../utils/downloadReply.js';
 import { isInstanceConfigured } from '../core/instance.js';
@@ -21,6 +26,8 @@ import { handleWizardText as handleRemindWizardText, handleCancelAllConfirmText 
 import { hasDraft as hasRemindDraft, hasCancelAllConfirmation as hasRemindCancelAllConfirmation } from '../core/remind/RemindSessionManager.js';
 import { getQuotedInfo } from '../utils/quotedContent.js';
 import { recordActivity } from '../core/activityStore.js';
+import { getAfk, clearAfk } from '../core/afkStore.js';
+import { extractMentionedJids, extractQuotedParticipant, normalizeJid } from '../utils/groupTarget.js';
 import { hasResetConfirmation as hasActivityResetConfirmation, handleResetConfirmText as handleActivityResetConfirmText } from '../core/activityResetSession.js';
 
 // Déduplication des messages : Baileys peut REJOUER des messages.upsert
@@ -34,6 +41,42 @@ import { hasResetConfirmation as hasActivityResetConfirmation, handleResetConfir
 // général dans les secondes/minutes qui suivent, pas des heures après.
 const DEDUP_WINDOW_MS = 5 * 60 * 1000;
 const processedMessageIds = new Map(); // clé "chatId:messageId" -> timestamp d'expiration
+
+// Persistance sur disque : une Map purement en mémoire est vidée à CHAQUE
+// redémarrage complet du process (crash, redéploiement...) — précisément
+// le cas où un rejeu est le plus probable (WhatsApp redélivre les messages
+// non-accusés à la reconnexion). Sans persistance, le dédoublonnage
+// ci-dessus ne protège que les reconnexions à chaud, pas les redémarrages.
+// Écriture différée (toutes les 10s, pas à chaque message) : un crash
+// exactement dans cette fenêtre de 10s reste possible mais rare, et le
+// filtre anti-rattrapage plus bas couvre déjà l'essentiel des cas réels.
+const DEDUP_FILE = dataFilePath('dedup.json');
+let dedupDirty = false;
+
+function loadProcessedMessageIds() {
+  if (!existsSync(DEDUP_FILE)) return;
+  try {
+    const raw = JSON.parse(readFileSync(DEDUP_FILE, 'utf-8'));
+    const now = Date.now();
+    for (const [key, expiresAt] of Object.entries(raw)) {
+      if (typeof expiresAt === 'number' && expiresAt > now) processedMessageIds.set(key, expiresAt);
+    }
+  } catch (err) {
+    logger.warn({ err }, 'Impossible de lire dedup.json, cache anti-doublon vide au démarrage');
+  }
+}
+
+setInterval(() => {
+  if (!dedupDirty) return;
+  try {
+    atomicWriteFileSync(DEDUP_FILE, JSON.stringify(Object.fromEntries(processedMessageIds)));
+    dedupDirty = false;
+  } catch (err) {
+    logger.error({ err }, "Impossible d'écrire dedup.json");
+  }
+}, 10 * 1000).unref?.();
+
+loadProcessedMessageIds();
 
 function isDuplicateMessage(chatId, messageId) {
   if (!messageId) return false; // pas d'id exploitable : on ne peut pas dédupliquer, on laisse passer
@@ -51,7 +94,28 @@ function isDuplicateMessage(chatId, messageId) {
   if (processedMessageIds.has(key)) return true;
 
   processedMessageIds.set(key, now + DEDUP_WINDOW_MS);
+  dedupDirty = true;
   return false;
+}
+
+// Filtre anti-rattrapage : à la (re)connexion, WhatsApp redélivre les
+// messages envoyés pendant que le bot était hors ligne, marqués
+// `type: 'notify'` — indiscernables de messages tout frais sans regarder
+// leur horodatage. Sans ce filtre, une commande tapée pendant que le bot
+// était éteint (même des heures avant) s'exécute après coup au
+// redémarrage, hors de tout contexte ("le bot réexécute les commandes au
+// redémarrage"). Marge généreuse (2 min) pour ne jamais risquer d'ignorer
+// un message réellement récent à cause d'un délai de livraison normal ou
+// d'un léger décalage d'horloge — seul le VRAI rattrapage (accumulé
+// pendant une coupure prolongée) doit être filtré.
+const BACKLOG_GRACE_MS = 2 * 60 * 1000;
+
+function isStaleBacklogMessage(msg) {
+  const connectedAt = getConnectedAt();
+  if (!connectedAt || !msg.messageTimestamp) return false; // pas d'info exploitable : on laisse passer
+
+  const sentAt = Number(msg.messageTimestamp) * 1000;
+  return sentAt < connectedAt - BACKLOG_GRACE_MS;
 }
 
 export function createMessageHandler(sock, commands) {
@@ -90,6 +154,15 @@ async function handleSingleMessage(sock, commands, msg) {
 
   const chatId = msg.key.remoteJid;
 
+  // Doit passer en tout premier, avant même le dédoublonnage : un message
+  // de rattrapage n'a jamais été vu par ce process, donc isDuplicateMessage
+  // ne l'aurait pas filtré — voir le commentaire au-dessus
+  // d'isStaleBacklogMessage() plus haut dans ce fichier.
+  if (isStaleBacklogMessage(msg)) {
+    logger.debug(`Message de rattrapage ignoré (envoyé avant la connexion): ${msg.key.id}`);
+    return;
+  }
+
   // Voir le commentaire au-dessus de isDuplicateMessage() plus haut dans ce
   // fichier — doit passer AVANT tout le reste (y compris le comptage
   // d'activité) pour qu'un message rejoué soit un no-op complet, pas juste
@@ -113,6 +186,27 @@ async function handleSingleMessage(sock, commands, msg) {
 
   const sender = isGroup(chatId) ? msg.key.participant : chatId;
 
+  // Protection antibug : uniquement en message PRIVÉ (jamais en groupe — un
+  // contenu volumineux dans un groupe peut être un partage/transfert tout à
+  // fait légitime, et bloquer un membre de groupe par erreur serait plus
+  // gênant qu'utile). Volontairement APRÈS le filtre fromMe : le bot ne
+  // s'analyse jamais lui-même. Désactivé par défaut — voir {prefix}antibug.
+  if (isAntibugEnabled() && !isGroup(chatId)) {
+    const reason = analyzeSuspiciousPayload(msg);
+    if (reason) {
+      logger.warn(`Antibug: message suspect de ${sender} — ${reason}`);
+      if (isAutoBlockEnabled()) {
+        try {
+          await sock.updateBlockStatus(sender, 'block');
+          logger.warn(`Antibug: ${sender} bloqué automatiquement.`);
+        } catch (err) {
+          logger.error({ err }, 'Antibug: échec du blocage automatique');
+        }
+      }
+      return; // jamais transmis au reste du pipeline (parsing de commande inclus)
+    }
+  }
+
   // Activité (!activity / !inactive) : comptage best-effort, un seul
   // point d'entrée pour tous les messages de groupe traités (commandes
   // incluses), AVANT tout le reste du pipeline pour ne dépendre d'aucun
@@ -125,6 +219,43 @@ async function handleSingleMessage(sock, commands, msg) {
     } catch (err) {
       logger.error({ err }, "Échec du comptage d'activité (non bloquant)");
     }
+  }
+
+  // AFK — deux effets indépendants, chacun isolé dans son propre try/catch
+  // (une panne ici ne doit jamais bloquer le reste du traitement) :
+  //
+  // 1. Celui qui envoie CE message n'est plus absent, quel que soit le
+  //    contenu — y compris si c'est !afk lui-même : la commande remettra
+  //    le statut juste après si besoin, l'ordre n'a pas de conséquence.
+  try {
+    const previous = clearAfk(sender);
+    if (previous) {
+      const minutesAway = Math.max(1, Math.round((Date.now() - previous.since) / 60000));
+      await sock.sendMessage(chatId, { text: `> 👋 Bon retour ! Tu étais absent depuis ${minutesAway} min.` });
+    }
+  } catch (err) {
+    logger.warn({ err }, 'AFK: notification de retour impossible');
+  }
+
+  // 2. Ce message mentionne ou répond à quelqu'un actuellement absent.
+  try {
+    const afkTargets = new Set();
+    for (const jid of extractMentionedJids(msg)) afkTargets.add(normalizeJid(jid));
+    const quotedParticipant = extractQuotedParticipant(msg);
+    if (quotedParticipant) afkTargets.add(normalizeJid(quotedParticipant));
+
+    for (const targetJid of afkTargets) {
+      const info = getAfk(targetJid);
+      if (!info) continue;
+      const minutesAway = Math.max(1, Math.round((Date.now() - info.since) / 60000));
+      const number = targetJid.split('@')[0].split(':')[0];
+      await sock.sendMessage(chatId, {
+        text: `> 💤 @${number} est absent depuis ${minutesAway} min — raison : ${info.reason}`,
+        mentions: [targetJid],
+      });
+    }
+  } catch (err) {
+    logger.warn({ err }, 'AFK: notification de mention impossible');
   }
 
   // Vérifié avant extractText() : une notification de mention de statut
@@ -230,6 +361,7 @@ async function handleSingleMessage(sock, commands, msg) {
     }
   }
 
+  if (await handleAntiflood(sock, msg, chatId, sender, text)) return;
   if (await handleAntilink(sock, msg, chatId, sender, text)) return;
   if (await handleDownloadReply(sock, chatId, sender, text, msg)) return;
 
@@ -307,3 +439,4 @@ async function handleSingleMessage(sock, commands, msg) {
   logger.info(`Commande exécutée: ${parsed.command} par ${sender}`);
   await command.execute(ctx);
 }
+

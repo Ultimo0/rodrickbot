@@ -41,14 +41,14 @@ export const downloadTool = {
       if (format === 'video') {
         return {
           type: 'video',
-          buffer: await downloadTikTokVideo(data.url),
+          buffer: await downloadTikTokVideo(data),
           title: data.title,
           mimeType: 'video/mp4',
         };
       }
       return {
         type: 'audio',
-        buffer: await downloadTikTokAudio(data.url),
+        buffer: await downloadTikTokAudio(data),
         title: data.title,
         mimeType: 'audio/mpeg',
       };

@@ -3,6 +3,7 @@ import {
   setAntispam,
   setAntipromote,
   setAntistatut,
+  setAntiflood,
   setGuardian,
   setGuardianSnapshot,
 } from '../core/groupSettings.js';
@@ -22,9 +23,9 @@ export default {
   name: 'protectall',
   aliases: ['fullguard', 'securite'],
   description:
-    'Active (ou désactive) en une seule commande les 5 protections de groupe : antilink, antispam, ' +
-    "antipromote, antistatut et guardian — chacune avec un court délai entre les activations plutôt " +
-    "que 5 confirmations d'un coup. Usage: {prefix}protectall on|off",
+    'Active (ou désactive) en une seule commande les 6 protections de groupe : antilink, antispam, ' +
+    "antipromote, antistatut, antiflood et guardian — chacune avec un court délai entre les activations plutôt " +
+    "que 6 confirmations d'un coup. Usage: {prefix}protectall on|off",
   category: 'Gestion de groupe',
   adminOnly: true,
   privateOnly: false,
@@ -62,6 +63,7 @@ export default {
       { label: 'Antispam', apply: () => setAntispam(ctx.chatId, enable) },
       { label: 'Antipromote', apply: () => setAntipromote(ctx.chatId, enable) },
       { label: 'Antistatut', apply: () => setAntistatut(ctx.chatId, enable) },
+      { label: 'Antiflood', apply: () => setAntiflood(ctx.chatId, enable) },
       {
         label: 'Guardian',
         apply: async () => {
@@ -93,7 +95,7 @@ export default {
     }
 
     await ctx.success(
-      `Protection complète ${verb} pour ce groupe (antilink, antispam, antipromote, antistatut, guardian).`
+      `Protection complète ${verb} pour ce groupe (antilink, antispam, antipromote, antistatut, antiflood, guardian).`
     );
   },
 };

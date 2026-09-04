@@ -1,9 +1,9 @@
 import { readFileSync, existsSync } from 'fs';
 import { atomicWriteFileSync } from '../utils/atomicWrite.js';
-import path from 'path';
+import { dataFilePath } from '../utils/dataFile.js';
 import { logger } from '../utils/logger.js';
 
-const DATA_FILE = path.join(process.cwd(), 'lock_schedules.json');
+const DATA_FILE = dataFilePath('lock_schedules.json');
 
 let schedules = {};
 

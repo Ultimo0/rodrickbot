@@ -1,6 +1,6 @@
 import { readFileSync, existsSync } from 'fs';
 import { atomicWriteFileSync } from '../utils/atomicWrite.js';
-import path from 'path';
+import { dataFilePath } from '../utils/dataFile.js';
 import { logger } from '../utils/logger.js';
 
 /**
@@ -46,7 +46,7 @@ import { logger } from '../utils/logger.js';
  * cumulatifs, pas des buckets datés).
  */
 
-const DATA_FILE = path.join(process.cwd(), 'activity.json');
+const DATA_FILE = dataFilePath('activity.json');
 const RETENTION_DAYS = 90;
 const FLUSH_INTERVAL_MS = 30 * 1000;
 

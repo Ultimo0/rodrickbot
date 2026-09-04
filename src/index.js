@@ -16,9 +16,24 @@ import { initQuizCleanupService } from './core/quiz/QuizCleanupService.js';
 import { cleanupStaleSessionsOnBoot as cleanupStaleCalcSessions } from './core/calc/CalcEngine.js';
 import { initPollCleanupService } from './core/poll/PollCleanupService.js';
 import { initRemindScheduler } from './core/remind/RemindScheduler.js';
+import { initMessageScheduler } from './core/messageScheduler.js';
+import { initYtDlpAutoUpdater } from './core/ytdlpAutoUpdater.js';
 
 async function main() {
   logger.info(`Démarrage de ${config.botName}...`);
+  // Filet de sécurité global : une exception ou un rejet de promesse non
+  // rattrapé ailleurs (ex: dans les internals de Baileys eux-mêmes,
+  // hors du try/catch par message de createMessageHandler) ferait
+  // normalement planter tout le process Node. On journalise et on
+  // continue plutôt que de laisser un seul incident inattendu couper la
+  // connexion WhatsApp entière. Non spécifique à un bug connu — sert de
+  // dernier rempart générique, quelle que soit la cause.
+  process.on('uncaughtException', (err) => {
+    logger.error({ err }, 'Exception non rattrapée (le bot continue)');
+  });
+  process.on('unhandledRejection', (err) => {
+    logger.error({ err }, 'Promesse rejetée non rattrapée (le bot continue)');
+  });
 
   const commands = await loadCommands();
   await loadThemes();
@@ -37,6 +52,9 @@ async function main() {
     cleanupStaleCalcSessions(); // clôture toute partie de calcul mental restée active avant ce redémarrage
     initPollCleanupService(sock); // reprend les sondages actifs (expiration) + démarre le balayage périodique
     initRemindScheduler(sock); // balayage périodique des rappels arrivés à échéance (voir RemindScheduler.js — pas de setTimeout par rappel, volontairement)
+    initMessageScheduler(sock); // recharge et replanifie les messages récurrents (!schedule)
+    initYtDlpAutoUpdater(); // rafraîchit le binaire yt-dlp toutes les 24h, sans redémarrage nécessaire
+
     sock.ev.on('messages.upsert', createMessageHandler(sock, commands));
     sock.ev.on('group-participants.update', createGroupParticipantsHandler(sock));
     startTelemetry();

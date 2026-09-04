@@ -2,6 +2,7 @@ import { readFileSync, existsSync, mkdirSync, unlinkSync } from 'fs';
 import { atomicWriteFileSync } from '../utils/atomicWrite.js';
 import path from 'path';
 import { logger } from '../utils/logger.js';
+import { dataFilePath } from '../utils/dataFile.js';
 
 /**
  * Stockage persistant "clé -> contenu" partagé par les commandes !save et
@@ -12,7 +13,7 @@ import { logger } from '../utils/logger.js';
  * est rangé au même endroit et peut être supprimé avec !dell <nom>.
  */
 
-const DATA_FILE = path.join(process.cwd(), 'saved_items.json');
+const DATA_FILE = dataFilePath('saved_items.json');
 const MEDIA_DIR = path.join(process.cwd(), 'saved_media');
 
 let items = {};

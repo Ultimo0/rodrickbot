@@ -1,9 +1,9 @@
 import { readFileSync, existsSync } from 'fs';
 import { atomicWriteFileSync } from '../utils/atomicWrite.js';
-import path from 'path';
+import { dataFilePath } from '../utils/dataFile.js';
 import { logger } from '../utils/logger.js';
 
-const INSTANCE_FILE = path.join(process.cwd(), 'instance.json');
+const INSTANCE_FILE = dataFilePath('instance.json');
 
 let instance = {
   instanceId: '',

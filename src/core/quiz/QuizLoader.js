@@ -3,10 +3,11 @@ import { atomicWriteFileSync } from '../../utils/atomicWrite.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { logger } from '../../utils/logger.js';
+import { dataFilePath } from '../../utils/dataFile.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FALLBACK_FILE = path.join(__dirname, '..', '..', 'data', 'quizQuestions.json'); // banque de secours embarquée
-const CACHE_FILE = path.join(process.cwd(), 'quiz_questions_cache.json'); // questions internet mises en cache
+const CACHE_FILE = dataFilePath('quiz_questions_cache.json'); // questions internet mises en cache
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24h avant de considérer le cache périmé
 const OPENTDB_TIMEOUT_MS = 15_000;

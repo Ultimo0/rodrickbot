@@ -27,6 +27,16 @@
  * extraire : le correctif est donc définitif pour cette classe
  * d'erreur, quelle qu'en soit la cause exacte côté serveur.
  *
+ * Depuis la v4 : télécharge en priorité depuis le canal MASTER de yt-dlp
+ * (yt-dlp-master-builds) plutôt que le canal stable. TikTok casse son
+ * extracteur plus vite que les releases stables ne sortent (stable :
+ * environ une fois par mois : master : plusieurs fois par semaine,
+ * parfois par jour) — un correctif TikTok peut donc être disponible côté
+ * master plusieurs jours, voire semaines, avant d'atterrir dans une
+ * release stable. En repli automatique si master est injoignable
+ * (panne GitHub ponctuelle, etc.) : retour sur le canal stable, pour ne
+ * jamais rester bloqué sans binaire du tout.
+ *
  * Dépendance : "adm-zip" (pure JS, aucune compilation native) doit
  * être dans package.json → dependencies. `npm install` s'en charge.
  *
@@ -39,8 +49,13 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
-const RELEASE_API_URL =
-  'https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest';
+// Ordre d'essai : master (correctifs plus rapides) puis stable (filet de
+// sécurité si master est injoignable). Voir le commentaire au-dessus de
+// ce bloc pour le pourquoi de cet ordre.
+const RELEASE_API_URLS = [
+  'https://api.github.com/repos/yt-dlp/yt-dlp-master-builds/releases/latest',
+  'https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest',
+];
 const ASSET_NAME = 'yt-dlp_linux.zip';
 
 // Binaire statique QuickJS-NG, ne nécessite aucun build ni dépendance
@@ -60,6 +75,32 @@ function findYoutubeDlExecBinDir(startDir) {
     dir = parent;
   }
   return null;
+}
+
+/**
+ * Essaie chaque source dans RELEASE_API_URLS dans l'ordre (master d'abord,
+ * stable en repli) et retourne la première release exploitable trouvée —
+ * c'est-à-dire qui contient bien l'asset attendu.
+ */
+async function fetchLatestRelease() {
+  let lastErr;
+  for (const url of RELEASE_API_URLS) {
+    const label = url.includes('master-builds') ? 'master' : 'stable';
+    try {
+      console.log(`[fix-ytdlp] Recherche de la dernière release yt-dlp (canal ${label})...`);
+      const release = await httpGetJson(url);
+      const asset = (release.assets || []).find((a) => a.name === ASSET_NAME);
+      if (!asset) {
+        throw new Error(`Asset "${ASSET_NAME}" introuvable dans la release ${label}.`);
+      }
+      console.log(`[fix-ytdlp] Release trouvée sur le canal ${label} : ${release.tag_name || release.name || '?'}`);
+      return asset;
+    } catch (err) {
+      console.warn(`[fix-ytdlp] Canal ${label} indisponible (${err.message}), essai du suivant...`);
+      lastErr = err;
+    }
+  }
+  throw new Error(`Aucun canal yt-dlp accessible. Dernière erreur : ${lastErr?.message}`);
 }
 
 function httpGetJson(url) {
@@ -143,11 +184,7 @@ async function main() {
   const zipTmpPath = path.join(binDir, `yt-dlp_linux-${Date.now()}.zip`);
 
   console.log('[fix-ytdlp] Recherche de la dernière release yt-dlp...');
-  const release = await httpGetJson(RELEASE_API_URL);
-  const asset = (release.assets || []).find((a) => a.name === ASSET_NAME);
-  if (!asset) {
-    throw new Error(`Asset "${ASSET_NAME}" introuvable dans la dernière release GitHub.`);
-  }
+  const asset = await fetchLatestRelease();
 
   console.log(`[fix-ytdlp] Téléchargement de ${ASSET_NAME} (build "onedir", pré-extrait)...`);
   await downloadFile(asset.browser_download_url, zipTmpPath);

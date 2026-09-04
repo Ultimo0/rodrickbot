@@ -5,7 +5,7 @@ export default {
   aliases: ['antiraid'],
   description:
     'Détecte un admin qui expulse plusieurs membres en très peu de temps (3 en moins de 10s) : le démet, ' +
-    "l'expulse, et tente de réintégrer automatiquement les membres expulsés. ADMIN_JIDS toujours exempté. " +
+    "l'expulse, et tente de réintégrer automatiquement les membres expulsés. Les admins du bot sont toujours exemptés. " +
     'Usage: {prefix}antipurge on|off|status',
   category: 'Modération',
   adminOnly: true,

@@ -1,431 +1,68 @@
 # Changelog
 
-Toutes les modifications notables de ce projet sont documentées ici.
-Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/), versionnement selon [SemVer](https://semver.org/lang/fr/).
-
-## [Unreleased]
-
-## [1.34.0] - 2026-09-01
-
-### Ajouté
-- **Nouvelle commande `!tovid`** (alias `!vid`, `!tovideo`) : convertit un sticker animé en vidéo MP4. Le décodeur webp natif de ffmpeg ne supportant pas les chunks d'animation (`ANIM`/`ANMF`) — donner un webp animé directement à ffmpeg produit 0 frame décodée et un échec silencieux (`exit code 69`) — `utils/mediaConvert.js` extrait chaque frame individuellement via `sharp` (une frame seule est un webp statique valide) puis les rassemble en vidéo via le démuxeur `concat` de ffmpeg, en conservant la durée réelle de chaque frame pour préserver la vitesse de lecture d'origine. Un sticker statique est explicitement refusé avec un message renvoyant vers `!toimg`, plutôt que de produire une vidéo d'une image figée.
-- **Nouvelle commande `!protectall on|off`** (alias `!fullguard`, `!securite`) : active ou désactive en une seule commande les 5 protections de groupe (`antilink`, `antispam`, `antipromote`, `antistatut`, `guardian`), chacune avec un court délai (1,5s) entre les activations plutôt que 5 confirmations d'un coup dans le fil. Vérifie que le bot est admin du groupe avant de commencer si activation demandée (indispensable pour Guardian). Un échec sur une protection n'empêche pas les autres de s'activer.
-- **Nouveau script `scripts/export-obfuscated-copy.mjs`** : génère une copie complète et autonome du bot avec `src/` obfusqué (mêmes réglages que `scripts/build.js`), en lecture seule sur le projet original (jamais modifié). Copie tel quel ce qui est nécessaire au fonctionnement (`package.json`, `boot.mjs`, `fix-ytdlp.cjs`, `assets/`, `node_modules/`), génère un gabarit `.env` sans les valeurs réelles, et exclut systématiquement les secrets et la session WhatsApp (`auth_info/`).
-
-### Corrigé
-- **IA (Groq) : erreur `model_not_found` (404) sur toutes les fonctionnalités IA** (`!traduire`, `!corriger`, `!rewrite`, `!resume`, `!ia`, l'agent conversationnel). Cause : Groq a officiellement retiré `llama-3.3-70b-versatile` (déprécié le 17 juin 2026, puis totalement supprimé de l'API). Basculé sur `openai/gpt-oss-120b`, le remplacement recommandé par Groq — `src/config/settings.json` et le repli en dur dans `agent/agentService.js`.
-- **Sécurité : mise à jour de Baileys `6.7.19` → `6.7.24`.** La version précédente est concernée par une faille critique (`GHSA-qvv5-jq5g-4cgg` / `CVE-2026-48063`, publiée le 20 mai 2026) permettant l'usurpation de messages via `placeholderResendMessage`. Compatibilité API vérifiée : les 7 symboles utilisés par le bot (`makeWASocket`, `useMultiFileAuthState`, `fetchLatestBaileysVersion`, `DisconnectReason`, `downloadMediaMessage`, `WAMessageStubType`, `jidNormalizedUser`, `sock.updateMediaMessage`) sont tous présents et inchangés dans la nouvelle version.
-- **Stabilité : plusieurs écouteurs d'évènements Baileys sans `try/catch`** (`viewOnceCache.js`, les deux écouteurs de `groupGuardian.js`, `onReady()` non intercepté dans `client.js`). Depuis Node.js 15, une seule promesse rejetée non gérée fait planter tout le process — pas juste échouer sur un message. Chaque écouteur est désormais protégé individuellement, et un filet de sécurité global (`process.on('unhandledRejection'/'uncaughtException')`) a été ajouté dans `boot.mjs` en tout premier, avant le reste du code, pour couvrir tout gap restant.
-- **Stabilité : appels réseau sans timeout** (`ttsTool.js`, `groupGuardian.js` téléchargement d'icône de groupe, `telemetry.js`, `reveal.js`). Le cas de `telemetry.js` était le plus grave : le heartbeat tourne dans un `setInterval` toutes les 5 minutes sans jamais attendre l'appel précédent — sans timeout, un dashboard injoignable ferait s'empiler un appel réseau bloqué de plus à chaque tick, indéfiniment. Tous protégés par `AbortController` (même mécanisme déjà en place dans `utils/groq.js`/`utils/weather.js`).
-- **Fiabilité : écritures de fichiers non atomiques sur les 15 stores de persistance** (`state.json`, `group_settings.json`, `warnings.json`, sessions quiz/calcul/sondages/rappels, etc.). `writeFileSync()` seul n'est pas atomique : un process tué exactement pendant l'écriture (OOM-kill, redémarrage brutal, coupure) laisse un fichier tronqué, illisible au prochain démarrage — perte silencieuse des réglages. Nouveau `utils/atomicWrite.js` (écrit dans un fichier temporaire voisin puis `rename()`, atomique sous POSIX), appliqué aux 15 stores concernés.
-- **Fiabilité : absence de déduplication des messages.** Baileys peut rejouer des `messages.upsert` déjà traités après une reconnexion (comportement documenté par le mainteneur, voir WhiskeySockets/Baileys#2415) — sans protection, un aléa réseau pouvait faire exécuter une commande deux fois (double téléchargement, double kick...). `handlers/messageHandler.js` ignore désormais tout message déjà traité dans les 5 dernières minutes (clé `chatId:messageId`), avant même le comptage d'activité.
-
-## [1.33.0] - 2026-08-26
-
-### Ajouté
-- **Nouvelle commande `!pingall`** (alias `!testall`, `!enligne`) : réservée aux admins, fait répondre "🟢 En ligne — `<identifiant de l'instance>`" par chaque copie de RodrickBOT présente dans le chat où la commande est tapée. Ne passe par aucun relais serveur : chaque copie active dans le même groupe/chat reçoit indépendamment le message entrant et y réagit de son côté (réaction 🟢 + texte). Utile pour vérifier d'un coup d'œil, dans un groupe de test, lesquelles des copies déployées sont bien en ligne.
-
-### Corrigé
-- **`!tiktok`/`!tt` : erreur `403` permanente lors de la récupération des vidéos.** Cause : l'API tierce utilisée jusqu'ici (tikwm.com) s'est refermée derrière une offre payante (tikwmapi.com) et rejette désormais toute requête gratuite, quel que soit le `User-Agent` envoyé.
-  - **Correctif** : `utils/tiktok.js` réécrit pour s'appuyer sur **yt-dlp** (extracteur TikTok natif) au lieu d'une API tierce — même moteur, déjà fiabilisé (cookies, runtime QuickJS), que celui utilisé pour YouTube et Facebook. `utils/youtube.js` exporte désormais `runYoutubeDl` pour être réutilisé par `tiktok.js` (diagnostics et configuration partagés).
-  - **Deuxième cause détectée en cours de route** : yt-dlp lui-même a un problème connu et récurrent avec TikTok (`Unable to extract universal data for rehydration`), TikTok changeant régulièrement la structure de ses pages — corrigé côté yt-dlp en quelques jours à chaque fois (ex. release 2026.08.19, `tiktok: Fix extractor (#17452)`). `fetchTikTokData` retente désormais automatiquement une fois après une courte pause si cette erreur précise survient (documentée comme intermittente même à jour), et le message renvoyé à l'utilisateur explique la situation au lieu d'afficher l'erreur brute de yt-dlp.
-  - **Point d'attention opérationnel (pas un correctif de code)** : `fix-ytdlp.cjs` télécharge la dernière release GitHub de yt-dlp au moment où il tourne (`postinstall`), pas à chaque démarrage du bot — si l'erreur ci-dessus revient malgré le retry, relancer `node fix-ytdlp.cjs` puis redémarrer le bot.
-
-## [1.32.0] - 2026-08-24
-
-### Ajouté
-- Nouvelle commande publique `/stats` pour afficher les statistiques d'utilisation du bot :
-  - Uptime, messages traités, commandes exécutées, commandes uniques
-  - Top 5 des commandes les plus utilisées
-  - Mode (Public/Privé), instance configurée
-  - Intégration avec tous les thèmes visuels
-
-## [1.31.0] - 2026-08-24
-
-### Ajouté
-- Nouvelle commande `/meteo` (alias `weather`, `météo`) pour afficher la météo actuelle et les prévisions 5 jours.
-  - Température, ressenti, humidité, pression, vent, lever/coucher du soleil
-  - Prévisions par jour (min/max, description, icône, humidité, vent)
-  - Cache de 10 minutes pour limiter les appels API
-  - Utilisation de l'API OpenWeatherMap (clé requise dans `.env`)
-
-## [1.30.0] - 2026-08-24
-
-### Ajouté
-- Nouvelle commande `/convert` (alias `conv`, `unite`) pour convertir des unités de mesure :
-  - Température (°C, °F, K)
-  - Longueur (m, km, cm, mm, mi, yd, ft, in)
-  - Masse (g, kg, mg, lb, oz)
-  - Volume (l, ml, cl, gal, qt, pt)
-  - Surface (m², km², cm², ha, acre, ft², mi²)
-  - Vitesse (km/h, m/s, mph, kn)
-  - Durée (s, min, h, d, semaine, mois, année)
-- Lecture automatique d'un fichier audio (MP3, M4A, OGG, WAV, AAC) après l'envoi du menu principal (`/menu` ou `/help` seul)
-  - Le fichier doit être placé dans le dossier `assets/` ; le bot envoie le premier fichier audio trouvé en note vocale.
-
-
-## [1.29.1]
-### Fixed
-- **`!play`/`!youtube` : `ImportError: You are using an unsupported version of Python. Only Python versions 3.10 and above are supported by yt-dlp` sur certains hébergeurs (Katabump notamment).** Cause : `youtube-dl-exec` télécharge par défaut la variante `yt-dlp` de yt-dlp — un script/zipapp qui s'exécute via le `python3` **du système hôte**. Or yt-dlp exige désormais Python 3.10+, alors que Katabump (et d'autres panels d'hébergement similaires) fournissent Python 3.9, sans possibilité pour l'utilisateur de le mettre à jour lui-même (pas d'accès root sur ce type d'hébergement).
-  - **Correctif** : nouveau fichier `.npmrc` à la racine du projet, `YOUTUBE_DL_FILE=yt-dlp_linux` — force `youtube-dl-exec` à télécharger la variante **autonome** (`yt-dlp_linux`, un exécutable ELF avec Python embarqué via PyInstaller, confirmé sur la page des releases GitHub de yt-dlp/yt-dlp). Cette variante ignore totalement le Python du système hôte, donc fonctionne quelle que soit sa version — voire en son absence.
-  - **Action requise pour un déploiement déjà en place** (le `.npmrc` seul ne corrige pas un binaire déjà téléchargé avec la mauvaise variante) : forcer une réinstallation du package — `rm -rf node_modules/youtube-dl-exec && npm install` (même commande que le correctif 1.28.1) — ou faire un déploiement neuf sur Katabump.
-  - **⚠️ Limite à connaître** : `yt-dlp_linux` est un binaire Linux x86_64 — si un développeur du projet travaille en local sur Windows ou macOS (pas seulement en déploiement Katabump), ce `.npmrc` fera échouer son installation locale du binaire (mauvaise plateforme). Dans ce cas, surcharger `YOUTUBE_DL_FILE` localement (variable d'environnement, ou `.npmrc` personnel non commité) avec la variante adaptée (`yt-dlp` pour Windows/macOS avec Python 3.10+ installé, ou `yt-dlp_macos` pour macOS sans dépendance Python).
-
-## [1.29.0]
-### Added
-- **Nouvelles commandes `/remind` (alias `/rappel`) et `/reminders` (alias `/rappels`) — rappels personnels programmés depuis WhatsApp.** Durée relative (`/remind 10min appeler maman`, `2h`, `1d`, `30s`), date/heure absolue (`/remind demain 08:00 cours`, `/remind 20/08/2026 18:30 réunion`), récurrence quotidienne/hebdomadaire (`/remind every day 08:00 ...`, `/remind every week lundi 09:00 ...`), et un assistant pas-à-pas (`/remind` seul) pour un utilisateur qui ne connaît aucune syntaxe. Toujours notifié en message privé, quel que soit l'endroit (groupe ou privé) où la commande a été tapée.
-  - **Nouveaux modules** (`src/core/remind/`), un seul rôle chacun : `RemindStorage.js` (persistance immédiate dans `reminders.json`, même convention que `polls.json`), `RemindManager.js` (orchestrateur, seul point d'accès au storage), `RemindRenderer.js` (rendu texte), `RemindSessionManager.js` (brouillon d'assistant + confirmation `cancel all`, en mémoire), `RemindScheduler.js` (balayage périodique), `remindDate.js` (parsing dates/heures + conversion fuseau horaire), `remindDuration.js` (parsing de durée, réutilise `core/poll/pollDuration.js`).
-  - **Aucune nouvelle dépendance.** La conversion heure murale → UTC (y compris à travers les changements d'heure d'été) utilise `Intl.DateTimeFormat` natif de Node — vérifié disponible dans l'environnement (ICU complet), aucune lib de type dayjs/luxon/date-fns nécessaire.
-  - **Choix d'architecture important, documenté dans `src/core/remind/README.md`** : contrairement à `/poll` (qui a un timer par sondage en complément d'un balayage), `/remind` n'utilise **aucun `setTimeout` par rappel**. Raison technique découverte pendant le développement (pas seulement une prudence de conception) : `setTimeout` déborde silencieusement au-delà de ~24,8 jours (dépassement d'entier 32 bits) et se déclenche immédiatement au lieu d'attendre — un rappel à 30 jours avec un timer direct aurait donc démarré tout de suite, en silence. Un balayage périodique (15s) n'a structurellement pas ce problème. Bénéfice secondaire : la reprise après redémarrage est gratuite (rien à réarmer, le balayage suivant retrouve tout seul les rappels en attente).
-  - **Fuseau horaire** : RodrickBOT n'a aujourd'hui aucun système de préférences par utilisateur (vérifié) ; `getUserTimezone(userId)` retourne un fuseau par défaut configurable (`Africa/Douala`) mais centralise le point d'extension pour un futur système par utilisateur.
-  - **Réutilisation** : `core/quiz/QuizInteractionGuard.js` (parsing 1/2 pour la confirmation `cancel all`), `core/poll/pollDuration.js` (parsing de durée, réexporté par `remindDuration.js` plutôt que dupliqué une 3e fois — voir note dans ce fichier sur un futur déplacement possible vers `utils/`).
-  - **Robustesse** : jamais d'exception sur une entrée mal formée (date/durée/message invalide) ; échec d'envoi (téléphone hors ligne) laisse le rappel en attente pour réessai, borné à 24h avant expiration plutôt qu'un rappel envoyé des jours en retard ; garde anti-chevauchement sur le balayage ; limites configurables `MAX_ACTIVE_REMINDERS_PER_USER` (25) et `MAX_MESSAGE_LENGTH` (300).
-  - `reminders.json` (racine du projet) ajouté à `.gitignore`, même traitement que `polls.json`.
-  - Documentation complète : `src/core/remind/README.md`.
-- **Deux bugs trouvés et corrigés pendant le développement (avant toute mise en service)** :
-  1. `remindDate.js` : la fonction interne `nowInTimezone()` utilisait l'heure système réelle (`new Date()`) au lieu du paramètre `now` reçu par les fonctions publiques (`parseAbsoluteDateTime`, `nextDailyOccurrence`, `nextWeekdayOccurrence`) — sans conséquence en production (l'heure réelle est toujours correcte) mais rendait le module impossible à tester de façon déterministe. Corrigé en propageant `now` jusqu'à `nowInTimezone`.
-  2. `RemindRenderer.js` : plusieurs messages utilisaient le placeholder littéral `{prefix}`, qui n'est automatiquement substitué que dans les *descriptions* de commandes affichées par `!menu` (voir `help.js`) — pas dans un message envoyé directement. Sans correction, un utilisateur aurait vu le texte brut `{prefix}remind cancel ...` dans WhatsApp. Corrigé en important `config.prefix` directement dans `RemindRenderer.js`.
-- **Tests** : 6 nouveaux fichiers (`remindDate`, `remindDuration`, `remindStorage`, `remindSessionManager`, `remindRenderer`, `remindManager`, `remindScheduler`), 86 tests au total — logique pure (parsing dates/durées/fuseaux, y compris DST), persistance disque isolée, sessions avec timers simulés, intégration bout-en-bout avec un `sock` WhatsApp simulé (création, assistant complet, annulation, limites, récurrence, échec d'envoi simulé, données corrompues, balayage périodique avec plusieurs utilisateurs).
-
-## [1.28.1]
-### Fixed
-- **`!play`/`!youtube` : `Échec du téléchargement : ERROR: unable to download video data: HTTP Error 403: Forbidden`.** **Cause confirmée en production : le binaire `yt-dlp` embarqué par `youtube-dl-exec` était obsolète.** `youtube-dl-exec` télécharge ce binaire une seule fois, à l'installation (`npm install`) — jamais automatiquement ensuite — alors que YouTube casse l'extraction très régulièrement (plusieurs fois par mois). Résolu en forçant la réinstallation (`rm -rf node_modules/youtube-dl-exec && npm install`), qui redéclenche le téléchargement de la dernière release de `yt-dlp`.
-  - `extractorArgs: 'youtube:player_client=default,android'` (voir plus bas) reste en place par précaution dans `src/utils/youtube.js`, mais **n'était pas la cause du correctif** — à garder en tête si ce 403 revient : vérifier d'abord la fraîcheur du binaire avant de retoucher aux `extractorArgs`.
-  - **Recommandation d'exploitation** : YouTube casse cette extraction très fréquemment. Prévoir une mise à jour régulière du binaire (`rm -rf node_modules/youtube-dl-exec && npm install`), idéalement via une tâche planifiée hebdomadaire, plutôt que d'attendre un nouveau 403 en production.
-  - Message d'erreur utilisateur clarifié (`explainYoutubeError` dans `src/utils/youtube.js`, réutilisé par `commands/play.js` et `utils/downloadReply.js` pour `!youtube`) : un 403 affiche désormais une explication en français plutôt que le message technique brut de yt-dlp.
-
-## [1.28.0]
-### Added
-- **Nouvelle commande `/poll` (alias `/sondage`) — sondages en chat, avec module complet.** Assistant pas-à-pas (`/poll` seul : titre, puis options une par une, `fin` pour terminer) ou syntaxe rapide (`/poll "Titre" A | B | C [| durée]`). Vote par chiffre nu **en réponse (reply) à la carte du sondage** — même limitation plateforme que `/quiz` (voir 1.19.1) : WhatsApp n'affiche pas de vrais boutons cliquables sur les comptes personnels, donc pas de composants interactifs natifs ici non plus. Répondre au message précis de la carte (plutôt qu'un chiffre nu envoyé dans le vide comme pour `/quiz`) permet plusieurs sondages actifs simultanément dans un même chat sans ambiguïté.
-  - **Nouveaux modules** (`src/core/poll/`), un seul rôle chacun : `PollStorage.js` (persistance immédiate dans `polls.json`, même convention que `warnings.json`), `PollManager.js` (orchestrateur), `PollRenderer.js` (rendu texte : carte de sondage, résultats avec barres de progression en emoji, infos, liste), `PollSessionManager.js` (brouillon de création + confirmation de suppression, en mémoire uniquement), `PollTimer.js` (timer d'expiration par sondage, structure identique à `QuizTimer.js`), `PollCleanupService.js` (reprise des sondages actifs au redémarrage + balayage périodique des expirations manquées, structure identique à `QuizCleanupService.js`), `pollDuration.js` (parsing `1h`/`2j`/`30min`).
-  - **Réutilisation explicite, zéro duplication** : `pollDuration.js` délègue s/min/h à `utils/duration.js` existant et n'ajoute que les jours par-dessus dans un fichier séparé — modifier `utils/duration.js` directement aurait cassé son test existant (`tests/duration.test.js`), qui rejette explicitement `"10 jours"`. Le vote réutilise `core/quiz/QuizInteractionGuard.js` (dédoublonnage réseau, parsing de chiffre) sans dupliquer cette logique. Le routage d'un vote vers le bon sondage réutilise `utils/quotedContent.js` (`getQuotedInfo().stanzaId`) déjà existant.
-  - **Gestion des votes** : un utilisateur peut voter une seule fois par sondage ; répondre à nouveau **remplace** son vote précédent (jamais de doublon). Toutes les vérifications (sondage actif, plage de chiffre valide, dédoublonnage réseau, anti-double-envoi concurrent via un verrou en mémoire par sondage) sont faites côté serveur.
-  - **Fermeture/suppression** (`/poll close`, `/poll delete`) réservées au créateur ou à un administrateur, vérifié côté serveur. `/poll delete` demande une confirmation `1`/`2` (valable 5 min), même pattern que `/quiz reset`.
-  - **Expiration automatique** (`/poll duration <1h|2j|30min> [id]`, ou sucre syntaxique `/poll <durée>` ciblant le sondage le plus récent) : fermeture automatique à échéance, timer réarmé au redémarrage (`resumeActivePolls`), avec un balayage de secours toutes les 60s pour rattraper les expirations manquées pendant un arrêt du bot.
-  - `/poll results [id]`, `/poll info [id]`, `/poll list`, `/poll cancel`, `/poll help`. Sans `[id]`, une commande de gestion cible le sondage le plus récent du chat (id court à 6 caractères sinon, ex: `a3f9c1`).
-  - Nouveau fichier de persistance `polls.json` (racine du projet), ajouté à `.gitignore` aux côtés des autres données runtime.
-  - Documentation complète : `src/core/poll/README.md` (même format que `src/core/quiz/README.md`).
-- **Correctif de robustesse trouvé et corrigé pendant le développement (avant toute mise en service)** : `PollStorage.getMostRecentPollForChat` départageait initialement par `createdAt` (résolution 1ms) — deux sondages créés dans la même milliseconde auraient été indépartageables, risquant de cibler le mauvais sondage pour `/poll close`/`/poll results`/etc. sans `id` explicite. Corrigé avec un compteur de séquence (`seq`) strictement monotone par sondage, qui reprend correctement après un redémarrage (repart du plus grand `seq` déjà connu sur disque).
-- **Tests** : 4 nouveaux fichiers (`tests/pollDuration.test.js`, `tests/pollRenderer.test.js`, `tests/pollSessionManager.test.js`, `tests/pollStorage.test.js`, `tests/pollManager.test.js`), 65 tests au total — logique pure (parsing de durée, rendu, sessions), persistance disque isolée (dossier temporaire, même pattern que `tests/warnStore.test.js`), et intégration bout-en-bout avec un `sock` WhatsApp simulé (création, vote, changement de vote, fermeture, suppression avec confirmation, expiration réelle via timer simulé, permissions créateur/admin).
-
-## [1.27.1]
-### Fixed
-- **`!savecontacts` : erreur "Aucun numéro exploitable trouvé" sur des groupes de 100+ membres.** Depuis une mise à jour de confidentialité WhatsApp (2024+), Baileys retourne les participants d'un groupe avec un identifiant interne `@lid` dans `p.id` au lieu du vrai numéro `@s.whatsapp.net`. L'ancienne logique ne cherchait que dans `p.id`, renvoyant 0 résultats. Correction : le vrai JID téléphonique est désormais recherché dans `p.id`, `p.jid` et `p.lid` (les trois champs que Baileys peut utiliser selon la version) — même stratégie déjà appliquée dans `groupGuardian.js > isBotGroupAdmin`.
-
-## [1.27.0]
-### Added
-- **Nouvelle commande `!savecontacts` (admin, alias `!exportcontacts`/`!enregistrercontacts`).** Exporte les membres du groupe en fichier `.vcf` (format contacts standard), envoyé **uniquement en message privé** à l'admin qui a lancé la commande — jamais posté dans le groupe, pour ne pas exposer la liste complète des numéros à tout le monde.
-  - Le groupe ne reçoit qu'une confirmation neutre (`✅ Liste des membres envoyée en message privé.`), sans aucun numéro ni détail.
-  - Les JID en `@lid` (numéro masqué par un réglage de confidentialité récent de WhatsApp) sont ignorés proprement — impossibles à convertir en contact exploitable — et comptés dans un résumé (`X membre(s) ignoré(s)`).
-  - Techniquement, Baileys/WhatsApp ne permet pas d'ajouter directement un numéro au carnet d'adresses du téléphone : le fichier `.vcf` généré doit être importé manuellement par l'admin depuis son appli Contacts après réception.
-  - **Non testé en conditions réelles** (pas d'accès WhatsApp dans mon environnement de dev).
-
-## [1.26.0]
-### Added
-- **Nouvelle commande `!approval on|off` (admin, alias `!joinapproval`/`!approbation`).** Active ou désactive directement le paramètre WhatsApp natif "Approbation des nouveaux membres" du groupe, via `sock.groupJoinApprovalMode` (Baileys) — contrairement à `!antilink`, ce n'est pas un réglage stocké côté bot mais un vrai paramètre du groupe.
-  - Sans argument : affiche le statut actuel (`metadata.joinApprovalMode`).
-  - Complète `!approveall` (v1.25.0) : une fois le mode activé, les demandes d'adhésion en attente peuvent être validées en masse avec `!approveall`.
-  - **Non testé en conditions réelles** (pas d'accès WhatsApp dans mon environnement de dev) — à valider notamment sur la présence du champ `joinApprovalMode` dans `groupMetadata` selon la version de Baileys installée.
-
-## [1.25.0]
-### Added
-- **Nouvelle commande `!approveall` (admin, alias `!approuvertout`/`!acceptall`).** Approuve en une fois toutes les demandes d'adhésion en attente d'un groupe dont le mode "Approbation des nouveaux membres" est activé.
-  - Utilise `sock.groupRequestParticipantsList` (Baileys) pour lister les demandes en attente, puis `sock.groupRequestParticipantsUpdate(..., 'approve')` par lots de 20 (même limite prudente que `!kickall`), pour rester cohérent avec les autres commandes de masse du bot.
-  - Aucune vérification séparée du flag "approbation activée" : si le mode n'est pas activé (ou si personne n'attend), la liste renvoyée par Baileys est simplement vide, et l'utilisateur reçoit un message clair dans ce cas plutôt qu'une erreur technique.
-  - **Non testé en conditions réelles** (pas d'accès WhatsApp dans mon environnement de dev) — à valider notamment sur le format exact de `status` renvoyé par `groupRequestParticipantsUpdate` selon la version de Baileys.
-
-## [1.24.0]
-### Added
-- **Nouvelle commande `!play` (alias `!music`).** Recherche une chanson sur YouTube à partir d'un simple titre (pas besoin de lien) et envoie directement l'audio en mp3, sans étape de confirmation — comportement inspiré des bots type "ERFAN-MD SONG".
-  - `searchYoutubeData(query)` ajouté dans `src/utils/youtube.js` : utilise la syntaxe `ytsearch1:` de yt-dlp pour récupérer le premier résultat pertinent (titre, chaîne, durée, vues, miniature) sans téléchargement, réutilise `MAX_DURATION_SECONDS` déjà en place pour `!youtube`.
-  - Envoie d'abord une carte d'infos (miniature + titre/chaîne/durée/vues/format), puis le message audio (mp3 128kbps) via `downloadYoutubeAudio` existant — aucune nouvelle dépendance.
-  - **Non testé en conditions réelles** (pas d'accès à WhatsApp/réseau dans mon environnement de dev) — à valider notamment sur la fiabilité de la recherche `ytsearch1:` et le rendu de la carte d'infos avant un premier envoi client.
-
-## [1.23.0]
-### Added
-- **Nouveau jeu : `/calcul` (calcul mental rapide).** Deuxième jeu du bot après le Quiz — 10 opérations arithmétiques chronométrées (7-15s selon la difficulté), réponse par un simple nombre en texte.
-  - `/calcul [facile|moyen|difficile]`, `/calcul stats`, `/calcul classement`, `/calcul abandonner`.
-  - Opérations générées à la volée (`CalcGenerator.js`), aucune dépendance réseau — la division est toujours construite pour garantir un résultat entier exact.
-  - Récompenses : points de base selon la difficulté, bonus de vitesse (répondre dans la première moitié du délai), bonus de série (dès 3 bonnes réponses d'affilée).
-  - Timer **par question** (pas par inactivité comme le Quiz) — la partie avance automatiquement, à temps ou pas, jamais bloquée : voir `CalcTimer.js`/`CalcEngine.resolveAnswer` pour la garantie anti-course entre une vraie réponse et l'expiration du délai.
-  - Économie séparée du Quiz (`calc_stats.json`) — pas de portefeuille unifié entre les jeux pour l'instant.
-  - `/quiz` et `/calcul` s'excluent mutuellement pour un même utilisateur, pour qu'un nombre tapé ne soit jamais ambigu entre les deux jeux.
-  - Architecture complète documentée dans `src/core/calc/README.md`.
-  - **Non testé en conditions réelles** (pas d'accès à WhatsApp dans mon environnement de dev) — calibrage des délais/récompenses à ajuster après premiers retours.
-
-## [1.22.3]
-### Fixed
-- **Questions qui revenaient trop souvent.** Aucune mémoire n'empêchait un utilisateur de retomber sur une question déjà vue lors d'une partie précédente — statistiquement fréquent avec un pool d'environ 60 questions (15/catégorie), et quasi systématique en filtrant sur une seule catégorie.
-  - `QuizEngine` mémorise désormais, par utilisateur (en mémoire, non persisté), les 30 dernières questions vues, et `QuizLoader.pickRandomQuestions` les exclut en priorité du tirage suivant (`excludeIds`), avec repli gracieux si le pool filtré est trop petit pour les éviter complètement (mieux vaut une répétition occasionnelle qu'une partie plus courte que prévu).
-  - Pool récupéré depuis Open Trivia DB élargi de 15 à 25 questions par catégorie (jusqu'à ~100 au lieu de ~60), pour donner plus de marge à ce mécanisme — impact : le rafraîchissement Internet en tâche de fond (au démarrage, ou `/quiz refresh`) prend un peu plus longtemps, toujours sans bloquer le bot.
-
-## [1.22.2]
-### Changed
-- **Traduction des questions Internet : MyMemory (gratuit, sans clé) au lieu de Groq.** `QuizLoader.js` ne dépend plus de Groq pour traduire les questions Open Trivia DB en français — bascule sur [MyMemory](https://mymemory.translated.net) (API gratuite, sans clé, ~5000 mots/jour/IP), pour ne pas consommer le quota Groq utilisé ailleurs dans le bot (`!ia`, `!traduire`, `!corriger`).
-  - Traduction segment par segment (question + chaque réponse) avec un pool de 4 requêtes concurrentes, plutôt qu'un seul appel structuré JSON — MyMemory ne fait que traduire, pas de génération de contenu.
-  - Cache de traduction en mémoire (texte anglais → français) pour éviter de re-traduire les doublons entre questions.
-  - Repli par segment : un segment dont la traduction échoue garde son texte anglais plutôt que de faire échouer toute la question.
-  - **Conséquence assumée** : les questions Internet n'ont plus de champ `explanation` (MyMemory ne génère pas de contenu pédagogique, contrairement à un LLM) — seule la banque de secours locale (`src/data/quizQuestions.json`) en fournit désormais.
-  - Le module Quiz ne dépend plus d'aucune clé API (`GROQ_API_KEY` n'est plus nécessaire pour `/quiz`).
-  - **Non testé en conditions réelles** (pas d'accès réseau dans mon environnement de dev) — fiabilité/quota de MyMemory et qualité de traduction à vérifier après déploiement, `purgeCache`/`refresh` restent les outils de diagnostic si besoin.
-
-## [1.22.1]
-### Added
-- **`/quiz purge` — réinitialisation complète du module Quiz en une seule commande (admin uniquement, `ADMIN_JIDS`).** Contrairement à `/quiz resetall` (qui ne touche qu'aux stats des utilisateurs), `/quiz purge` vide les 3 fichiers de données du module d'un coup :
-  1. Sessions actives : interrompues et notifiées (comme `/quiz resetall`) avant toute suppression.
-  2. `quiz_sessions.json` vidé intégralement (historique compris, pas seulement les sessions actives).
-  3. `quiz_stats.json` vidé intégralement (XP, pièces, niveaux, succès de tous les utilisateurs).
-  4. `quiz_questions_cache.json` supprimé — la banque de secours locale (`src/data/quizQuestions.json`) reprend le relais immédiatement, en attendant le prochain `/quiz refresh` ou redémarrage.
-  - Irréversible et **sans fenêtre de confirmation** (à la différence de `/quiz reset` et `/quiz resetall`) : pensé comme un outil de remise à zéro pour le développement/diagnostic, pas comme une action courante.
-  - `QuizEngine.purgeEverything` orchestre les trois étapes ; `QuizSessionManager.purgeAllSessions` et `QuizLoader.purgeCache` sont les nouvelles primitives de bas niveau réutilisées.
-- **`/quiz sessions purge` — vidage ciblé de `quiz_sessions.json`** (admin, sous-commande de `/quiz sessions`) : contrairement à `/quiz sessions clear` (qui interrompt les sessions actives mais garde l'historique), `purge` supprime le fichier de sessions dans son intégralité, actives comprises, sans toucher aux stats/XP. Utile pour repartir d'un fichier de sessions propre sans perdre la progression des utilisateurs. Réutilise `QuizEngine.purgeAllSessionData` (interrompt puis vide).
-- **`/quiz categories` — liste les catégories de questions disponibles**, pour ne plus avoir à deviner les noms valides avant `/quiz <categorie>`. Réutilise `QuizLoader.listCategories`/`QuizEngine.getCategoriesMessage`, déjà utilisés en interne pour valider les catégories.
-
-## [1.22.0]
-### Changed
-- **Questions récupérées depuis Internet au lieu d'une banque figée dans le code.** `QuizLoader.js` récupère désormais les questions via [Open Trivia Database](https://opentdb.com) (gratuit, sans clé) et les traduit en français via Groq (`requestGroqJson`, déjà utilisé par `!ia`/`!traduire`/`!corriger`) — une courte explication est générée pour chaque question au passage.
-  - Fiabilité en 3 niveaux : cache disque 24h (`quiz_questions_cache.json`, racine) → récupération Internet en tâche de fond (ne bloque pas le démarrage du bot) → repli sur `src/data/quizQuestions.json`, dorénavant une simple **banque de secours** utilisée uniquement si le réseau ou Groq est indisponible.
-  - Catégories inchangées pour l'utilisateur (`geographie`, `histoire`, `sciences`, `informatique`) — mappées vers les catégories Open Trivia DB correspondantes en interne.
-  - Nouvelle commande admin **`/quiz refresh`** : force une récupération immédiate, en ignorant la fraîcheur du cache.
-  - Respect du rate-limit d'OpenTDB (~1 req/5s/IP) via un délai entre chaque catégorie récupérée.
-  - **Non testé en conditions réelles** (pas d'accès réseau dans mon environnement de dev) — comportement d'OpenTDB, qualité de la traduction Groq et cas de bascule en cours de partie à vérifier après déploiement.
-
-## [1.21.0]
-### Added
-- **`/quiz resetall` — réinitialisation globale (admin uniquement, `ADMIN_JIDS`).** Supprime les données quiz de TOUS les utilisateurs (XP, pièces, niveaux, historiques, succès), après confirmation `1`/`2`.
-  - Interrompt d'abord toute partie en cours (réutilise `QuizEngine.forceEndAllSessions`, chaque utilisateur concerné est notifié) avant de purger les statistiques (`QuizStatistics.deleteAllStats`), pour ne laisser aucune session orpheline référençant un profil supprimé.
-  - Fenêtre de confirmation **entièrement indépendante** de celle de `/quiz reset` (map `pendingGlobalResets` séparée dans `QuizResetService`) : un admin qui a une confirmation personnelle en attente ne peut jamais la confirmer par erreur en répondant à une confirmation globale, ou inversement.
-  - `messageHandler.js` : le reset global est vérifié en priorité dans la chaîne de routage des réponses texte (avant reset personnel, avant réponse à une question), avec le même contrat `false` = "pas concerné, laisse passer le message" que les autres flux quiz.
-  - Bloqué si l'admin a lui-même un quiz en cours (même garde que `/quiz reset`), pour qu'un "1"/"2" ne soit jamais ambigu.
-
-## [1.20.0]
-### Added
-- **`/quiz sessions` — commande admin de gestion des sessions actives** (réservée à `ADMIN_JIDS`, comme les autres commandes admin du bot) :
-  - `/quiz sessions` : liste toutes les sessions quiz actives (tous utilisateurs), avec question en cours et temps d'inactivité — diagnostic avant de forcer un nettoyage.
-  - `/quiz sessions clear` : interrompt de force **toutes** les sessions actives (débloque un état incohérent sans toucher aux stats/XP des utilisateurs concernés).
-  - `/quiz sessions clear @mention` / `<numero>` / en réponse à un message : interrompt de force la session d'un utilisateur précis (réutilise `utils/groupTarget.js`, déjà utilisé par `!warn` — mention, réponse citée, ou numéro en argument).
-  - S'appuie sur `QuizEngine.forceEndSession`/`forceEndAllSessions` (déjà présents) : contrairement à `/quiz reset`, seule la session en cours est terminée — XP, pièces, niveau et historique de l'utilisateur ne sont pas touchés — et l'utilisateur concerné est notifié.
-  - `QuizRenderer.renderSessionsList` pour l'affichage de la liste.
-
-## [1.19.1]
-### Fixed
-- **Quiz : remplacement du carrousel "liste WhatsApp" par des réponses numérotées en texte.** Testé en conditions réelles (voir capture utilisateur) : WhatsApp affiche le message liste (`sections`/`rows`) en texte brut sans aucune ligne cliquable pour les comptes personnels (non-Business) — restriction plateforme, pas un bug Baileys. `QuizRenderer` envoie désormais les options numérotées en texte pur (1️⃣, 2️⃣...) et n'accepte comme réponse qu'un chiffre nu envoyé pendant qu'une session est active, validé côté serveur (`QuizInteractionGuard.parseAnswerDigit`/`validateAnswerAttempt`) — même garantie "pas de texte libre" que le clic-only initial, juste un canal d'entrée différent.
-  - `QuizEngine.handleAnswerText` remplace `handleAnswerClick` ; ajout d'un verrou en mémoire par session (`sessionsBeingAnswered`) car deux messages texte distincts n'ont pas le même `messageId`, donc la déduplication réseau seule ne suffit plus à empêcher un double-envoi concurrent.
-  - `QuizResetService.handleTextReply` remplace `handleControlClick` ("1" confirme, "2" annule) ; `/quiz reset` refuse désormais explicitement si une session est déjà active, pour qu'un "1"/"2" ne soit jamais ambigu entre "réponse à une question" et "confirmation de reset".
-  - Renommage `QuizSessionManager` : `answeredButtonIds` → `answeredQuestionIds` (migration douce assurée pour les sessions déjà sur disque).
-  - `messageHandler.js` : le routage se fait désormais sur `hasPendingReset()`/`hasActiveSession()` + un chiffre nu, avec repli explicite vers le pipeline normal si le texte n'est pas un chiffre pertinent (évite qu'une vraie commande comme `/quiz abandonner` tapée en pleine partie soit avalée silencieusement).
-
-## [1.19.0]
-### Added
-- **Module Quiz interactif en carrousel WhatsApp** (commande `/quiz`) :
-  - `/quiz [categorie] [difficulte]`, `/quiz random`, `/quiz stats`, `/quiz classement`, `/quiz abandonner`, `/quiz reset` (avec confirmation par bouton avant suppression définitive).
-  - Carrousel = message liste natif WhatsApp (`sections`/`rows`), pas le type `buttons` (déprécié côté serveurs WhatsApp pour les comptes personnels) — réponse acceptée uniquement via clic sur une ligne, jamais par texte libre.
-  - Récompenses (XP, pièces, bonus de série, bonus "sans-faute"), niveaux, classement global, succès déblocables.
-  - Sécurité : anti-double-clic + idempotence anti-redélivrance réseau (`QuizInteractionGuard`), une seule session active par utilisateur, expiration après 10 min d'inactivité avec notification, sauvegarde disque après chaque réponse, reprise des sessions valides après redémarrage (`QuizCleanupService`), nettoyage périodique des sessions expirées.
-  - Architecture découplée : `QuizEngine` (orchestration), `QuizSessionManager`, `QuizLoader`, `QuizRenderer`, `QuizInteractionGuard`, `QuizStatistics`, `QuizRewards`, `QuizRanking`, `QuizAchievements`, `QuizTimer`, `QuizCleanupService`, `QuizResetService` — chacun dans `src/core/quiz/`.
-  - Banque de questions dans `src/data/quizQuestions.json` (catégories, difficultés, explications) — ajouter une question ne nécessite aucune modification de code.
-  - `src/handlers/messageHandler.js` : les clics sur le carrousel (`listResponseMessage`) sont interceptés et routés vers le module Quiz avant le pipeline de commandes classique, sans impacter les commandes existantes.
-  - Nouvelle catégorie de menu `Jeux` (`src/commands/help.js`).
-
-## [1.18.0]
-### Added
-- Commande `!remove` (alias `!antidelete`, `!recovermsg`) : renvoie les 3 derniers messages supprimés ("supprimer pour tout le monde") dans le chat courant — texte, image, vidéo, audio — conservés 45 minutes. Fonctionne en privé comme en groupe. Réservée à `ADMIN_JIDS` (contenu potentiellement sensible). Affichage thémé (`renderDeletedMessages`, ajouté aux 5 thèmes existants), les médias sont renvoyés séparément du résumé.
-- `src/core/deletedMessageCache.js` : cache tout message texte/média entrant (n'importe quel chat) pendant 45 minutes, détecte les suppressions via `protocolMessage.type === REVOKE` (`messages.upsert`), maintient un journal des 3 dernières suppressions par chat avec la même rétention.
-- Contrat des thèmes étendu : `renderDeletedMessages({ entries, footer })`, implémenté dans `classique.js`, `royal.js`, `neon.js`, `mono.js`, `galaxy.js`, documenté dans `src/themes/README.md`.
-
-## [1.17.0]
-### Changed
-- **Agent IA réservé aux administrateurs (`ADMIN_JIDS`)** :
-  - `src/handlers/messageHandler.js` : tout message hors commande (donc destiné à l'agent conversationnel) est désormais ignoré silencieusement s'il ne vient pas d'un admin (`ADMIN_JIDS`) ou du propriétaire en self-test — même si une session `!agent on` a été activée par ailleurs, pour ne pas laisser deviner à un non-admin que le mode existe.
-  - `src/commands/ultimo.js` (`!agent`/`!ultimo`) passe à `adminOnly: true` : seuls les admins peuvent désormais activer/désactiver le mode, cohérent avec la restriction ci-dessus (éviter qu'un non-admin l'active sans jamais obtenir de réponse).
-
-## [1.16.3]
-### Fixed
-- Agent IA : une commande pontée refusée (ex: `!ping`/`!status` en groupe, réservées au privé, ou une commande `adminOnly` demandée par un non-admin) envoyait le bon message de refus, **puis** un second message parasite "Outil inconnu: ping". Cause : `invokeExistingCommand` (`src/agent/commandBridge.js`) renvoyait `false` après avoir déjà envoyé le message de refus (ou après un blocage silencieux intentionnel — lockdown, bot désactivé à distance, antilink...), ce que `agentService.js` interprétait comme "non géré" et faisait retomber sur `executeTool('ping', ...)` — qui échoue toujours pour ces noms, puisque `ping`/`status`/etc. sont des commandes pontées et non des outils agent enregistrés. Tous les gardes-fous du bridge renvoient désormais `true` dès qu'ils ont pris en charge la requête (succès, refus explicite, ou silence intentionnel) ; `false` est réservé au seul cas où le bridge n'a rien géré (nom hors liste blanche).
-
-## [1.16.2]
-### Fixed
-- Agent IA : répondre à un message (reply) puis demander « traduire/corriger/résume en anglais » ignorait le message cité et traitait à la place l'instruction elle-même (ex: traduisait littéralement "Traduire en anglais"). Deux causes :
-  - `src/agent/agentService.js` transmettait toujours l'instruction tapée par l'utilisateur comme `text` (le contenu à traiter) aux outils `translate_text`/`correct_text`/`summarize_text`/`rewrite_professional` — cette valeur n'étant jamais vide, ces outils l'utilisaient directement sans jamais tenter de résoudre le message cité. Elle n'est désormais plus transmise pour ces outils, qui se reposent sur `resolveTextSource()` (texte direct → args → message cité → message actuel → mémoire de session).
-  - `src/agent/tools/{translateTool,correctTool,summarizeTool}.js` appelaient encore `resolveTextSource(msg, chatId, sender)` (ancienne signature à arguments positionnels), alors que `textSourceResolver.js` attend désormais un seul objet de contexte (`resolveTextSource(ctx)`) — seul `proRewriteTool.js` avait été mis à jour. Les trois outils appellent maintenant `resolveTextSource(ctx)` correctement.
-
-## [1.16.1]
-### Fixed
-- Agent IA : `INTENT_TOOL_NAMES` (`src/agent/agentService.js`) listait deux noms d'outils fantômes (`translate`, `ocr_image`) qui ne correspondaient à aucun outil réellement enregistré dans `toolRegistry.js` (les vrais noms sont `translate_text` et `ocr`). Comme cette liste est injectée telle quelle dans le prompt système envoyé au classifieur IA, celui-ci choisissait parfois ces noms invalides — notamment `translate` pour toute demande de traduction — ce qui faisait échouer `executeTool()` avec "Outil inconnu: translate". Liste corrigée pour correspondre exactement aux noms enregistrés.
-
-## [1.16.0]
-### Changed
-- **Migration complète de Mistral vers Groq** pour toutes les fonctionnalités IA du bot (`!ia`, `!ocr`, `!resume`, `!corriger`, `!traduire`, Agent IA conversationnel, `!rewrite`) :
-  - `src/utils/mistral.js` remplacé par `src/utils/groq.js` — endpoint `https://api.groq.com/openai/v1/chat/completions` (compatible OpenAI), fonctions renommées (`askMistral` → `askGroq`), messages d'erreur mis à jour. La résilience réseau ajoutée avec Mistral (timeout 20s via `AbortController`, retry/backoff sur 429, gestion dédiée du 402 "crédit épuisé", logs upstream jamais exposés à l'utilisateur) est conservée à l'identique côté Groq.
-  - `MISTRAL_API_KEY` (`.env`) remplacé par `GROQ_API_KEY` — **à mettre à jour manuellement dans `.env`, non inclus dans les archives/zips livrés**. Clé obtenable sur https://console.groq.com/.
-  - `mistralModel` (`settings.json`) remplacé par `groqModel` (`llama-3.3-70b-versatile` par défaut) et `groqVisionModel` (`qwen/qwen3.6-27b`, nouveau).
-  - `!ocr` : Groq n'a pas d'endpoint OCR dédié comme Mistral (`/v1/ocr`) — remplacé par un modèle de vision (`groqVisionModel`) via le chat completions standard, avec un prompt de transcription dédié. Les modèles vision de Groq changent assez fréquemment (plusieurs dépréciations ces derniers mois) : si l'OCR cesse de fonctionner, ajuster `groqVisionModel` dans `settings.json` en vérifiant https://console.groq.com/docs/vision.
-  - `src/agent/agentService.js` (détection d'intention) migré vers Groq (endpoint + modèle + clé), en conservant le client mutualisé (`requestGroqJson`, retry/timeout) ainsi que la liste blanche de commandes pontables et la limite de débit introduites après la migration Mistral.
-  - `src/agent/toolRegistry.js`, `src/agent/tools/{ocrTool,correctTool,summarizeTool,translateTool,proRewriteTool}.js`, `src/commands/{ia,ocr,resume,corriger,traduire}.js` : imports et références mises à jour.
-  - `src/agent/README.md` mis à jour.
-
-## [1.15.0]
-### Added
-- Commande `!antipurge` (alias `!antiraid`) `on|off|status` : détecte un admin (autre que `ADMIN_JIDS`) qui expulse 3 membres ou plus en moins de 10 secondes ("purge"/raid). Une fois détecté : l'auteur est démis puis expulsé du groupe, et le bot tente de réintégrer automatiquement les membres expulsés (`groupParticipantsUpdate(..., 'add')`), avec un compte-rendu transparent des réintégrations qui échouent (souvent dû aux réglages de confidentialité empêchant un ajout direct — WhatsApp ne garantit pas la réintégration).
-- `src/utils/antipurge.js` (`handlePurgeGuard`) : fenêtre glissante en mémoire par auteur (même principe que `antispamGuard.js`), branchée sur l'action `remove` de `group-participants.update` (déjà utilisée pour les messages bye — les deux fonctionnalités sont indépendantes, l'une n'empêche pas l'autre). Réutilise `isBotGroupAdmin` de `core/groupGuardian.js`.
-- `setAntipurge` dans `src/core/groupSettings.js`.
-
-## [1.14.3]
-### Fixed
-- `!guardian` n'exemptait jamais `ADMIN_JIDS` : un changement de nom/description/photo/lien d'invitation/réglages fait par un admin de confiance était annulé exactement comme pour n'importe qui d'autre — incohérent avec `!antipromote`/`!antispam`, qui exemptent déjà `ADMIN_JIDS`. `src/core/groupGuardian.js` vérifie maintenant l'auteur avant de restaurer :
-  - Photo et lien d'invitation : l'auteur vient directement de l'événement déclencheur (fiable).
-  - Nom/description/réglages (`groups.update` ne fournit pas d'auteur) : best-effort, basé sur le même mécanisme de détection d'auteur déjà utilisé pour la notification (`recentActors`) — si l'auteur n'a pas pu être identifié à temps, le changement est restauré quand même, même s'il venait d'un admin.
-
-## [1.14.2]
-### Added
-- `scripts/save-release.js` (`npm run save-release`) : sauvegarde locale d'une version stable dans `releases/v<version>/` (lu depuis `package.json`). Copie `src/`, `assets/`, `scripts/`, `tests/`, `package.json`, `CHANGELOG.md`, `README.md`, `.gitignore` — exclut `node_modules`, `.git`, `.env`, `auth_info/`, et tous les fichiers de données runtime. Refuse d'écraser une version déjà sauvegardée sauf avec `--force`. Purement local : `releases/` est ajouté à `.gitignore`, ce n'est ni un mécanisme de publication ni un remplacement des tags Git.
-
-## [1.14.1]
-### Changed
-- `royal` est maintenant le thème par défaut (au lieu de `classique`), aussi bien dans `src/config/settings.json` que dans `utils/theme.js` (`DEFAULT_THEME`).
-- Le style du thème actif s'étend désormais aux libellés/sections dans le **corps** des messages (pas seulement le grand titre en tête) : `!menu` (labels de catégories, "Version", "CATÉGORIES"), le message de démarrage ("Statut", "Instance", "Propriétaire", "Commandes chargées", "Mode"), et les gabarits welcome/bye par défaut ("Règles"). Le séparateur de pied de page (`themedSeparator`) suit aussi le style de bordure du thème actif.
-- `!menu` affiche maintenant le thème actif (`🎨 Thème : 👑 Royal`).
-
-### Fixed
-- Le marqueur de citation (`> `) est redevenu **fixe**, non thémé (retiré du champ `quote` de chaque thème, supprimé de `utils/theme.js`) — `toQuoteBlock` (`utils/helpers.js`) et le message de démarrage l'utilisent en dur, comme avant l'introduction des thèmes. Au passage, une référence résiduelle à `theme.quote` (supprimé) dans `utils/startupMessage.js` aurait fait planter la signature du message de démarrage ; corrigée avant d'être livrée.
-
-## [1.14.0]
-### Added
-- Système de thèmes visuels : `!theme list` / `!theme <nom>` (admin, effet immédiat, persisté dans `settings.json` — même principe que `!prefix`). 4 thèmes livrés : `classique` (défaut, identique au rendu existant), `royal`, `neon`, `mono` — chacun définit une police Unicode de titre, un style de bordure, un marqueur de citation et un emoji d'accent.
-- `src/utils/theme.js` : registre des thèmes + `getCurrentTheme`/`setTheme`/`listThemeNames`/`boxTop`/`boxBottom`/`themedTitle`.
-- `src/utils/fancyFont.js` : 3 nouvelles polices Unicode (`toBoldFont`, `toSansBoldFont`, `toMonospaceFont`), toutes basées sur des plages continues du bloc Mathematical Alphanumeric Symbols (contrairement à double-struck/fraktur qui ont des exceptions) pour rester simples et sans bug.
-- Application **partout**, sans dupliquer la logique dans chaque commande :
-  - `utils/helpers.js` (`toQuoteBlock`) — le marqueur de citation du thème remplace le `"> "` en dur, donc toutes les réponses via `ctx.reply`/`ctx.success`/`ctx.error` en héritent automatiquement.
-  - `commands/help.js` (menu principal, sous-menus, détail de commande).
-  - `utils/startupMessage.js` (message de démarrage).
-  - `handlers/groupParticipantsHandler.js` (gabarits par défaut welcome/bye — uniquement quand le groupe n'a pas défini son propre message personnalisé).
-- `theme: "classique"` ajouté à `src/config/settings.json`.
-
-## [1.13.1]
-### Changed
-- Toutes les descriptions de commandes (`!menu`) référençaient le préfixe en dur (`!nom`), ce qui devenait incohérent depuis l'ajout de `!prefix` (préfixe modifiable à la volée). Chaque référence a été remplacée par un placeholder `{prefix}`, substitué par le préfixe courant au moment de l'affichage (`withPrefix()` dans `commands/help.js`) — donc toujours exact, même après un changement de préfixe.
-- Portée volontairement limitée aux champs `description:` (affichés par `!menu`) : les messages d'usage codés en dur à l'intérieur des `execute()` (ex: `ctx.error('Usage: !dell <nom>')`) n'ont pas été touchés, pour rester un changement ciblé et à faible risque.
-
-## [1.13.0]
-### Added
-- Commande `!prefix` : affiche le préfixe actuel (`!prefix`), ou le change (`!prefix <nouveau>`), avec effet immédiat sur tous les chats (pas de redémarrage nécessaire) et persistance dans `src/config/settings.json`. Réservée aux admins (`ADMIN_JIDS`).
-
-## [1.12.0]
-### Added
-- Commande `!facebook` (`.facebook` / `!fb`) : télécharge une vidéo Facebook en audio (MP3) ou vidéo (MP4), même flux que `!tiktok`/`!youtube` (choix 1/2 après envoi du lien). Réutilise `youtube-dl-exec` (déjà une dépendance du projet pour `!youtube`) plutôt qu'une API tierce non vérifiable — `yt-dlp` supporte nativement `facebook.com`/`fb.watch`.
-- `src/utils/facebook.js` : détection de lien, récupération des infos, téléchargement audio/vidéo — réutilise `runDownload` (désormais exporté) de `src/utils/youtube.js` au lieu de dupliquer la logique de téléchargement.
-- `src/utils/downloadReply.js` : gère le nouveau type `facebook` dans le flux de choix 1/2 existant (aucune duplication de la mécanique de session).
-
-## [1.11.0]
-### Added
-- Commande `!antispam` (`.antispam` avec le préfixe configuré) `on|off|status|config <limite> <secondes>|reset @membre` : détecte les rafales de messages (5 en moins de 8s par défaut, configurable par groupe), supprime les messages concernés, avertit l'auteur, et l'expulse au 3e avertissement. Réutilise le compteur d'avertissements déjà partagé par `!warn`/`!warns`/l'antilink (`core/warnStore.js`) plutôt que d'en créer un nouveau, puisque la sanction est identique (expulsion à 3).
-- `src/core/antispamGuard.js` : fenêtre glissante en mémoire par membre, branchée sur `messages.upsert`. Exempte le bot lui-même et `ADMIN_JIDS`, et nécessite que le bot soit administrateur du groupe (réutilise `isBotGroupAdmin` de `core/groupGuardian.js`).
-- `setAntispam` / `setAntispamConfig` dans `src/core/groupSettings.js`.
-- Alias `!warnings` ajouté à la commande `!warns` existante (demandé comme `.warnings @user` — même fonctionnalité, pas de doublon créé).
-
-## [1.10.4]
-### Fixed
-- Le message de démarrage affichait "Commandes chargées : 43" alors que `!menu` en affiche 42 — `index.js` comptait toutes les commandes chargées (`help` incluse), alors que `commands/help.js` exclut volontairement `!help` de sa propre liste. Le comptage utilise maintenant le même filtre (`cmd.name !== 'help'`) aux deux endroits.
-
-## [1.10.3]
-### Fixed
-- Les commandes envoyées par le propriétaire du bot depuis son propre compte (`fromMe`) n'étaient traitées qu'en message privé, jamais en groupe — `isSelfTest` (dans `handlers/messageHandler.js` **et** `agent/commandBridge.js`, deux implémentations identiques) excluait explicitement les groupes (`!isGroup(...)`). Comme le bot tourne sur le compte personnel du propriétaire, ça rendait `!private on` inutilisable par lui-même en groupe, alors que la doc de `core/state.js` décrivait déjà ce mode comme actif "peu importe le chat (privé ou groupe)". `fromMe` est désormais traité comme admin (via `isSelfTest`) dans les deux contextes ; `ADMIN_JIDS` continue de fonctionner à l'identique en plus de ça.
-
-## [1.10.2]
-### Fixed
-- Guardian bouclait en rafale sur les changements de photo de groupe (restauration → nouvel écho → nouvelle restauration...). Deux causes corrigées dans `src/core/groupGuardian.js` :
-  - `fetchBuffer` faisait un `fetch()` nu sur l'URL de la photo WhatsApp, qui échoue sans en-têtes appropriés ; la comparaison de hash retombait alors systématiquement sur "différent" → restauration à chaque fois. Ajout des mêmes en-têtes que `commands/reveal.js` (`User-Agent`, `Accept`).
-  - Ajout d'un cooldown anti-boucle dédié à la photo (`recentSelfIconRestore`, 10s), sur le même principe que celui déjà en place pour le lien d'invitation — rempart supplémentaire indépendant de la comparaison de hash.
-
-## [1.10.1]
-### Fixed
-- `!guardian on` répondait "je dois être administrateur" alors que le bot l'était réellement : `isBotGroupAdmin` (`src/core/groupGuardian.js`) ne comparait `sock.user.id` aux participants qu'après avoir retiré le suffixe `:device`, ce qui échoue quand WhatsApp identifie le bot sous une forme JID différente (LID `@lid` vs PN `@s.whatsapp.net`) selon le compte/la session. La comparaison utilise maintenant le normaliseur officiel `jidNormalizedUser` de Baileys en plus, sur tous les champs d'identité disponibles (`id`, `lid`) côté bot et côté participants, avec un log de diagnostic si le bot reste introuvable dans la liste.
-
-## [1.10.0]
-### Added
-- Commande `!guardian` (`.guardian` avec le préfixe configuré) `on|off|status` : protection avancée du groupe. Une fois activée, sauvegarde le nom, la description, la photo et les réglages (qui peut écrire / qui peut modifier les infos) comme référence, puis restaure automatiquement tout changement non initié par le bot et avertit le groupe (en mentionnant l'auteur si l'information est disponible).
-- `src/core/groupGuardian.js` : logique de détection/restauration, branchée sur `groups.update` (nom, description, réglages) et sur les messages système `messageStubType` (`messages.upsert`) pour la photo, le lien d'invitation et l'attribution de l'auteur.
-- `setGuardian` / `setGuardianSnapshot` dans `src/core/groupSettings.js`.
-- Les photos de référence sont sauvegardées dans `saved_media/guardian/` (déjà ignoré par git via la règle existante `saved_media/`).
-
-**Limites connues (voir aussi le message livré avec cette fonctionnalité) :** l'attribution de l'auteur et la détection photo/lien d'invitation reposent sur des constantes `WAMessageStubType` de Baileys non vérifiables sans test en conditions réelles — à valider après déploiement. Le lien d'invitation ne peut pas être restauré à l'identique (limitation de l'API WhatsApp) : il est immédiatement invalidé à la place.
-
-## [1.9.0]
-### Added
-- Commande `!antipromote` (alias `!noautopromote`, `!protegeradmin`) : une fois activée sur un groupe, empêche les administrateurs WhatsApp du groupe (autres que `ADMIN_JIDS`) de nommer quelqu'un administrateur. Chaque tentative est annulée immédiatement (la cible est rétrogradée) et l'auteur reçoit un avertissement dédié ; au 3e avertissement, l'auteur perd lui-même son statut admin. `ADMIN_JIDS` fait office de "propriétaire du bot" (aucun JID propriétaire séparé n'est stocké — voir `!setup`), ces membres ne sont jamais concernés.
-- `src/core/promotionGuardStore.js` : compteur d'avertissements dédié à `!antipromote`, séparé de `core/warnStore.js` (utilisé par `!warn`/l'antilink) pour ne pas mélanger des sanctions sans rapport.
-- `src/utils/antipromote.js` (`handlePromoteGuard`) : logique d'interception, branchée sur l'action `promote` de l'événement Baileys `group-participants.update` (déjà utilisé pour welcome/bye).
-- `setAntipromote` dans `src/core/groupSettings.js`.
-
-## [1.8.2]
-### Added
-- Tests unitaires (`tests/`) basés sur `node:test`, sans nouvelle dépendance : `helpers`, `duration`, `fancyFont`, `groupTarget`, `documentText`, `quotedContent`, `groupMetadataCache`, `antilink`, `antiSpam` (+ `middlewares/index`), `agent/sessionMemory`, `agent/contextBuilder`, `core/downloadSessions`, `core/groupSettings`, `core/warnStore`.
-- Scripts `npm test` et `npm run test:coverage`.
-
-### Changed
-- Suppression de la catégorie `Archivage` : `!save`, `!get`, `!dell`, `!listsaved` rejoignent la nouvelle catégorie `Sauvegardes`.
-- Recatégorisation de plusieurs commandes pour un classement plus cohérent dans `!menu` : `!ping` → `Diagnostic`, `!pp` et `!reveal` → `Média`, `!rewrite` → `Intelligence Artificielle`.
-- `CATEGORY_MENU` (`src/commands/help.js`) mis à jour en conséquence (ordre des catégories, ajout de `Sauvegardes`).
-
-### Fixed
-- `getGroupSettings` (`src/core/groupSettings.js`) renvoyait une copie superficielle : les objets `welcome`/`bye`/`antilink` étaient partagés avec les valeurs par défaut, donc entre tous les groupes. La copie est désormais profonde.
-- L'intervalle de purge de `src/agent/sessionMemory.js` est `unref()` : il n'empêche plus le process de s'arrêter proprement.
-
-## [1.8.1] - reconstitué (commit `eb60b61`)
-### Added
-- **Agent IA conversationnel** (Mistral, function-calling) : comprend le langage naturel, choisit automatiquement les commandes à exécuter, garde le contexte de la conversation et une mémoire de session par utilisateur (historique récent, dernier outil utilisé, dernier média, préférences), avec expiration automatique.
-- Nouveau module `src/agent/` : orchestrateur de conversation, registre d'outils, mémoire de session, résolveur de contexte, et un ensemble d'outils qui réutilisent les commandes/utilitaires existants (sticker, toimg, tomp3, ocr, traduction, résumé, réécriture, téléchargement TikTok/YouTube...).
-- Commande `!ultimo` (alias `!assistant`, `!botia`, `!agent`) : active/désactive/affiche l'état de l'agent pour le chat courant, et permet de réinitialiser sa mémoire de session (`on|off|status|clear`).
-- Commande `!rewrite` (alias `!pro`, `!professionnel`, `!réécris`) : réécriture professionnelle d'un texte, en contournant volontairement l'agent (utile quand on veut ce résultat précis sans passer par la compréhension du langage naturel).
-- Fonctionnement hybride : les commandes classiques (`!play`, `!sticker`, `!ocr`, etc.) continuent de fonctionner normalement, en parallèle de l'agent.
-
-## [1.7.0] - 2026-08-04
-### Added
-- Commande `!ocr` (alias `!textfromimage`, `!extraire`) : extrait le texte visible d'une image via l'API OCR dédiée de Mistral (`mistral-ocr-latest`).
-- `ocrImage` dans `src/utils/mistral.js`, réutilise la clé `MISTRAL_API_KEY` déjà utilisée par `!ia`.
-
-## [1.6.0] - 2026-08-04
-### Added
-- Commande `!toimg` (alias `!img`) : convertit un sticker en image PNG.
-- Commande `!tomp3` (alias `!mp3`) : extrait l'audio d'une vidéo (ou convertit un audio) en MP3.
-- `getMediaType` (`src/utils/quotedContent.js`) reconnaît désormais aussi les stickers.
-- Nouvel utilitaire `src/utils/mediaConvert.js` (`stickerToImage`, `extractAudioMp3`).
-
-## [1.5.2] - 2026-08-04
-### Changed
-- Carte de lien de la chaîne WhatsApp (`sendChannelLink` dans `src/utils/channelCard.js`) : plusieurs pistes testées pour masquer le titre/l'icône ou le lien brut affiché au-dessus du bouton natif "Voir la chaîne". Aucune n'a fonctionné sans casser la carte (texte sans lien réel → message vide et sans bouton), donc retour à la version d'origine avec titre et miniature du logo. Comportement final inchangé par rapport à 1.5.1.
-
-## [1.5.1] - 2026-08-03
-### Fixed
-- Reconnexion Baileys revue pour éviter les restrictions de compte WhatsApp : arrêt net sur session invalide (`loggedOut`, `badSession`, `multideviceMismatch`, `connectionReplaced`) au lieu de boucler indéfiniment, plafond de 8 tentatives, délai max porté à 5 min, jitter aléatoire sur le backoff.
-
-## [1.5.0] - 2026-08-03
-### Added
-- Suppression définitive d'une instance depuis le dashboard (`DELETE /api/instances/:instanceId`), disponible uniquement pour les copies hors ligne.
-- Dashboard restructuré : `public/index.html`, `public/css/style.css` et `public/js/app.js` séparés au lieu de tout dans `index.html`.
-- Nouveau thème visuel "blues sombre" pour le dashboard.
-
-## [1.4.1] - reconstitué (commit `406d16c`)
-### Changed
-- Obfuscation du build (`javascript-obfuscator`, script `build.js`).
-
-## [1.4.0] - reconstitué (commit `087645c`)
-### Changed
-- Configuration de l'instance via `INSTANCE_ID` / `INSTANCE_OWNER`.
-
-## [1.3.0] - reconstitué (commit `4fc2a62`)
-### Added
-- Nouvelle commande `!ia`.
-
-## [1.2.0] - reconstitué (commit `8bc0db9`)
-### Added
-- Interrupteur à distance pour activer/désactiver une instance depuis le dashboard.
-- Statistiques d'usage par commande (`commandStats`).
-
-## [1.1.1] - version initiale (commit `7d6b11e`)
-### Added
-- Version initiale de RodrickBOT.
-
----
-
-**Note :** les entrées 1.2.0 à 1.4.1, ainsi que 1.8.1, sont reconstituées a posteriori à partir de l'historique git — le numéro de version dans `package.json` avait été mis à jour sans entrée correspondante ici. À partir de maintenant, chaque changement notable doit s'accompagner d'une mise à jour ici et du champ `version` dans `package.json`, dans le même commit.
+## 1.46.0
+
+- **Nouvelle commande `{prefix}antibug`** (`on|off|autoblock on|off|status`, admin uniquement) : protection contre les messages anormalement volumineux/mal formés reçus en **message privé** (harcèlement type "bug bot" — vCard démesurée, texte saturé de caractères combinants type "zalgo", nombre anormal de mentions/contacts...). Détection uniquement par défaut ; le blocage automatique de l'expéditeur (`autoblock on`) est une option séparée, désactivée par défaut. Volontairement scopé au privé seulement — jamais en groupe, pour ne jamais bloquer un membre par erreur sur un simple partage volumineux légitime. Honnêteté sur la portée : RodrickBOT tourne via Baileys (pas l'app WhatsApp native), donc probablement déjà à l'abri des bugs de rendu qui ciblent l'app officielle — cette protection est une défense en profondeur générique (taille/structure anormale), pas une liste de bugs connus.
+- **Filet de sécurité global** (`index.js`) : `process.on('uncaughtException'/'unhandledRejection')` pour qu'une erreur échappant au try/catch par message existant (ex: dans les internals de Baileys eux-mêmes) ne fasse plus jamais planter tout le process — journalisée, le bot continue.
+
+## 1.45.0
+
+- **Fichiers de données regroupés dans `data/`.** Les 19 fichiers JSON runtime (`admins.json`, `dedup.json`, `instance.json`, `state.json`, `afk.json`, `polls.json`, `saved_items.json`, `message_schedules.json`, `quiz_sessions.json`, `quiz_questions_cache.json`, `quiz_stats.json`, `calc_sessions.json`, `calc_stats.json`, `activity.json`, `promotion_guard_warnings.json`, `lock_schedules.json`, `reminders.json`, `group_settings.json`, `warnings.json`) vivent désormais dans `data/` au lieu de la racine du projet. Nouveau helper partagé `utils/dataFile.js` (`dataFilePath(filename)`), qui crée `data/` automatiquement si absent. `src/data/quizQuestions.json` (asset embarqué versionné, pas une donnée d'exécution) n'est pas concerné.
+- **Journalisation fichier optionnelle avec rotation automatique.** Nouveau flag `LOG_TO_FILE=true` (`.env`) : en plus de la console habituelle, les logs sont aussi écrits dans `data/logs/bot.log`. Rotation par taille (10 Mo, jusqu'à 3 archives `bot.log.1`/`.2`/`.3`) via une stratégie "copytruncate" (vide le fichier en place plutôt que de le renommer, pour rester compatible avec le file descriptor déjà ouvert par pino). Désactivé par défaut — aucun changement de comportement sans ce flag.
+
+## 1.44.0
+
+- **Chromium/Playwright entièrement retiré.** Suppression de `core/chromiumInstaller.js` (téléchargement auto du binaire au démarrage) et `utils/tiktokBrowser.js` (repli navigateur headless pour `!tiktok`), de l'appel correspondant dans `index.js`, du flag `disableTiktokBrowserFallback`/`DISABLE_TIKTOK_BROWSER_FALLBACK` dans `config/index.js`, et de la dépendance `playwright` dans `package.json`.
+- `utils/tiktok.js` simplifié en conséquence : `fetchTikTokData`/`downloadTikTokAudio`/`downloadTikTokVideo` ne connaissent plus qu'une seule source (yt-dlp), le champ `source` et le chemin `directVideoUrl` disparaissent.
+- Conséquence assumée : si yt-dlp échoue avec l'erreur de structure de page TikTok ("rehydration"/"universal data") même après le retry automatique, il n'y a désormais plus de repli — l'utilisateur reçoit directement le message d'erreur explicatif. Objectif : alléger le bot sur les hébergements à RAM très contrainte (un Chromium headless dépassait à lui seul le budget mémoire de ces environnements).
+
+## 1.43.0
+
+- `{prefix}bots` n'est plus réservée aux admins (`adminOnly: false`). Avec `adminOnly: true`, une instance appartenant à un autre utilisateur ignorait la commande si l'expéditeur n'était pas admin sur CETTE instance précise — ce qui empêchait justement les bots des autres utilisateurs de répondre, le but recherché avec cette commande.
+
+## 1.42.0
+
+- Nouvelle commande `{prefix}bots` (alias `whoisonline`, `presence`) : chaque instance du bot présente dans le chat répond directement avec son propre statut (nom, propriétaire, instanceId, uptime) — aucune requête vers le dashboard-server, chaque bot répond pour lui-même en tant que participant normal du chat. Pensée pour un groupe partagé où plusieurs instances sont membres.
+
+## 1.41.0
+
+- `{prefix}tagadmin` exclut désormais le bot lui-même des mentions (il ne tague plus que les admins humains du groupe) — y compris s'il a le rôle admin dans ce groupe précis, ou si son entrée dans `groupMetadata` utilise un format de JID différent (`@lid` vs `@s.whatsapp.net`).
+
+## 1.40.0
+
+- **Fix : le bot réexécutait des commandes au redémarrage.** Deux causes, deux correctifs dans `handlers/messageHandler.js` :
+  - Le cache anti-doublon (`processedMessageIds`) était uniquement en mémoire, donc vidé à chaque redémarrage complet — précisément le cas où un rejeu Baileys est le plus probable (crash juste après traitement, messages non-accusés redélivrés à la reconnexion). Il est désormais persisté dans `dedup.json` (écriture différée toutes les 10s).
+  - Nouveau filtre anti-rattrapage : les messages envoyés pendant que le bot était hors ligne sont redélivrés par WhatsApp à la reconnexion, marqués comme des messages tout frais. Ils sont désormais ignorés s'ils datent de plus de 2 min avant l'heure de connexion (`core/state.js` : `markConnectedNow()`/`getConnectedAt()`, appelé depuis `client.js` à chaque `connection === 'open'`).
+  - Marge de 2 min volontairement généreuse pour ne jamais risquer d'ignorer un message réellement récent (délai de livraison normal, léger décalage d'horloge) — seul le vrai rattrapage (coupure prolongée) est filtré.
+
+## 1.39.0
+
+- **ADMIN_JIDS retiré du .env.** Remplacé par `core/adminStore.js` :
+  - Le **propriétaire** du bot n'est plus stocké nulle part : c'est le JID sur lequel le bot est connecté (`sock.user.id`), lu en direct à chaque connexion (`client.js`, événement `connection === 'open'`). Impossible de désynchroniser, même après un ré-appairage sur un autre numéro.
+  - Les **admins supplémentaires** sont persistés dans `admins.json` (racine du projet, non versionné), modifiables directement dans WhatsApp via les nouvelles commandes `{prefix}addadmin` et `{prefix}removeadmin` (réservées aux admins existants — sinon n'importe qui pourrait s'auto-promouvoir). Nouvelle commande `{prefix}admins` pour lister qui est admin.
+  - **Migration automatique et unique** : si `ADMIN_JIDS` existe encore dans `.env` au démarrage et qu'`admins.json` n'existe pas encore, son contenu est importé dans `admins.json` avec un avertissement invitant à retirer la ligne du `.env`.
+  - `config.adminJids` reste disponible (getter dynamique délégué à `adminStore.getAdmins()`) pour ne rien casser côté `kickall.js` et autres usages existants.
+  - Descriptions de `whoami`, `antipurge`, `ultimo` mises à jour (elles référençaient encore `ADMIN_JIDS`).
+  - Point d'attention technique : `adminStore.js` n'importe volontairement PAS `utils/logger.js` (utilise `console` à la place), pour éviter une dépendance circulaire avec `config/index.js` qui importe désormais `adminStore.js`.
+
+## 1.38.0
+
+- Rétablissement de `core/outboundGateway.js` (file d'attente d'envoi + simulation de frappe), retiré en 1.37.0. Contenu identique à la version 1.35.0. Rebranché dans `client.js` juste après la création du socket.
+
+## 1.37.0
+
+- **Retrait de la file d'attente d'envoi et de la simulation de frappe** (`core/outboundGateway.js`, ajoutés en 1.35.0) : suppression du fichier et de son branchement dans `client.js`. Les commandes envoient de nouveau instantanément, sans délai (700-1800ms) ni pause "composing" avant les messages texte.
+- ⚠️ Compromis assumé : ce retrait annule la mesure prise en 1.35.0 pour réduire le risque de restriction de compte WhatsApp (rythme d'envoi mécanique/instantané de nouveau présent). Choix délibéré en faveur de la rapidité d'exécution des commandes.
+
+## 1.36.0
+
+- **Stabilité sur mauvaise connexion.** `client.js` : `startBaileysClient()` ne rejette plus jamais — une erreur avant même l'ouverture du socket (lecture de session, résolution de version, échec du pairing) planifie désormais une reconnexion via le même backoff qu'une déconnexion en cours de route, au lieu de faire planter tout le process via `main().catch()` dans `index.js`. Avant ce correctif, une mauvaise connexion pile au démarrage tuait le bot au lieu de retenter.
+- Résolution de version Baileys (`fetchLatestBaileysVersion`) désormais bornée dans le temps (10s) avec repli automatique sur la version embarquée par défaut de la librairie en cas d'échec/lenteur réseau, plutôt que de bloquer indéfiniment le démarrage.
+- Tuning des options de socket Baileys pour tolérer une connexion lente : `connectTimeoutMs` 20s→60s, `keepAliveIntervalMs` 30s→25s (détection de coupure plus rapide), `defaultQueryTimeoutMs` 60s→90s, ajout de `retryRequestDelayMs` (5s) et `maxMsgRetryCount` (5) pour que Baileys retente en interne les requêtes/envois avant d'abandonner.
+
+## 1.35.0
+
+- Ajout de `src/core/outboundGateway.js` : tous les envois sortants (`sock.sendMessage`, toutes commandes confondues) passent désormais par une file d'attente séquentielle avec délai aléatoire (700-1800ms) entre deux envois, pour éviter un rythme d'envoi mécanique et régulier.
+- Simulation de frappe humaine ("composing" puis "paused") avant l'envoi d'un vrai message texte, avec un délai proportionnel à la longueur du texte (borné entre 400ms et 2500ms). Les réactions et suppressions de messages ne sont pas concernées par la simulation de frappe (mais restent soumises à l'espacement de la file).
+- Objectif : réduire le risque de restriction de compte WhatsApp en atténuant les signaux comportementaux de bot (réponses instantanées, rafales d'envoi). Ceci réduit le risque, ça ne l'élimine pas — voir discussion en amont sur les limites structurelles de Baileys.
+- `client.js` : branchement de la file dès la création du socket (`wrapSocketWithOutboundGateway(sock)`), avant toute utilisation de `sock.sendMessage`, pour couvrir automatiquement toutes les commandes existantes sans les modifier une par une.

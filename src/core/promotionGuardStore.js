@@ -1,6 +1,6 @@
 import { readFileSync, existsSync } from 'fs';
 import { atomicWriteFileSync } from '../utils/atomicWrite.js';
-import path from 'path';
+import { dataFilePath } from '../utils/dataFile.js';
 import { logger } from '../utils/logger.js';
 
 /**
@@ -11,7 +11,7 @@ import { logger } from '../utils/logger.js';
  * promotion illégitime, compterait pour cette sanction-là.
  */
 
-const DATA_FILE = path.join(process.cwd(), 'promotion_guard_warnings.json');
+const DATA_FILE = dataFilePath('promotion_guard_warnings.json');
 export const WARN_LIMIT = 3;
 
 let warnings = {}; // { [chatId]: { [jid]: count } }

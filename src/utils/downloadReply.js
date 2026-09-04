@@ -22,14 +22,14 @@ async function handleTiktokChoice(sock, chatId, msg, choice, data) {
   const fileName = sanitizeFileName(data.title);
 
   if (choice === 'audio') {
-    const buffer = await downloadTikTokAudio(data.url);
+    const buffer = await downloadTikTokAudio(data);
     await sock.sendMessage(
       chatId,
       { audio: buffer, mimetype: 'audio/mpeg', fileName: `${fileName}.mp3` },
       { quoted: msg }
     );
   } else {
-    const buffer = await downloadTikTokVideo(data.url);
+    const buffer = await downloadTikTokVideo(data);
     await sock.sendMessage(
       chatId,
       { video: buffer, mimetype: 'video/mp4', caption: data.title || '' },

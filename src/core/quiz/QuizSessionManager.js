@@ -1,10 +1,10 @@
 import { readFileSync, existsSync } from 'fs';
 import { atomicWriteFileSync } from '../../utils/atomicWrite.js';
-import path from 'path';
+import { dataFilePath } from '../../utils/dataFile.js';
 import { randomUUID } from 'crypto';
 import { logger } from '../../utils/logger.js';
 
-const DATA_FILE = path.join(process.cwd(), 'quiz_sessions.json');
+const DATA_FILE = dataFilePath('quiz_sessions.json');
 export const SESSION_TTL_MS = 10 * 60 * 1000; // 10 minutes d'inactivité (cahier des charges)
 
 /**

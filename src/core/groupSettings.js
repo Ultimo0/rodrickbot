@@ -1,11 +1,11 @@
 import { readFileSync, existsSync } from 'fs';
 import { atomicWriteFileSync } from '../utils/atomicWrite.js';
-import path from 'path';
+import { dataFilePath } from '../utils/dataFile.js';
 import { logger } from '../utils/logger.js';
 
 /** Paramètres persistants par groupe : welcome, bye, antilink, antipromote, guardian, antispam. */
 
-const DATA_FILE = path.join(process.cwd(), 'group_settings.json');
+const DATA_FILE = dataFilePath('group_settings.json');
 
 let settings = {};
 
@@ -37,6 +37,7 @@ const DEFAULTS = {
   antispam: { enabled: false, messageLimit: 5, windowSeconds: 8 },
   antipurge: { enabled: false },
   antistatut: { enabled: false },
+  antiflood: { enabled: false, maxMentions: 5 },
 };
 
 function ensure(chatId) {
@@ -115,5 +116,34 @@ export function setAntipurge(chatId, enabled) {
 export function setAntistatut(chatId, enabled) {
   const g = ensure(chatId);
   g.antistatut = { enabled };
+  persist();
+}
+
+export function setAntiflood(chatId, enabled) {
+  const g = ensure(chatId);
+  g.antiflood = { ...(g.antiflood || DEFAULTS.antiflood), enabled };
+  persist();
+}
+
+export function setAntifloodConfig(chatId, maxMentions) {
+  const g = ensure(chatId);
+  g.antiflood = { ...(g.antiflood || DEFAULTS.antiflood), maxMentions };
+  persist();
+}
+
+/**
+ * Remplace intégralement les réglages d'un groupe à partir d'un objet
+ * externe (utilisé par !restore) — validé champ par champ plutôt qu'un
+ * simple `settings[chatId] = raw` : un JSON de sauvegarde modifié à la
+ * main ou corrompu ne doit jamais injecter de clés arbitraires dans le
+ * fichier de settings du bot.
+ */
+export function restoreGroupSettings(chatId, raw) {
+  const g = ensure(chatId);
+  for (const key of Object.keys(DEFAULTS)) {
+    if (raw && typeof raw[key] === 'object' && raw[key] !== null) {
+      g[key] = { ...DEFAULTS[key], ...raw[key] };
+    }
+  }
   persist();
 }
