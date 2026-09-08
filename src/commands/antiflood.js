@@ -38,6 +38,11 @@ export default {
     }
 
     setAntiflood(ctx.chatId, sub === 'on');
-    await ctx.success(sub === 'on' ? '✅ Antiflood activé.' : '❌ Antiflood désactivé.');
+    const current = getGroupSettings(ctx.chatId).antiflood;
+    await ctx.success(
+      sub === 'on'
+        ? `✅ Antiflood activé (seuil : ${current.maxMentions} mentions max).`
+        : '❌ Antiflood désactivé.'
+    );
   },
 };

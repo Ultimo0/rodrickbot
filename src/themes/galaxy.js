@@ -8,6 +8,7 @@
  * été ajouté sans toucher à engine.js ni à aucun autre thème.
  */
 import { toScriptFont } from '../utils/fancyFont.js';
+import { pickRandom } from '../utils/pickRandom.js';
 
 const DIVIDER = '✦ ⋆ ｡ ⋆ ✦ ⋆ ｡ ⋆ ✦';
 const ACCENT = '🪐';
@@ -106,13 +107,18 @@ export default {
   },
 
   renderWelcome(data) {
+    const [line1, line2] = pickRandom([
+      [`🪐 @${data.number} vient d'entrer dans l'orbite de *${data.groupName}*.`, '✨ Que ton passage illumine cette galaxie.\n🌠 Bienvenue parmi les étoiles !'],
+      [`🚀 Alerte météo spatiale : une bonne humeur vient d'entrer en orbite autour de *${data.groupName}*.`, '🌌 Bienvenue à bord, astronaute !'],
+      [`🪐 Attention, un nouvel astre brillant (@${data.number}) vient d'apparaître dans *${data.groupName}*.`, '✨ Que la force (et les emojis) soient avec toi !'],
+    ]);
+
     return [
       titleBlock('NOUVELLE ÉTOILE'),
       '',
-      `🪐 @${data.number} vient d'entrer dans l'orbite de *${data.groupName}*.`,
+      line1,
       '',
-      '✨ Que ton passage illumine cette galaxie.',
-      '🌠 Bienvenue parmi les étoiles !',
+      line2,
     ].join('\n');
   },
 

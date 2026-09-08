@@ -9,6 +9,7 @@ export default {
   description: 'Télécharge une vidéo YouTube en audio ou vidéo. Usage: {prefix}youtube <lien>',
   category: 'Téléchargement',
   adminOnly: false,
+  cooldownMs: 20000, // téléchargement yt-dlp à chaque usage
   privateOnly: false,
   execute: async (ctx) => {
     const url = extractYoutubeUrl(ctx.args.join(' '));

@@ -1,5 +1,87 @@
 # Changelog
 
+## 1.59.0
+
+- **`{prefix}reveal` (alias `rv`/`see`/`viewonce`) réservé aux admins du bot.** Cette commande contourne la fonction "Vue unique" de WhatsApp (extrait et conserve une photo/vidéo censée disparaître après un visionnage) — n'importe quel membre de groupe pouvait l'utiliser jusqu'ici, un vrai problème de consentement pour l'expéditeur du média.
+- **Cooldown ajouté sur 6 commandes qui n'en avaient pas** malgré un coût comparable à celles déjà protégées : `corriger`/`ia` (15s, appel API Groq — même classe que `resume`/`ocr`), `facebook` (20s, téléchargement yt-dlp — même classe que `tiktok`/`youtube`), `toimg`/`tovid`/`sticker` (10s, conversion sharp/ffmpeg).
+- **`.env.example` recréé** — absent de cet export alors que `README.md` le référence dans les instructions de démarrage rapide.
+
+## 1.58.0
+
+- **Fix probable du bug `/tiktok`/`/play` sur AdKyNet** : ajout du champ `allowScripts` dans `package.json`. npm 12 bloque par défaut les scripts d'installation (`preinstall`/`install`/`postinstall`) des paquets non explicitement listés — ce qui empêchait `ffmpeg-static` (télécharge ffmpeg), `youtube-dl-exec` (télécharge yt-dlp) et `sharp` de s'installer correctement, sans qu'aucune erreur explicite ne le signale (juste un `npm warn`). Katabump n'était probablement pas encore sur npm 12, d'où la différence de comportement entre les deux hébergeurs avec le même code.
+- Comme le démarrage relance `npm install` à chaque redémarrage (comportement standard des panels type Pterodactyl), ce fix s'applique tout seul au prochain redémarrage — aucune commande à taper dans une console.
+
+## 1.57.0
+
+- **Nouvelle commande `{prefix}leave`** (alias `quitter`, `quittergroupe`, admin) : fait quitter le bot du groupe, sans toucher aux membres. Pas de confirmation lourde comme `{prefix}delgroup` — rien d'irréversible ici, le bot peut être réajouté. Confirmation envoyée en privé à l'auteur, pour la même raison que `delgroup` (impossible d'écrire dans le groupe après l'avoir quitté).
+
+## 1.56.0
+
+- **Nouvelle commande `{prefix}delgroup`** (alias `supprimergroupe`, `deletegroup`, admin) : retire tous les membres du groupe (y compris les admins, contrairement à `{prefix}kickall`) puis fait quitter le bot. Confirmation explicite obligatoire (`{prefix}delgroup CONFIRMER`) vu le caractère irréversible.
+- ⚠️ Limite honnête documentée dans la commande elle-même : WhatsApp ne permet à personne de supprimer un groupe pour tout le monde via l'API — le groupe reste techniquement vide/abandonné sur les serveurs WhatsApp, pas effacé.
+- Si le bot n'est pas admin du groupe, il quitte quand même mais ne retire personne (prévenu en privé à l'auteur de la commande, puisque le bot ne peut plus écrire dans le groupe une fois parti).
+
+## 1.55.0
+
+- **Nouvelle commande `{prefix}antidemote`** (alias `protegemoiadmin`, admin, par groupe) — miroir exact d'`antipromote`, dans l'autre sens : empêche les admins du groupe (autres que les admins du bot) de retirer le statut administrateur d'un admin du bot. La rétrogradation est annulée immédiatement (repromotion), l'auteur est averti (compteur **partagé** avec `antipromote` — `core/promotionGuardStore.js`), jusqu'à être lui-même rétrogradé au 3e avertissement.
+- Seuls les admins du bot (`isAdmin()` — propriétaire + `{prefix}addadmin`) sont protégés ; un admin de groupe classique sans lien avec le bot peut toujours être rétrogradé normalement.
+
+## 1.54.0
+
+- **Reconnaissance de commandes sans préfixe en mode agent** (`utils/helpers.js` : `tryParseNoPrefixCommand()`) : quand le mode agent est activé pour un chat, un admin peut taper `Menu`, `PING`, `antilink on`, `addadmin 237600000000`... sans le préfixe habituel, insensible à la casse. Réservé aux admins par construction (branché dans la même zone du code déjà admin-only pour l'agent IA).
+- **Correspondance exacte exigée**, pour ne pas voler les mots-clés d'une conversation naturelle avec l'IA : le premier mot doit être un nom de commande/alias connu, et tout le reste du message doit être vide ou composé uniquement de `on`/`off`/`status`/chiffres. `menu du jour, un bon resto ?` ou `ping moi si tu vois ça` partent bien vers l'IA comme avant, sans être interceptés.
+
+## 1.53.0
+
+- **Message de bienvenue diversifié**, sur les deux fronts :
+  - **Thèmes** (`royal`, `neon`, `galaxy`, `mono`, `classique`) : chaque `renderWelcome()` tire désormais au hasard parmi 3 formulations accueillantes et un peu drôles (nouveau `utils/pickRandom.js`), au lieu du même texte identique à chaque arrivée. Structure/style visuel de chaque thème inchangés — seul le ton varie.
+  - **Messages personnalisés par groupe** (`{prefix}welcome on <message>`) : acceptent désormais plusieurs variantes séparées par `|` (ex: `A | B | C`), une choisie au hasard à chaque arrivée. Rétrocompatible : un message sans `|` se comporte exactement comme avant. S'applique aussi à `{prefix}bye` (même mécanisme, `groupConfig.message` partagé).
+- **Photo de profil du nouveau membre** jointe au message de bienvenue (arrivée uniquement, jamais au départ) : best-effort via `sock.profilePictureUrl()` — silencieusement remplacé par un message texte simple si la personne n'a pas de photo ou si sa vie privée en restreint l'accès aux non-contacts.
+
+## 1.52.0
+
+- **Nouvelle commande `{prefix}repost`** (alias `republier`, admin, cooldown 15s) : republie un statut WhatsApp avec une description modifiable.
+  - Usage direct : réponds à un statut avec `{prefix}repost [nouvelle description]`.
+  - Depuis une sauvegarde existante : `{prefix}repost <nom sauvegardé via {prefix}statut> [nouvelle description]`.
+  - Réutilise les mêmes utilitaires que `{prefix}save`/`{prefix}statut` (`utils/quotedContent.js`, `core/savedItems.js`) — aucune nouvelle logique de téléchargement/stockage.
+  - ⚠️ Limite honnête, à tester : envoyé sans `statusJidList` (le projet ne maintient pas de synchronisation des contacts du compte). La portée réelle auprès des contacts peut varier selon la version de Baileys/WhatsApp — à vérifier en conditions réelles.
+  - Stickers et documents explicitement refusés (pas des statuts valides).
+
+## 1.51.0
+
+Cinq améliorations indépendantes, demandées ensemble :
+
+1. **Arrêt propre centralisé** (`core/shutdown.js`, nouveau) : `state.js` et `activityStore.js` enregistraient chacun leur propre gestionnaire `SIGINT`/`SIGTERM`, et l'un appelait `process.exit(0)` de façon synchrone — risque réel que l'autre n'ait jamais le temps de s'exécuter (l'ordre dépend de l'ordre d'import). Remplacé par un point central : `registerShutdownHandler(fn)`, qui attend chaque flush dans l'ordre avant de couper une seule fois. `dedup.json` (aucun flush à l'arrêt jusqu'ici, seulement toutes les 10s) en profite aussi désormais.
+2. **Cooldown par utilisateur** (`core/cooldownStore.js`, nouveau, + champ `cooldownMs` sur une commande) : `!ocr`/`!resume` (15s), `!tomp3`/`!tiktok`/`!youtube`/`!play` (20s). Protège contre le spam d'une commande coûteuse (appel API, ffmpeg, téléchargement) qui ralentissait tout le monde d'autre dans le groupe. Admins exemptés.
+3. **README.md + .env.example** (nouveaux) : setup, tableau des variables d'environnement (avec `ADMIN_JIDS` marqué legacy), premières commandes, structure du projet, avertissement Baileys.
+4. **Remontée d'erreurs anonymisée** (`core/telemetry.js` : `reportError()`) : les deux gestionnaires globaux `uncaughtException`/`unhandledRejection` (ajoutés en 1.46.0) envoient désormais un rapport au dashboard-server si la télémétrie est déjà configurée (même interrupteur que le heartbeat, pas de nouvelle variable). JID et numéros redactés activement avant envoi (regex, pas juste une promesse en commentaire) — beaucoup de logs internes interpolent un JID dans leur message.
+5. **`.gitignore`** (nouveau, absent du projet jusqu'ici) : `node_modules/`, `.env`, `auth_info/`, `data/`, `saved_media/`, `dist/`, `*.log`.
+
+## 1.50.0
+
+- **Fix de lenteur perçue : file d'attente d'envoi désormais par conversation, plus globale.** `core/outboundGateway.js` utilisait une seule file (`chain`) partagée par TOUT le bot — un groupe très actif retardait les réponses dans toutes les autres conversations, qui attendaient inutilement derrière des envois sans rapport. Remplacé par une `Map<chatId, file>` : chaque conversation a son propre espacement (700-1800ms), indépendant des autres. Le signal anti-restriction visé (rythme mécanique) n'a de sens qu'à l'intérieur d'une même conversation — le sérialiser entre conversations différentes n'apportait aucune protection, juste de la lenteur.
+- Nettoyage automatique des entrées de la Map une fois leur file vidée (pas de fuite mémoire sur un bot qui tourne longtemps avec beaucoup de conversations différentes).
+
+## 1.49.0
+
+- **Confirmations on/off plus claires** sur 4 commandes ayant un paramètre configurable :
+  - `{prefix}antiflood on` affiche désormais le seuil actif (ex: "activé (seuil : 5 mentions max)").
+  - `{prefix}antispam on` affiche désormais la limite/fenêtre actives (ex: "activé (5 messages en 8s)").
+  - `{prefix}antiraid on` rappelle les deux seuils fixes (contenu à risque + verrouillage sur 8 membres/1min).
+  - `{prefix}antibug autoblock on` prévient désormais si la protection principale est désactivée (réglage sans effet tant que `{prefix}antibug on` n'est pas fait aussi) ; `{prefix}antibug on` précise si le blocage automatique est déjà actif.
+  - Inchangé pour `antilink`/`antipromote`/`antipurge`/`antistatut` : pas de paramètre configurable, "activé/désactivé" tout court reste suffisant.
+
+## 1.48.0
+
+- **Nouvelle commande `{prefix}antiraid`** (`on|off|status`, admin, par groupe) — deux volets :
+  - **Contenu à risque** (`utils/antiraidContent.js`, même schéma qu'`antilink.js`) : supprime et avertit sur les liens raccourcis (bit.ly, tinyurl...), les liens `.apk`, et les formulations d'arnaque courantes (fausses annonces de gains, prêts, offres d'emploi WhatsApp). Admins exemptés. Avertissements partagés avec le système existant (`warnStore`) : expulsion au seuil habituel.
+  - **Affluence anormale** (`core/joinRaidGuard.js`, même schéma qu'`utils/antipurge.js`) : verrouille automatiquement le groupe (`{prefix}lock` déclenché par code) si 8 membres ou plus rejoignent en moins d'1 min — déverrouillage automatique après 15 min. Se déclenche même si `welcome` est désactivé pour ce groupe.
+  - Retiré l'alias `antiraid` d'`{prefix}antipurge` (collision de nom — `antiraid` est désormais sa propre commande, sans lien avec `antipurge`).
+
+## 1.47.0
+
+- Commande `{prefix}pingall` supprimée. Nettoyage des deux commentaires dans `help.js` et `protectall.js` qui la citaient en exemple par analogie (reformulés, aucun changement fonctionnel).
+
 ## 1.46.0
 
 - **Nouvelle commande `{prefix}antibug`** (`on|off|autoblock on|off|status`, admin uniquement) : protection contre les messages anormalement volumineux/mal formés reçus en **message privé** (harcèlement type "bug bot" — vCard démesurée, texte saturé de caractères combinants type "zalgo", nombre anormal de mentions/contacts...). Détection uniquement par défaut ; le blocage automatique de l'expéditeur (`autoblock on`) est une option séparée, désactivée par défaut. Volontairement scopé au privé seulement — jamais en groupe, pour ne jamais bloquer un membre par erreur sur un simple partage volumineux légitime. Honnêteté sur la portée : RodrickBOT tourne via Baileys (pas l'app WhatsApp native), donc probablement déjà à l'abri des bugs de rendu qui ciblent l'app officielle — cette protection est une défense en profondeur générique (taille/structure anormale), pas une liste de bugs connus.

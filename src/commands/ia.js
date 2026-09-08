@@ -6,6 +6,7 @@ export default {
   description: 'Pose une question à l\'IA (Groq). Usage: {prefix}ia <question>',
   category: 'Intelligence Artificielle',
   adminOnly: false,
+  cooldownMs: 15000, // appel API IA à chaque usage
   privateOnly: false,
   execute: async (ctx) => {
     const question = ctx.args.join(' ').trim();

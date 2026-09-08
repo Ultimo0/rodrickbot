@@ -6,6 +6,7 @@
  * soucis de rendu sur les téléphones/polices exotiques.
  */
 import { boxTop, boxBottom, hLine } from '../utils/boxDrawing.js';
+import { pickRandom } from '../utils/pickRandom.js';
 
 const BOX = { tl: '╭', tr: '╮', bl: '╰', br: '╯', h: '─' };
 const ACCENT = '🤖';
@@ -116,6 +117,12 @@ export default {
   },
 
   renderWelcome(data) {
+    const [tagline, closing] = pickRandom([
+      ['🎊 Toute la communauté te souhaite la bienvenue !', '🚀 Profite de ton séjour parmi nous !'],
+      ['🎉 Une nouvelle personne, une nouvelle occasion de faire des blagues !', '🚀 Installe-toi, la bonne humeur est offerte !'],
+      ['🥳 Prépare-toi à un accueil chaleureux (et à quelques memes).', '🚀 Bienvenue à bord !'],
+    ]);
+
     return [
       boxTop(20, BOX),
       `${ACCENT}  WELCOME  ${ACCENT}`,
@@ -124,14 +131,14 @@ export default {
       `👤 Utilisateur : *@${data.number}*`,
       `🏡 Groupe : *${data.groupName}*`,
       '',
-      '🎊 Toute la communauté te souhaite la bienvenue !',
+      tagline,
       '',
       '📜 *Règles*',
       '✅ Respect',
       '✅ Bonne humeur',
       '✅ Entraide',
       '',
-      '🚀 Profite de ton séjour parmi nous !',
+      closing,
     ].join('\n');
   },
 

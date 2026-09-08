@@ -31,6 +31,37 @@ export function parseCommand(text, prefix) {
   return { command: command.toLowerCase(), args };
 }
 
+// Vocabulaire strict autorisé pour les arguments en reconnaissance SANS
+// préfixe (mode agent) : "on"/"off"/"status" (la quasi-totalité des
+// toggles du bot) ou une suite de chiffres (numéro de téléphone pour
+// !addadmin, etc.). N'importe quel autre mot (phrase normale, ponctuation)
+// fait échouer la correspondance — c'est voulu : le but est justement de
+// ne PAS intercepter une conversation naturelle avec l'agent IA qui
+// commencerait par le même mot qu'une commande.
+const NO_PREFIX_ARG_REGEX = /^(on|off|status)$|^\d+$/i;
+
+/**
+ * Reconnaissance de commande SANS préfixe, réservée au mode agent (voir
+ * handleSingleMessage). Exige une correspondance EXACTE : le premier mot
+ * doit être un nom de commande ou un alias connu, et tout le reste du
+ * message doit être vide ou composé uniquement de mots du vocabulaire
+ * ci-dessus. "Menu" ou "antilink on" matchent ; "menu du jour ?" ou
+ * "ping moi si tu vois ça" ne matchent pas et partent vers l'IA comme une
+ * conversation normale.
+ */
+export function tryParseNoPrefixCommand(text, commands) {
+  const trimmed = text?.trim().replace(/\s+/g, ' ');
+  if (!trimmed) return null;
+
+  const [first, ...args] = trimmed.split(' ');
+  const command = first.toLowerCase();
+
+  if (!commands.has(command)) return null;
+  if (!args.every((a) => NO_PREFIX_ARG_REGEX.test(a))) return null;
+
+  return { command, args };
+}
+
 /**
  * Transforme un texte en bloc citation WhatsApp (chaque ligne préfixée
  * par "> "). Marqueur volontairement FIXE, non thémé (identité visuelle

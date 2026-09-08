@@ -5,6 +5,7 @@
  */
 import { boxTop, boxBottom, hLine } from '../utils/boxDrawing.js';
 import { toSansBoldFont } from '../utils/fancyFont.js';
+import { pickRandom } from '../utils/pickRandom.js';
 
 const BOX = { tl: '╔', tr: '╗', bl: '╚', br: '╝', h: '═' };
 const ACCENT = '⚡';
@@ -118,6 +119,12 @@ export default {
   },
 
   renderWelcome(data) {
+    const [line1, line2] = pickRandom([
+      ['>> Bienvenue dans le système.', '>> Synchronisation avec les autres modules en cours...'],
+      ['>> Nouvel utilisateur détecté. Alerte : niveau de sympathie élevé.', '>> Chargement du mode ami en cours...'],
+      ['>> Connexion établie. Aucun bug détecté (pour l\'instant).', '>> Bienvenue, humain(e).'],
+    ]);
+
     return [
       boxTop(20, BOX),
       `${ACCENT} ${upper('NEW CONNECTION')} ${ACCENT}`,
@@ -127,8 +134,8 @@ export default {
       `> NODE........... ${data.groupName}`,
       `> STATUS......... CONNECTED ✅`,
       '',
-      '>> Bienvenue dans le système.',
-      '>> Synchronisation avec les autres modules en cours...',
+      line1,
+      line2,
     ].join('\n');
   },
 

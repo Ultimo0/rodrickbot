@@ -2,6 +2,7 @@ import { readFileSync, existsSync } from 'fs';
 import { atomicWriteFileSync } from '../utils/atomicWrite.js';
 import { dataFilePath } from '../utils/dataFile.js';
 import { logger } from '../utils/logger.js';
+import { registerShutdownHandler } from './shutdown.js';
 
 const STATE_FILE = dataFilePath('state.json');
 
@@ -62,14 +63,8 @@ function flushPendingSave() {
 
 // Ne jamais perdre les derniers compteurs si le bot est arrêté/redémarré
 // entre deux flushs automatiques (ex: redéploiement, `pm2 restart`, Ctrl+C).
-process.on('SIGINT', () => {
-  flushPendingSave();
-  process.exit(0);
-});
-process.on('SIGTERM', () => {
-  flushPendingSave();
-  process.exit(0);
-});
+// Voir core/shutdown.js pour pourquoi ce n'est plus un process.on() direct.
+registerShutdownHandler(flushPendingSave);
 
 loadState();
 

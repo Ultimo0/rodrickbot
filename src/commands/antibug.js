@@ -23,13 +23,17 @@ export default {
         return;
       }
       setAutoBlockEnabled(arg === 'on');
-      await ctx.success(`✅ Blocage automatique ${arg === 'on' ? 'activé' : 'désactivé'}.`);
+      const warning = arg === 'on' && !isAntibugEnabled()
+        ? "\n⚠️ Mais la protection antibug est désactivée — active-la aussi avec {prefix}antibug on, sinon ce réglage n'a aucun effet."
+        : '';
+      await ctx.success(`✅ Blocage automatique ${arg === 'on' ? 'activé' : 'désactivé'}.${warning}`);
       return;
     }
 
     if (sub === 'on' || sub === 'off') {
       setAntibugEnabled(sub === 'on');
-      await ctx.success(`✅ Protection antibug ${sub === 'on' ? 'activée' : 'désactivée'}.`);
+      const suffix = sub === 'on' && isAutoBlockEnabled() ? ' (blocage automatique activé)' : '';
+      await ctx.success(`✅ Protection antibug ${sub === 'on' ? 'activée' : 'désactivée'}${suffix}.`);
       return;
     }
 

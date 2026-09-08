@@ -10,6 +10,7 @@ export default {
     "Extrait l'audio d'une vidéo (ou convertit un audio) en MP3. Réponds à un média avec {prefix}tomp3, ou envoie-le directement avec {prefix}tomp3 en légende.",
   category: 'Média',
   adminOnly: false,
+  cooldownMs: 20000, // conversion ffmpeg à chaque usage
   privateOnly: false,
   execute: async (ctx) => {
     let buffer;

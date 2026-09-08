@@ -10,7 +10,7 @@ import { initGroupGuardian } from './core/groupGuardian.js';
 import { initAntispamGuard } from './core/antispamGuard.js';
 import { initDeletedMessageCache } from './core/deletedMessageCache.js';
 import { createGroupParticipantsHandler } from './handlers/groupParticipantsHandler.js';
-import { startTelemetry } from './core/telemetry.js';
+import { startTelemetry, reportError } from './core/telemetry.js';
 import { sendStartupMessage } from './utils/startupMessage.js';
 import { initQuizCleanupService } from './core/quiz/QuizCleanupService.js';
 import { cleanupStaleSessionsOnBoot as cleanupStaleCalcSessions } from './core/calc/CalcEngine.js';
@@ -21,6 +21,7 @@ import { initYtDlpAutoUpdater } from './core/ytdlpAutoUpdater.js';
 
 async function main() {
   logger.info(`Démarrage de ${config.botName}...`);
+
   // Filet de sécurité global : une exception ou un rejet de promesse non
   // rattrapé ailleurs (ex: dans les internals de Baileys eux-mêmes,
   // hors du try/catch par message de createMessageHandler) ferait
@@ -30,9 +31,11 @@ async function main() {
   // dernier rempart générique, quelle que soit la cause.
   process.on('uncaughtException', (err) => {
     logger.error({ err }, 'Exception non rattrapée (le bot continue)');
+    reportError(err); // best-effort, anonymisé — voir core/telemetry.js
   });
   process.on('unhandledRejection', (err) => {
     logger.error({ err }, 'Promesse rejetée non rattrapée (le bot continue)');
+    reportError(err);
   });
 
   const commands = await loadCommands();

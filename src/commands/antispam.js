@@ -60,6 +60,11 @@ export default {
     }
 
     setAntispam(ctx.chatId, sub === 'on');
-    await ctx.success(sub === 'on' ? '✅ Antispam activé.' : '❌ Antispam désactivé.');
+    const current = getGroupSettings(ctx.chatId).antispam;
+    await ctx.success(
+      sub === 'on'
+        ? `✅ Antispam activé (${current.messageLimit} messages en ${current.windowSeconds}s).`
+        : '❌ Antispam désactivé.'
+    );
   },
 };

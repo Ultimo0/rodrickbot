@@ -60,6 +60,7 @@ export default {
     'Résume un texte, un long message cité ou un document (.txt/.md/.csv/.json/.pdf/.docx). Usage: {prefix}resume [court|moyen|détaillé] <texte>, ou réponds à un message/document avec {prefix}resume [taille].',
   category: 'Intelligence Artificielle',
   adminOnly: false,
+  cooldownMs: 15000, // appel API de résumé à chaque usage
   privateOnly: false,
   execute: async (ctx) => {
     // 1. Déterminer la taille du résumé et le texte passé en argument.

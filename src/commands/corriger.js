@@ -12,6 +12,7 @@ export default {
     "Corrige automatiquement l'orthographe, la grammaire, la ponctuation et le style d'un texte, sans en changer le sens. Usage: {prefix}corriger <texte>, ou réponds à un message/document (.txt/.md/.csv/.json/.pdf/.docx) avec {prefix}corriger.",
   category: 'Intelligence Artificielle',
   adminOnly: false,
+  cooldownMs: 15000, // appel API de correction à chaque usage
   privateOnly: false,
   execute: async (ctx) => {
     const usageMessage =

@@ -3,18 +3,21 @@ import { dataFilePath } from '../utils/dataFile.js';
 import { config, isAdmin } from '../config/index.js';
 import { logger } from '../utils/logger.js';
 import { atomicWriteFileSync } from '../utils/atomicWrite.js';
-import { extractText, isGroup, parseCommand, toQuoteBlock } from '../utils/helpers.js';
+import { extractText, isGroup, parseCommand, tryParseNoPrefixCommand, toQuoteBlock } from '../utils/helpers.js';
 import { runMiddlewares } from '../middlewares/index.js';
 import { attachReplyHelpers } from '../utils/reply.js';
 import { isLockdownMode, incrementMessageCount, incrementCommandCount, getConnectedAt } from '../core/state.js';
+import { registerShutdownHandler } from '../core/shutdown.js';
+import { getRemainingCooldownMs, markCommandUsed } from '../core/cooldownStore.js';
 import { isAntibugEnabled, isAutoBlockEnabled, analyzeSuspiciousPayload } from '../core/antibugGuard.js';
 import { isRemotelyDisabled } from '../core/remoteControl.js';
 import { handleAntilink } from '../utils/antilink.js';
 import { handleAntiflood } from '../utils/antiflood.js';
+import { handleAntiraidContent } from '../utils/antiraidContent.js';
 import { handleAntistatut } from '../utils/antistatut.js';
 import { handleDownloadReply } from '../utils/downloadReply.js';
 import { isInstanceConfigured } from '../core/instance.js';
-import { runAgentTurn } from '../agent/index.js';
+import { runAgentTurn, isAgentSessionEnabled } from '../agent/index.js';
 import { handleAnswerText, hasActiveSession } from '../core/quiz/QuizEngine.js';
 import { handleTextReply, hasPendingReset, handleGlobalTextReply, hasPendingGlobalReset } from '../core/quiz/QuizResetService.js';
 import { handleAnswerText as handleCalcAnswerText, hasActiveSession as hasActiveCalcSession } from '../core/calc/CalcEngine.js';
@@ -66,7 +69,7 @@ function loadProcessedMessageIds() {
   }
 }
 
-setInterval(() => {
+function flushDedupIfDirty() {
   if (!dedupDirty) return;
   try {
     atomicWriteFileSync(DEDUP_FILE, JSON.stringify(Object.fromEntries(processedMessageIds)));
@@ -74,7 +77,14 @@ setInterval(() => {
   } catch (err) {
     logger.error({ err }, "Impossible d'écrire dedup.json");
   }
-}, 10 * 1000).unref?.();
+}
+
+setInterval(flushDedupIfDirty, 10 * 1000).unref?.();
+
+// N'existait pas avant : dedup.json n'avait aucun flush à l'arrêt, contrairement
+// à state.json/activity.json — jusqu'à 10s d'entrées pouvaient donc se perdre
+// sur un redémarrage propre (Ctrl+C, redéploiement). Voir core/shutdown.js.
+registerShutdownHandler(flushDedupIfDirty);
 
 loadProcessedMessageIds();
 
@@ -363,9 +373,20 @@ async function handleSingleMessage(sock, commands, msg) {
 
   if (await handleAntiflood(sock, msg, chatId, sender, text)) return;
   if (await handleAntilink(sock, msg, chatId, sender, text)) return;
+  if (await handleAntiraidContent(sock, msg, chatId, sender, text)) return;
   if (await handleDownloadReply(sock, chatId, sender, text, msg)) return;
 
-  const parsed = parseCommand(text, config.prefix);
+  let parsed = parseCommand(text, config.prefix);
+
+  if (!parsed && (isSelfTest || isAdmin(sender)) && isAgentSessionEnabled(chatId, sender)) {
+    // Mode agent : reconnaît aussi les commandes SANS préfixe, mais
+    // uniquement en correspondance exacte (voir tryParseNoPrefixCommand) —
+    // pour ne pas voler les mots-clés d'une conversation naturelle avec
+    // l'IA. Réservé aux admins par construction : on est déjà dans la
+    // branche isAdmin ci-dessus.
+    parsed = tryParseNoPrefixCommand(text, commands);
+  }
+
   if (!parsed) {
     // Agent IA réservé aux admins (ADMIN_JIDS) : ignoré silencieusement pour
     // les autres, même si la session a été activée via !agent on — même
@@ -432,6 +453,15 @@ async function handleSingleMessage(sock, commands, msg) {
   if (command.adminOnly && !ctx.isAdmin) {
     await ctx.error('Commande réservée aux administrateurs.');
     return;
+  }
+
+  if (command.cooldownMs && !ctx.isAdmin) {
+    const remaining = getRemainingCooldownMs(command.name, sender, command.cooldownMs);
+    if (remaining > 0) {
+      await ctx.error(`⏳ Patiente encore ${Math.ceil(remaining / 1000)}s avant de réutiliser cette commande.`);
+      return;
+    }
+    markCommandUsed(command.name, sender);
   }
 
   incrementMessageCount();

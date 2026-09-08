@@ -10,6 +10,7 @@ export default {
     'Convertit un sticker animé en vidéo. Réponds à un sticker avec {prefix}tovid, ou envoie le sticker directement avec {prefix}tovid en légende.',
   category: 'Média',
   adminOnly: false,
+  cooldownMs: 10000, // conversion sharp/ffmpeg à chaque usage
   privateOnly: false,
   execute: async (ctx) => {
     let buffer;

@@ -10,6 +10,7 @@ export default {
     "Extrait le texte visible d'une image. Réponds à une image avec {prefix}ocr, ou envoie l'image directement avec {prefix}ocr en légende.",
   category: 'Intelligence Artificielle',
   adminOnly: false,
+  cooldownMs: 15000, // appel API OCR à chaque usage
   privateOnly: false,
   execute: async (ctx) => {
     let buffer;

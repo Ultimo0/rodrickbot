@@ -2,7 +2,6 @@ import { getGroupSettings, setAntipurge } from '../core/groupSettings.js';
 
 export default {
   name: 'antipurge',
-  aliases: ['antiraid'],
   description:
     'Détecte un admin qui expulse plusieurs membres en très peu de temps (3 en moins de 10s) : le démet, ' +
     "l'expulse, et tente de réintégrer automatiquement les membres expulsés. Les admins du bot sont toujours exemptés. " +

@@ -5,6 +5,7 @@
  */
 import { boxTop, boxBottom, hLine } from '../utils/boxDrawing.js';
 import { toBoldFont } from '../utils/fancyFont.js';
+import { pickRandom } from '../utils/pickRandom.js';
 
 const BOX = { tl: '┏', tr: '┓', bl: '┗', br: '┛', h: '━' };
 const ACCENT = '👑';
@@ -119,6 +120,12 @@ export default {
   },
 
   renderWelcome(data) {
+    const [tagline, closing] = pickRandom([
+      ['👑 Que votre passage ici soit digne de la royauté.', '✦ Sois le bienvenu parmi nous ✦'],
+      ['👑 Le trône t\'attendait — la couronne arrive dès que le stock est réapprovisionné.', '✦ Longue vie à toi dans ce royaume ✦'],
+      ['👑 Un nouveau sujet royal vient d\'arriver, inclinez-vous (un tout petit peu suffira).', '✦ Bienvenue, noble visiteur ✦'],
+    ]);
+
     return [
       boxTop(20, BOX),
       `${ACCENT}  ${bold('BIENVENUE')}  ${ACCENT}`,
@@ -128,12 +135,12 @@ export default {
       `◆ Utilisateur : @${data.number}`,
       `◆ Groupe : ${bold(data.groupName)}`,
       '',
-      `👑 Que votre passage ici soit digne de la royauté.`,
+      tagline,
       '',
       `◆ ${bold('Etiquette')}`,
       '  Respect · Elégance · Entraide',
       '',
-      '✦ Sois le bienvenu parmi nous ✦',
+      closing,
     ].join('\n');
   },
 

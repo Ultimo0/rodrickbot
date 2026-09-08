@@ -9,6 +9,7 @@ export default {
   description: 'Télécharge une vidéo Facebook en audio ou vidéo. Usage: {prefix}facebook <lien>',
   category: 'Téléchargement',
   adminOnly: false,
+  cooldownMs: 20000, // téléchargement yt-dlp à chaque usage
   privateOnly: false,
   execute: async (ctx) => {
     const url = extractFacebookUrl(ctx.args.join(' '));

@@ -209,7 +209,7 @@ export default {
   execute: async (ctx) => {
     // Réaction "parchemin" sur le message !menu lui-même — repère visuel
     // immédiat que la commande a bien été reçue, avant même l'envoi du
-    // menu (même esprit que le 🟢 de !pingall).
+    // menu.
     await ctx.sock.sendMessage(ctx.chatId, { react: { text: '📜', key: ctx.msg.key } });
 
     const visibleCommands = getVisibleCommands(ctx);

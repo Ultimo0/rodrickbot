@@ -10,6 +10,7 @@ export default {
     'Transforme une image ou une courte vidéo en sticker. Réponds à un média avec {prefix}sticker, ou envoie le média directement avec {prefix}sticker en légende.',
   category: 'Média',
   adminOnly: false,
+  cooldownMs: 10000, // conversion sharp/ffmpeg à chaque usage
   privateOnly: false,
   execute: async (ctx) => {
     let buffer;

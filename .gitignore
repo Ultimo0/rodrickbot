@@ -1,37 +1,23 @@
+# Dépendances
 node_modules/
 
-# Cookies YouTube (contournement anti-bot) — secret, jamais commit
-data/cookies.txt
-
-# Secrets et configuration locale — ne jamais commit
+# Secrets et session WhatsApp — ne doivent JAMAIS être versionnés
 .env
-
-# Session WhatsApp (Baileys) — contient les clés de connexion au compte,
-# aussi sensible qu'un mot de passe. Si ça fuite, quelqu'un peut se
-# connecter à la place du bot.
 auth_info/
 
-# Données générées au runtime (avertissements, éléments !save, réglages
-# de groupe, etc.) — propres à chaque déploiement, pas du code source.
-saved_items.json
+# Données runtime (recréées automatiquement au démarrage — voir utils/dataFile.js)
+data/
+
+# Médias sauvegardés par !save
 saved_media/
-lock_schedules.json
-state.json
-group_settings.json
-warnings.json
-promotion_guard_warnings.json
 
-# Fichiers temporaires / logs
+# Build obfusqué
+dist/
+
+# Logs (si LOG_TO_FILE=true)
 *.log
-npm-debug.log*
 
-# OS
+# Divers OS / éditeurs
 .DS_Store
-Thumbs.db
-
-instance.json
-
-# Sauvegardes locales de versions stables (npm run save-release) — purement
-# local, pas fait pour être versionné (ce serait dupliquer tout le code
-# source dans git à chaque snapshot).
-releases/
+.vscode/
+.idea/

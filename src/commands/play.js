@@ -23,6 +23,7 @@ export default {
   description: "Recherche une chanson sur YouTube et envoie directement l'audio. Usage: {prefix}play <titre>",
   category: 'Téléchargement',
   adminOnly: false,
+  cooldownMs: 20000, // recherche + téléchargement yt-dlp à chaque usage
   privateOnly: false,
   execute: async (ctx) => {
     const query = ctx.args.join(' ').trim();

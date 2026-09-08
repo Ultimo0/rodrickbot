@@ -2,6 +2,7 @@ import { readFileSync, existsSync } from 'fs';
 import { atomicWriteFileSync } from '../utils/atomicWrite.js';
 import { dataFilePath } from '../utils/dataFile.js';
 import { logger } from '../utils/logger.js';
+import { registerShutdownHandler } from './shutdown.js';
 
 /**
  * Statistiques d'activité par groupe/utilisateur, pour la commande
@@ -101,8 +102,7 @@ function flushPendingSave() {
   }
 }
 
-process.on('SIGINT', flushPendingSave);
-process.on('SIGTERM', flushPendingSave);
+registerShutdownHandler(flushPendingSave);
 
 function pruneOldBuckets() {
   const cutoff = daysAgoKey(RETENTION_DAYS);

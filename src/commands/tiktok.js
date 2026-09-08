@@ -9,6 +9,7 @@ export default {
   description: 'Télécharge une vidéo TikTok en audio ou vidéo. Usage: {prefix}tiktok <lien>',
   category: 'Téléchargement',
   adminOnly: false,
+  cooldownMs: 20000, // téléchargement yt-dlp à chaque usage
   privateOnly: false,
   execute: async (ctx) => {
     const url = extractTikTokUrl(ctx.args.join(' '));

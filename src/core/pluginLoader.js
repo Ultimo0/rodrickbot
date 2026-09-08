@@ -13,6 +13,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
  *   aliases: ['p'],          // optionnel
  *   description: '...',      // affiché dans !help
  *   adminOnly: false,        // optionnel
+ *   cooldownMs: 15000,       // optionnel — délai minimum par utilisateur entre
+ *                            // deux usages de CETTE commande (admins exemptés).
+ *                            // Voir core/cooldownStore.js. Réservé aux commandes
+ *                            // coûteuses (appel API externe, ffmpeg, téléchargement).
  *   privateOnly: true,       // optionnel, true par défaut.
  *                            // Si true (ou absent), la commande est bloquée
  *                            // en groupe. Mettre "false" pour l'autoriser

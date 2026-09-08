@@ -28,7 +28,7 @@ export default {
   aliases: ['rv', 'see', 'viewonce', 'vo'],
   description: 'Révèle un message "Vue unique" (photo, vidéo, audio) en répondant au message.',
   category: 'Média',
-  adminOnly: false,
+  adminOnly: true,
   privateOnly: false,
 
   async execute(ctx) {

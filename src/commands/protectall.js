@@ -10,9 +10,9 @@ import {
 import { captureGroupSnapshot, isBotGroupAdmin } from '../core/groupGuardian.js';
 
 // Délai entre deux activations. But: ne pas envoyer 5 confirmations d'un
-// coup — même esprit que le délai entre groupes dans l'ancien summonListener
-// ou entre les copies dans !pingall : ça reste lisible et ne ressemble pas
-// à une rafale automatisée dans le fil de discussion.
+// coup — même esprit que le délai entre groupes dans l'ancien summonListener :
+// ça reste lisible et ne ressemble pas à une rafale automatisée dans le fil
+// de discussion.
 const STEP_DELAY_MS = 1500;
 
 function sleep(ms) {

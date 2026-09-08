@@ -33,11 +33,13 @@ const DEFAULTS = {
   bye: { enabled: false, message: null },
   antilink: { enabled: false },
   antipromote: { enabled: false },
+  antidemote: { enabled: false },
   guardian: { enabled: false, snapshot: null },
   antispam: { enabled: false, messageLimit: 5, windowSeconds: 8 },
   antipurge: { enabled: false },
   antistatut: { enabled: false },
   antiflood: { enabled: false, maxMentions: 5 },
+  antiraid: { enabled: false },
 };
 
 function ensure(chatId) {
@@ -74,6 +76,12 @@ export function setAntilink(chatId, enabled) {
 export function setAntipromote(chatId, enabled) {
   const g = ensure(chatId);
   g.antipromote = { enabled };
+  persist();
+}
+
+export function setAntidemote(chatId, enabled) {
+  const g = ensure(chatId);
+  g.antidemote = { enabled };
   persist();
 }
 
@@ -128,6 +136,12 @@ export function setAntiflood(chatId, enabled) {
 export function setAntifloodConfig(chatId, maxMentions) {
   const g = ensure(chatId);
   g.antiflood = { ...(g.antiflood || DEFAULTS.antiflood), maxMentions };
+  persist();
+}
+
+export function setAntiraid(chatId, enabled) {
+  const g = ensure(chatId);
+  g.antiraid = { enabled };
   persist();
 }
 

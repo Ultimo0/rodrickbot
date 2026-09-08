@@ -4,6 +4,8 @@
  * rendu monospace natif — pas de police Unicode ni de boîte dessinée,
  * quasiment aucun emoji. Compact, rapide à lire.
  */
+import { pickRandom } from '../utils/pickRandom.js';
+
 const SEP = '-------------------';
 
 function pad(label, width = 14) {
@@ -96,7 +98,12 @@ export default {
   },
 
   renderWelcome(data) {
-    return block([`+ @${data.number} a rejoint ${data.groupName}`]);
+    const line = pickRandom([
+      `+ @${data.number} a rejoint ${data.groupName}`,
+      `+ @${data.number} vient d'atterrir dans ${data.groupName}`,
+      `+ nouveau: @${data.number} dans ${data.groupName}`,
+    ]);
+    return block([line]);
   },
 
   renderBye(data) {
