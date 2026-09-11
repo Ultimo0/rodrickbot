@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 import { getItem } from '../core/savedItems.js';
-import { audioToVoiceNote } from '../utils/mediaConvert.js';
+import { audioToM4a } from '../utils/mediaConvert.js';
 
 export default {
   name: 'get',
@@ -43,23 +43,13 @@ export default {
         sendOptions.caption = item.caption;
       }
     } else if (item.type === 'audio') {
-      let audioBuffer = buffer;
-      let mimetype = item.mimetype || 'audio/ogg; codecs=opus';
-      let ptt = Boolean(item.ptt);
-
-      // Le comportement demandé ici est explicite : on veut relire le média
-      // comme une voice note WhatsApp. Pour les audios transférés, on les
-      // normalise donc en OGG/Opus au moment du `!get` puis on envoie avec
-      // le bon drapeau `ptt = true`.
-      if (!ptt) {
-        audioBuffer = await audioToVoiceNote(buffer);
-        mimetype = 'audio/ogg; codecs=opus';
-        ptt = true;
-      }
-
-      sendOptions.audio = audioBuffer;
-      sendOptions.mimetype = mimetype;
-      sendOptions.ptt = ptt;
+      // Converti en M4A et envoyé comme audio normal (pas ptt) : le
+      // ré-encodage OGG/Opus + ptt=true (note vocale) s'est avéré encore
+      // produire des fichiers illisibles côté destinataire sur certains
+      // enregistrements — M4A en audio normal est plus fiable.
+      sendOptions.audio = await audioToM4a(buffer);
+      sendOptions.mimetype = 'audio/mp4';
+      sendOptions.ptt = false;
     }
 
     await ctx.sock.sendMessage(ctx.chatId, sendOptions, { quoted: ctx.msg });

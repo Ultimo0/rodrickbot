@@ -1,6 +1,7 @@
 import { downloadMediaMessage } from '@whiskeysockets/baileys';
 import { logger } from '../utils/logger.js';
 import { getViewOnceMessage } from '../core/viewOnceCache.js';
+import { audioToM4a } from '../utils/mediaConvert.js';
 
 // === Fonctions utilitaires ===
 function getMediaType(message) {
@@ -170,9 +171,6 @@ export default {
       }
 
       // --- Envoi du média ---
-      const innerMessage = extractInnerMessage(quoted);
-      const mediaObj = innerMessage[`${mediaType}Message`];
-
       const caption = '👁️ *Message à vision unique révélé*';
       const sendOptions = {};
 
@@ -184,9 +182,11 @@ export default {
         sendOptions.caption = caption;
         sendOptions.gifPlayback = false;
       } else if (mediaType === 'audio') {
-        sendOptions.audio = buffer;
-        sendOptions.mimetype = mediaObj.mimetype || 'audio/ogg; codecs=opus';
-        sendOptions.ptt = true;
+        // Même correctif que {prefix}get : M4A en audio normal (pas ptt)
+        // s'est avéré plus fiable que OGG/Opus en note vocale.
+        sendOptions.audio = await audioToM4a(buffer);
+        sendOptions.mimetype = 'audio/mp4';
+        sendOptions.ptt = false;
       }
 
       await sock.sendMessage(chatId, sendOptions);

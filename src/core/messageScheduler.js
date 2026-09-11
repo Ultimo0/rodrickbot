@@ -1,4 +1,5 @@
 import { getAllMessageSchedules, getMessageSchedules } from './messageSchedules.js';
+import { nextDailyOccurrence, DEFAULT_TIMEZONE } from './remind/remindDate.js';
 import { logger } from '../utils/logger.js';
 
 // "chatId:id" -> handle de setTimeout en cours, pour pouvoir annuler
@@ -8,13 +9,22 @@ import { logger } from '../utils/logger.js';
 // supprimé entre-temps).
 const timers = new Map();
 
-/** Millisecondes jusqu'à la prochaine occurrence de "HH:MM" (heure du serveur, aujourd'hui ou demain). */
+/**
+ * Millisecondes jusqu'à la prochaine occurrence de "HH:MM", dans un fuseau
+ * horaire FIXE (DEFAULT_TIMEZONE — Africa/Douala), quel que soit le fuseau
+ * du serveur qui exécute le bot. Corrige un vrai bug vécu : un serveur dont
+ * le fuseau système diffère de celui de l'utilisateur décalait tous les
+ * messages programmés du même écart (~1h en pratique).
+ *
+ * Réutilise nextDailyOccurrence() de core/remind/remindDate.js — déjà
+ * utilisée et éprouvée par !remind, plutôt que de dupliquer la même
+ * logique de conversion de fuseau horaire ici.
+ */
 function msUntilNext(time) {
   const [h, m] = time.split(':').map(Number);
-  const now = new Date();
-  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0);
-  if (next <= now) next.setDate(next.getDate() + 1);
-  return next.getTime() - now.getTime();
+  const now = Date.now();
+  const targetMs = nextDailyOccurrence(h, m, DEFAULT_TIMEZONE, now);
+  return targetMs - now;
 }
 
 function scheduleOne(sock, chatId, entry) {

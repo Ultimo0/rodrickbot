@@ -1,5 +1,56 @@
 # Changelog
 
+## 1.64.4
+
+- **Nouveau : message d'aide envoyé juste après la validation de l'instance (`{prefix}setup`)**, pour guider un nouvel utilisateur — liste des premières commandes utiles (`{prefix}menu`, `{prefix}ping`, `{prefix}mention`, `{prefix}afk`, `{prefix}save`) avec un mot d'explication pour chacune. Envoyé une seule fois, uniquement à la suite de `{prefix}setup` (donc une seule fois par instance). Seul `commands/setup.js` a été touché — aucun autre fichier modifié.
+
+## 1.64.3
+
+- **`{prefix}mention` repasse en véritable note vocale (`ptt: true`)**, à la demande explicite — malgré la limitation connue documentée en 1.62.0/1.64.2. Nouvelle fonction `toVoiceNoteOgg()` dans `utils/mediaConvert.js`, avec une recette ffmpeg nettement plus stricte que celle essayée en 1.62.0 :
+  - `-err_detect ignore_err -fflags +discardcorrupt` en entrée : tolère un flux WhatsApp source légèrement abîmé plutôt que de produire une sortie corrompue en silence.
+  - `-application voip` : profil Opus optimisé pour la voix (c'est le profil que WhatsApp/Signal utilisent eux-mêmes), au lieu du profil générique par défaut utilisé en 1.62.0.
+  - `-avoid_negative_ts make_zero -map_metadata -1`, mono, **16 kHz** (recommandation officielle Baileys, contre 48 kHz en 1.62.0).
+  - **Durée (`seconds`) calculée explicitement pendant la conversion** (via l'événement `codecData` de fluent-ffmpeg, pas besoin de binaire `ffprobe` séparé) et transmise telle quelle à `sock.sendMessage()`, plutôt que de laisser Baileys la déduire lui-même du buffer — une source d'échec supplémentaire déjà documentée dans l'écosystème Baileys pour ce type de problème.
+  - Toujours ré-encodé systématiquement (jamais de passthrough des octets bruts), comme en 1.64.1.
+- ⚠️ Si le problème persiste malgré cette recette plus robuste, la cause est probablement propre à un enregistrement source précis (durée très courte, silence total, codec exotique) plutôt qu'aux paramètres ffmpeg eux-mêmes — dans ce cas, `{prefix}mention` peut repasser sur M4A/`ptt:false` (1.64.2) qui reste éprouvé et fiable.
+
+## 1.64.2
+
+- **Fix (le vrai cette fois) : `{prefix}mention` — audio toujours illisible malgré le ré-encodage systématique de la 1.64.1.** Le ré-encodage OGG/Opus + `ptt: true` n'était pas le problème : même en repassant systématiquement par ffmpeg, ce format s'est avéré non fiable en usage réel — **exactement ce qui avait déjà été constaté sur `{prefix}get`/`{prefix}reveal` en 1.62.0 → 1.63.0** (voir plus bas), et que j'avais ignoré en proposant OGG/Opus comme "la" méthode correcte. `{prefix}mention` envoie désormais l'audio enregistré en **M4A/AAC, comme audio normal (`ptt: false`)**, via `audioToM4a()` — même fonction, même comportement que `{prefix}get`/`{prefix}reveal`. Contrepartie assumée : l'audio de `{prefix}mention` s'affiche comme un fichier audio classique, pas comme une bulle "note vocale" avec forme d'onde — mais il est réellement lisible, ce qui prime.
+- `toVoiceNoteOgg()` (introduite en 1.64.0, devenue inutilisée) retirée de `utils/mediaConvert.js`.
+
+## 1.64.1
+
+- **Fix : `{prefix}mention` — "Cet audio n'est pas disponible, il y a eu un souci avec le fichier audio."** au renvoi d'une note vocale enregistrée. Cause : exactement le bug déjà corrigé sur `{prefix}get`/`{prefix}reveal` en 1.62.0, réintroduit par mégarde ici — quand l'audio enregistré était déjà une vraie note vocale (`ptt: true`), le code renvoyait ses octets bruts tels quels au lieu de les repasser par le ré-encodage ffmpeg, donc entièrement dépendant d'un conteneur OGG parfois non-standard selon l'appareil source. `{prefix}mention` ré-encode désormais systématiquement en OGG/Opus via `toVoiceNoteOgg()`, peu importe si la source était déjà `ptt` ou non — même politique que `{prefix}get`/`{prefix}reveal`.
+  - ⚠️ Insuffisant en pratique — voir 1.64.2.
+
+## 1.64.0
+
+- **Fix : le bot pouvait réexécuter d'anciennes commandes au redémarrage.** Le filtre anti-rattrapage (`handlers/messageHandler.js` : `isStaleBacklogMessage`) existait déjà depuis l'audit de stabilité, mais sa marge de tolérance de 2 minutes laissait volontairement repasser les commandes envoyées juste avant l'arrêt du bot ("rattrapage" de messages reçus hors ligne). Marge réduite à 10 secondes — juste de quoi absorber un délai réseau ou un décalage d'horloge, plus une fenêtre pour "rattraper" des commandes.
+- **Fix : `{prefix}ping` ne fonctionnait pas en groupe.** Il lui manquait `privateOnly: false` (bloqué en groupe par défaut comme la majorité des commandes, voir `core/pluginLoader.js`).
+- **Nouvelle commande `{prefix}mention`** (alias `onmention`) : enregistre un message (texte ou note vocale) renvoyé automatiquement à chaque mention ou citation dans un GROUPE (jamais en privé). `{prefix}mention <texte>` pour du texte, réponse à un audio/une note vocale avec `{prefix}mention` pour de la voix, `{prefix}mention off` pour supprimer. Persisté sur disque (`data/mention_replies.json` + `saved_media/`), un seul message actif par utilisateur (le nouveau remplace l'ancien).
+  - Si l'audio enregistré n'est pas déjà une vraie note vocale WhatsApp (`ptt`), il est reconverti via un nouveau `utils/mediaConvert.js` : `toVoiceNoteOgg()` — **OGG/Opus** (mono, 48kHz), pas M4A/AAC : c'est le seul format que WhatsApp affiche de façon fiable comme note vocale (icône micro + forme d'onde) sur tous les appareils, quel que soit `ptt: true`. `audioToM4a()` (utilisée par `{prefix}get`/`{prefix}reveal`, qui renvoient volontairement en audio normal et non en note vocale) reste inchangée — problématique différente.
+
+## 1.63.0
+
+- **Fix : audio toujours illisible via `{prefix}get`/`{prefix}reveal` après le ré-encodage OGG/Opus de la 1.62.0.** Remplacé par une conversion M4A/AAC (`utils/mediaConvert.js` : `audioToM4a`, remplace `audioToVoiceNote`), envoyée comme audio normal (`ptt: false`, `mimetype: audio/mp4`) plutôt qu'en note vocale — plus fiable sur les enregistrements qui posaient problème.
+- **Audit complet du projet** (216 fichiers) : vérification de syntaxe exhaustive (aucune erreur), résolution des 525 imports relatifs (tous valides), recherche de `TODO`/`FIXME` et de `console.log` oubliés (aucun), et surtout détection systématique des collisions de nom/alias entre commandes.
+- **Fix : collision trouvée entre `kick.js` et `remove.js`.** `remove` était déclaré comme alias de `{prefix}kick` (expulser un membre) ET comme nom propre de `{prefix}remove` (récupérer les messages supprimés) — deux fonctionnalités sans rapport qui se marchaient dessus silencieusement, exactement le même type de bug que la collision `antipromote`/`antiraid` corrigée en 1.48.0. Alias retiré de `kick.js` ; `{prefix}kick` reste utilisable par son nom seul.
+
+## 1.62.0
+
+- **Fix : audio illisible via `{prefix}get`** ("Cet audio n'est pas disponible, il y a eu un souci avec le fichier audio" côté WhatsApp). Cause : quand l'élément sauvegardé était déjà une vraie note vocale (`ptt: true`), le code renvoyait les octets bruts tels qu'enregistrés au lieu de les repasser par le ré-encodage ffmpeg — dépendant donc entièrement de la qualité de l'encodage d'origine (conteneur OGG parfois non-standard selon l'appareil source). `{prefix}get` ré-encode désormais systématiquement l'audio, peu importe si l'original était déjà `ptt` ou non.
+- **Même correctif appliqué à `{prefix}reveal`** (messages vocaux à vision unique) : même schéma de renvoi brut, même risque, même fix.
+
+## 1.61.0
+
+- **Fix : `{prefix}schedule` envoyait les messages à la mauvaise heure** (ex: programmé pour 6h30, envoyé à 5h29). Cause : l'heure était calculée avec l'horloge LOCALE du serveur (`new Date(...).getFullYear()` etc.), qui ne correspond pas forcément au fuseau horaire réel de l'utilisateur selon l'hébergeur (AdKyNet/Katabump peuvent avoir des fuseaux système différents). `core/messageScheduler.js` calcule désormais l'heure cible dans un fuseau horaire **fixe** (Africa/Douala), indépendamment de la configuration du serveur.
+- Réutilise `nextDailyOccurrence()`/`DEFAULT_TIMEZONE` de `core/remind/remindDate.js` — déjà utilisés et éprouvés par `{prefix}remind`, qui n'avait jamais eu ce bug puisqu'il gérait déjà correctement les fuseaux horaires. `{prefix}schedule` est le seul endroit du projet qui utilisait encore l'heure locale du serveur pour une programmation.
+
+## 1.60.0
+
+- **Commande `{prefix}repost` supprimée.** Suppression aussi de `core/contactsStore.js`, qui n'existait que pour elle (liste de contacts destinée au `statusJidList`) — au passage, son point de branchement `registerContactsStore()` n'était en fait jamais appelé nulle part dans le projet, donc la liste de contacts restait toujours vide en pratique : le fix était resté à moitié fait.
+
 ## 1.59.0
 
 - **`{prefix}reveal` (alias `rv`/`see`/`viewonce`) réservé aux admins du bot.** Cette commande contourne la fonction "Vue unique" de WhatsApp (extrait et conserve une photo/vidéo censée disparaître après un visionnage) — n'importe quel membre de groupe pouvait l'utiliser jusqu'ici, un vrai problème de consentement pour l'expéditeur du média.

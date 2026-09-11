@@ -163,15 +163,93 @@ export async function extractAudioMp3(buffer) {
 }
 
 /**
- * Normalise un audio en voice note WhatsApp compatible : OGG + Opus.
- * Le flux de `!save`/`!get` garde le stockage principal immuable ; on
- * convertit seulement le buffer ré-expédié pour satisfaire le contrat
- * `ptt = true` côté Baileys/WhatsApp.
+ * Convertit un audio quelconque en OGG/Opus + calcule sa durée exacte,
+ * pour un envoi en véritable note vocale WhatsApp (`ptt: true`).
+ *
+ * Paramètres ffmpeg volontairement plus stricts que ceux essayés en
+ * 1.62.0 (qui n'avaient pas suffi, voir CHANGELOG) — recette reprise de
+ * cas similaires documentés dans l'écosystème Baileys :
+ *  - `-err_detect ignore_err -fflags +discardcorrupt` : tolère un flux
+ *    d'entrée légèrement abîmé (transfert WhatsApp, appareil source
+ *    variable) plutôt que de produire une sortie corrompue en silence.
+ *  - `-application voip` : profil Opus optimisé pour la voix (c'est ce
+ *    que WhatsApp/Signal utilisent eux-mêmes pour les notes vocales),
+ *    par opposition au profil générique par défaut.
+ *  - `-avoid_negative_ts make_zero -map_metadata -1` : évite les
+ *    métadonnées/timestamps hérités du fichier source qui peuvent rendre
+ *    le conteneur OGG "non standard" pour le lecteur WhatsApp.
+ *  - 16 kHz mono : la fréquence recommandée par la documentation Baileys
+ *    elle-même pour l'audio, plutôt que les 48 kHz utilisés en 1.62.0.
+ *
+ * La durée (`seconds`) est calculée pendant la conversion elle-même
+ * (`codecData` de fluent-ffmpeg, pas besoin d'un binaire ffprobe séparé)
+ * et doit être transmise explicitement à `sock.sendMessage()` — ne pas
+ * laisser Baileys la déduire lui-même du buffer, potentiellement une
+ * source d'échec supplémentaire sur certains fichiers.
+ *
+ * @returns {Promise<{buffer: Buffer, seconds: number}>}
  */
-export async function audioToVoiceNote(buffer) {
+export async function toVoiceNoteOgg(buffer) {
   const id = randomUUID();
   const inputPath = join(tmpdir(), `${id}-in`);
   const outputPath = join(tmpdir(), `${id}-out.ogg`);
+
+  await writeFile(inputPath, buffer);
+
+  let seconds = 0;
+
+  try {
+    await new Promise((resolve, reject) => {
+      ffmpeg(inputPath)
+        .on('codecData', (data) => {
+          seconds = Math.round(parseDurationToSeconds(data.duration));
+        })
+        .on('error', reject)
+        .on('end', resolve)
+        .inputOptions(['-err_detect', 'ignore_err', '-fflags', '+discardcorrupt'])
+        .noVideo()
+        .audioChannels(1)
+        .audioFrequency(16000)
+        .audioCodec('libopus')
+        .audioBitrate('32k')
+        .outputOptions([
+          '-compression_level', '10',
+          '-frame_duration', '60',
+          '-application', 'voip',
+          '-avoid_negative_ts', 'make_zero',
+          '-map_metadata', '-1',
+        ])
+        .toFormat('ogg')
+        .save(outputPath);
+    });
+
+    const outBuffer = await readFile(outputPath);
+    return { buffer: outBuffer, seconds: seconds || 1 };
+  } finally {
+    await Promise.allSettled([unlink(inputPath).catch(() => {}), unlink(outputPath).catch(() => {})]);
+  }
+}
+
+/** Convertit une durée "HH:MM:SS.ms" (format ffmpeg) en secondes. */
+function parseDurationToSeconds(duration) {
+  const parts = String(duration || '0:0:0').split(':').map(Number);
+  const [h = 0, m = 0, s = 0] = parts;
+  return (h * 3600) + (m * 60) + s;
+}
+
+/**
+ * Normalise un audio en fichier M4A (AAC) pour un renvoi fiable via
+ * `!get`/`!reveal`. Remplace une précédente version OGG/Opus + ptt=true
+ * (note vocale WhatsApp) qui produisait encore des fichiers illisibles
+ * côté destinataire sur certains enregistrements malgré le ré-encodage —
+ * M4A/AAC envoyé en audio normal (pas en note vocale) s'est avéré plus
+ * fiable. Le stockage principal de `!save` reste inchangé ; seul le
+ * buffer ré-expédié est converti.
+ */
+export async function audioToM4a(buffer) {
+  const id = randomUUID();
+  const inputPath = join(tmpdir(), `${id}-in`);
+  const outputPath = join(tmpdir(), `${id}-out.m4a`);
 
   await writeFile(inputPath, buffer);
 
@@ -181,9 +259,9 @@ export async function audioToVoiceNote(buffer) {
         .on('error', reject)
         .on('end', resolve)
         .noVideo()
-        .audioCodec('libopus')
-        .audioBitrate('64k')
-        .toFormat('ogg')
+        .audioCodec('aac')
+        .audioBitrate('128k')
+        .toFormat('mp4')
         .save(outputPath);
     });
 

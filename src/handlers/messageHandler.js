@@ -1,4 +1,5 @@
 import { readFileSync, existsSync } from 'fs';
+import path from 'path';
 import { dataFilePath } from '../utils/dataFile.js';
 import { config, isAdmin } from '../config/index.js';
 import { logger } from '../utils/logger.js';
@@ -30,6 +31,7 @@ import { hasDraft as hasRemindDraft, hasCancelAllConfirmation as hasRemindCancel
 import { getQuotedInfo } from '../utils/quotedContent.js';
 import { recordActivity } from '../core/activityStore.js';
 import { getAfk, clearAfk } from '../core/afkStore.js';
+import { getMentionReply } from '../core/mentionReplyStore.js';
 import { extractMentionedJids, extractQuotedParticipant, normalizeJid } from '../utils/groupTarget.js';
 import { hasResetConfirmation as hasActivityResetConfirmation, handleResetConfirmText as handleActivityResetConfirmText } from '../core/activityResetSession.js';
 
@@ -109,16 +111,19 @@ function isDuplicateMessage(chatId, messageId) {
 }
 
 // Filtre anti-rattrapage : à la (re)connexion, WhatsApp redélivre les
-// messages envoyés pendant que le bot était hors ligne, marqués
-// `type: 'notify'` — indiscernables de messages tout frais sans regarder
-// leur horodatage. Sans ce filtre, une commande tapée pendant que le bot
-// était éteint (même des heures avant) s'exécute après coup au
-// redémarrage, hors de tout contexte ("le bot réexécute les commandes au
-// redémarrage"). Marge généreuse (2 min) pour ne jamais risquer d'ignorer
-// un message réellement récent à cause d'un délai de livraison normal ou
-// d'un léger décalage d'horloge — seul le VRAI rattrapage (accumulé
-// pendant une coupure prolongée) doit être filtré.
-const BACKLOG_GRACE_MS = 2 * 60 * 1000;
+// messages envoyés pendant que le bot était hors ligne (ou pas encore
+// accusés de réception avant un redémarrage), marqués `type: 'notify'` —
+// indiscernables de messages tout frais sans regarder leur horodatage.
+// Sans ce filtre, une commande déjà traitée (ou tapée pendant que le bot
+// était éteint) se réexécute après coup au redémarrage ("le bot réexécute
+// les commandes au démarrage").
+// Marge volontairement TRÈS courte : seulement de quoi absorber un léger
+// délai de livraison réseau ou un décalage d'horloge, pas pour "rattraper"
+// des commandes envoyées avant l'arrêt du bot — c'est précisément ce
+// rattrapage que le bot ne doit plus jamais faire. Concrètement, tout
+// message antérieur à la connexion (au-delà de cette marge minime) est
+// désormais ignoré, point.
+const BACKLOG_GRACE_MS = 10 * 1000;
 
 function isStaleBacklogMessage(msg) {
   const connectedAt = getConnectedAt();
@@ -266,6 +271,49 @@ async function handleSingleMessage(sock, commands, msg) {
     }
   } catch (err) {
     logger.warn({ err }, 'AFK: notification de mention impossible');
+  }
+
+  // Réponse automatique de mention (!mention) — UNIQUEMENT en groupe
+  // (jamais en privé, contrairement à AFK ci-dessus), et indépendante d'un
+  // quelconque statut "absent" : tant qu'une réponse est enregistrée pour
+  // ce jid, elle part à chaque mention/citation, point final. Même source
+  // de cibles (mentions @ + réponse citée) que le bloc AFK au-dessus, pour
+  // un comportement cohérent entre les deux fonctionnalités.
+  if (isGroup(chatId) && !isSelfTest) {
+    try {
+      const mentionTargets = new Set();
+      for (const jid of extractMentionedJids(msg)) mentionTargets.add(normalizeJid(jid));
+      const quotedParticipant = extractQuotedParticipant(msg);
+      if (quotedParticipant) mentionTargets.add(normalizeJid(quotedParticipant));
+      mentionTargets.delete(normalizeJid(sender)); // jamais se répondre à soi-même
+
+      for (const targetJid of mentionTargets) {
+        const registered = getMentionReply(targetJid);
+        if (!registered) continue;
+
+        if (registered.type === 'audio') {
+          const fullPath = path.join(process.cwd(), registered.mediaPath);
+          if (!existsSync(fullPath)) {
+            logger.warn(`Réponse de mention: fichier audio introuvable pour ${targetJid} (${fullPath})`);
+            continue;
+          }
+          const audioMessage = {
+            audio: readFileSync(fullPath),
+            mimetype: registered.mimetype || 'audio/ogg; codecs=opus',
+            ptt: Boolean(registered.ptt),
+          };
+          // Durée transmise explicitement (calculée à l'enregistrement, voir
+          // mention.js/toVoiceNoteOgg) plutôt que laissée à Baileys, qui doit
+          // sinon la déduire lui-même du buffer — une source d'échec de plus.
+          if (registered.seconds) audioMessage.seconds = registered.seconds;
+          await sock.sendMessage(chatId, audioMessage, { quoted: msg });
+        } else if (registered.type === 'text' && registered.text) {
+          await sock.sendMessage(chatId, { text: registered.text }, { quoted: msg });
+        }
+      }
+    } catch (err) {
+      logger.warn({ err }, 'Réponse de mention: envoi impossible');
+    }
   }
 
   // Vérifié avant extractText() : une notification de mention de statut

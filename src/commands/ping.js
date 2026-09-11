@@ -6,6 +6,7 @@ export default {
   aliases: ['p'],
   description: 'Vérifie la disponibilité du bot et affiche la latence.',
   category: 'Diagnostic',
+  privateOnly: false,
   execute: async (ctx) => {
     const sentAt = Number(ctx.msg.messageTimestamp) * 1000;
     const latency = Date.now() - sentAt;

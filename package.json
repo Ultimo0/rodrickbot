@@ -1,6 +1,6 @@
 {
   "name": "RodrickBot",
-  "version": "1.59.0",
+  "version": "1.64.4",
   "description": "Bot WhatsApp extensible basé sur Baileys 6.7.19",
   "type": "module",
   "main": "src/index.js",

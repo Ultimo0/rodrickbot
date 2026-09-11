@@ -7,7 +7,7 @@ export default {
   name: 'schedule',
   aliases: ['programmer'],
   description:
-    'Programme un message récurrent quotidien dans ce groupe (heure du serveur). ' +
+    'Programme un message récurrent quotidien dans ce groupe (fuseau horaire fixe — Africa/Douala, voir DEFAULT_TIMEZONE dans core/remind/remindDate.js — indépendant du serveur qui héberge le bot). ' +
     'Usage: {prefix}schedule add HH:MM <message>, {prefix}schedule list, {prefix}schedule remove <id>',
   category: 'Gestion de groupe',
   adminOnly: true,
