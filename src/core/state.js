@@ -9,7 +9,13 @@ const STATE_FILE = dataFilePath('state.json');
 let state = {
   // Si true: seul l'admin (défini dans ADMIN_JIDS) peut utiliser le bot,
   // peu importe la commande ou le chat (privé ou groupe).
-  lockdownMode: false,
+  // Par défaut à true (mode privé) : une nouvelle instance ne doit pas
+  // répondre à tout le monde tant que l'admin n'a pas explicitement
+  // ouvert l'accès via {prefix}private off. N'a d'effet que tant que
+  // state.json n'existe pas encore (première exécution) — un
+  // state.json déjà présent garde la valeur qu'il contient (voir
+  // loadState() juste en dessous).
+  lockdownMode: true,
   // Nombre d'exécutions par commande, cumulatif et persisté (contrairement
   // à processedMessageCount ci-dessous) — sert aux statistiques envoyées
   // au dashboard de suivi (voir core/telemetry.js).

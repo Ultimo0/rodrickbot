@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.64.5
+
+- **Le mode privé strict est désormais activé par défaut** sur une instance neuve (`core/state.js` : `lockdownMode: true` au lieu de `false`). Auparavant, une nouvelle instance répondait par défaut à tout le monde (mode public) tant que l'admin ne tapait pas `{prefix}private on` — c'est maintenant l'inverse : seul l'admin peut utiliser le bot tant qu'il n'ouvre pas explicitement l'accès via `{prefix}private off`. Sans effet sur une instance déjà en service : `state.json` garde la valeur qu'il contient déjà, seule une toute nouvelle instance (sans `state.json`) démarre désormais en privé.
+
 ## 1.64.4
 
 - **Nouveau : message d'aide envoyé juste après la validation de l'instance (`{prefix}setup`)**, pour guider un nouvel utilisateur — liste des premières commandes utiles (`{prefix}menu`, `{prefix}ping`, `{prefix}mention`, `{prefix}afk`, `{prefix}save`) avec un mot d'explication pour chacune. Envoyé une seule fois, uniquement à la suite de `{prefix}setup` (donc une seule fois par instance). Seul `commands/setup.js` a été touché — aucun autre fichier modifié.
