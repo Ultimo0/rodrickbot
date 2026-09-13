@@ -183,6 +183,59 @@ export async function ocrImage(imageBuffer, mimeType) {
 }
 
 /**
+ * Décrit le contenu d'une image via le modèle de vision Groq (même modèle
+ * que ocrImage ci-dessus, voir config.groqVisionModel) — contrairement à
+ * ocrImage qui ne fait QUE transcrire le texte visible, cette fonction
+ * demande une description générale de la scène (objets, personnes,
+ * ambiance, contexte...).
+ * @param {Buffer} imageBuffer
+ * @param {string} mimeType ex: 'image/jpeg'
+ * @param {string} [question] question optionnelle sur l'image (sinon description générale)
+ * @returns {Promise<string>}
+ */
+export async function analyzeImage(imageBuffer, mimeType, question = null) {
+  if (!config.groqApiKey) {
+    throw new Error('Clé API Groq manquante (GROQ_API_KEY dans .env).');
+  }
+
+  const dataUri = `data:${mimeType || 'image/jpeg'};base64,${imageBuffer.toString('base64')}`;
+  const prompt =
+    question ||
+    "Décris cette image de façon claire et concise en français : ce qu'elle montre, les éléments principaux, " +
+    "l'ambiance générale. 3-4 phrases maximum, sans préambule ni markdown.";
+
+  try {
+    const json = await requestGroqJson(GROQ_CHAT_URL, {
+      model: config.groqVisionModel,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: prompt },
+            { type: 'image_url', image_url: { url: dataUri } },
+          ],
+        },
+      ],
+      temperature: 0.4,
+    });
+
+    const answer = json?.choices?.[0]?.message?.content;
+    if (!answer) {
+      throw new Error('Réponse vide reçue de Groq.');
+    }
+    return answer.trim();
+  } catch (err) {
+    if (isInsufficientBalanceErrorMessage(err.message)) {
+      return insufficientBalanceFallbackMessage();
+    }
+    if (isRateLimitErrorMessage(err.message)) {
+      return rateLimitFallbackMessage();
+    }
+    throw err;
+  }
+}
+
+/**
  * Instructions de résumé par taille, utilisées par summarizeText() et par
  * la commande !resume pour valider la taille demandée.
  */
@@ -318,4 +371,132 @@ export async function translateText(text, targetLanguage) {
     }
     throw err;
   }
+}
+
+/**
+ * Helper générique factorisant le schéma commun à correctText/translateText/
+ * summarizeText/analyzeImage ci-dessus : un prompt système + un texte
+ * utilisateur, avec la même gestion des erreurs 402/429. Utilisé par
+ * generateDebate/defineWord/findSynonyms/generateHoroscope ci-dessous, qui
+ * n'ont chacune besoin que d'un prompt système différent.
+ */
+async function simplePrompt(systemPrompt, userText, { temperature = 0.5 } = {}) {
+  if (!config.groqApiKey) {
+    throw new Error('Clé API Groq manquante (GROQ_API_KEY dans .env).');
+  }
+
+  try {
+    const json = await requestGroqJson(GROQ_CHAT_URL, {
+      model: config.groqModel,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userText },
+      ],
+      temperature,
+    });
+
+    const answer = json?.choices?.[0]?.message?.content;
+    if (!answer) {
+      throw new Error('Réponse vide reçue de Groq.');
+    }
+    return answer.trim();
+  } catch (err) {
+    if (isInsufficientBalanceErrorMessage(err.message)) {
+      return insufficientBalanceFallbackMessage();
+    }
+    if (isRateLimitErrorMessage(err.message)) {
+      return rateLimitFallbackMessage();
+    }
+    throw err;
+  }
+}
+
+/** Génère un mini-débat pour/contre un sujet donné (commande !debat). */
+export async function generateDebate(topic) {
+  return simplePrompt(
+    "Tu es un débatteur intégré à un bot WhatsApp. Pour le sujet donné par l'utilisateur, développe de façon équilibrée et concise les meilleurs arguments POUR puis les meilleurs arguments CONTRE (3 arguments maximum de chaque côté, une phrase par argument). Structure ta réponse en deux sections claires \"✅ POUR\" et \"❌ CONTRE\" avec des tirets, sans préambule ni conclusion personnelle, et sans prendre parti toi-même.",
+    topic,
+    { temperature: 0.6 }
+  );
+}
+
+/** Donne la définition d'un mot ou d'une expression (commande !define). */
+export async function defineWord(word) {
+  return simplePrompt(
+    "Tu es un dictionnaire intégré à un bot WhatsApp. Pour le mot ou l'expression donné, indique sa nature grammaticale puis 1 à 2 définitions claires et concises, avec un exemple d'usage court pour chacune. Réponds uniquement avec la définition, sans préambule ni commentaire, en français sauf si le mot fourni est explicitement dans une autre langue.",
+    word,
+    { temperature: 0.2 }
+  );
+}
+
+/** Donne des synonymes d'un mot (commande !synonyme). */
+export async function findSynonyms(word) {
+  return simplePrompt(
+    "Tu es un dictionnaire de synonymes intégré à un bot WhatsApp. Pour le mot donné, liste 5 à 10 synonymes pertinents en français, du plus courant au plus soutenu, séparés par des virgules. Réponds uniquement avec la liste, sans préambule ni commentaire. Si le mot n'a pas de synonyme évident, indique-le en une courte phrase.",
+    word,
+    { temperature: 0.3 }
+  );
+}
+
+/**
+ * Génère un horoscope du jour pour un signe astrologique (commande
+ * !horoscope) — divertissement uniquement, le prompt le rappelle
+ * explicitement pour que le modèle ne présente jamais ça comme une
+ * prédiction sérieuse.
+ */
+export async function generateHoroscope(sign) {
+  return simplePrompt(
+    "Tu es un générateur d'horoscopes fantaisistes pour un bot WhatsApp, à but purement divertissant (pas une vraie prédiction). Pour le signe astrologique donné, écris un horoscope du jour amusant et positif en français (4-5 phrases : ambiance générale, amour, travail/études, un conseil du jour). Réponds uniquement avec le texte de l'horoscope, sans préambule.",
+    sign,
+    { temperature: 0.9 }
+  );
+}
+
+const GROQ_TRANSCRIPTION_URL = 'https://api.groq.com/openai/v1/audio/transcriptions';
+
+/**
+ * Transcrit un audio (note vocale) en texte via l'API Whisper de Groq
+ * (commande !vocal-en-texte). Contrairement aux autres fonctions de ce
+ * fichier, l'appel est multipart (fichier binaire), pas du JSON — passe
+ * donc par un fetch dédié plutôt que par requestGroqJson.
+ * @param {Buffer} audioBuffer
+ * @param {string} mimeType ex: 'audio/ogg; codecs=opus'
+ * @returns {Promise<string>}
+ */
+export async function transcribeAudio(audioBuffer, mimeType) {
+  if (!config.groqApiKey) {
+    throw new Error('Clé API Groq manquante (GROQ_API_KEY dans .env).');
+  }
+
+  const form = new FormData();
+  const ext = mimeType?.includes('ogg') ? 'ogg' : mimeType?.includes('mp4') ? 'm4a' : 'audio';
+  form.append('file', new Blob([audioBuffer], { type: mimeType || 'audio/ogg' }), `audio.${ext}`);
+  form.append('model', config.groqWhisperModel);
+  form.append('response_format', 'json');
+
+  let res;
+  try {
+    res = await fetch(GROQ_TRANSCRIPTION_URL, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${config.groqApiKey}` },
+      body: form,
+    });
+  } catch (err) {
+    throw new Error(`Connexion à Groq impossible : ${err.message}`);
+  }
+
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    logger.warn({ status: res.status, errText }, 'Erreur API Groq transcription (détail upstream, non exposé)');
+    if (isInsufficientBalanceErrorMessage(`(${res.status})`)) return insufficientBalanceFallbackMessage();
+    if (res.status === 429) return rateLimitFallbackMessage();
+    throw new Error(`Erreur API Groq (${res.status}).`);
+  }
+
+  const json = await res.json();
+  const text = json?.text?.trim();
+  if (!text) {
+    throw new Error('Aucun texte détecté dans cet audio.');
+  }
+  return text;
 }

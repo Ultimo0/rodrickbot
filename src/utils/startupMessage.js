@@ -1,4 +1,4 @@
-import { config } from '../config/index.js';
+import { config, getApiKeyStatuses } from '../config/index.js';
 import { isInstanceConfigured, getInstance } from '../core/instance.js';
 import { isLockdownMode } from '../core/state.js';
 import { getCurrentTheme } from '../themes/engine.js';
@@ -20,6 +20,7 @@ export function buildStartupMessage(commandCount) {
     prefix: config.prefix,
     commandCount,
     mode: isLockdownMode() ? 'Privé' : 'Public',
+    apiKeys: getApiKeyStatuses(),
   });
 }
 

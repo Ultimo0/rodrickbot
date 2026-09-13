@@ -89,6 +89,15 @@ export default {
 
     lines.push(`${pad('commands')}${data.commandCount}`);
     lines.push(`${pad('mode')}${data.mode.toLowerCase()}`);
+
+    if (data.apiKeys?.length) {
+      lines.push(SEP);
+      const width = Math.max(14, ...data.apiKeys.map((k) => k.label.length + 2));
+      for (const k of data.apiKeys) {
+        lines.push(`${pad(k.label.toLowerCase(), width)}${k.configured ? 'ok' : 'off'}`);
+      }
+    }
+
     lines.push(SEP);
     // Marqueur "> " volontairement fixe, non thémé — identité visuelle
     // constante du bot, quel que soit le thème actif.

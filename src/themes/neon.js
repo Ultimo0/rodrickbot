@@ -110,6 +110,15 @@ export default {
 
     lines.push(`> MODULES_LOADED.. ${data.commandCount}`);
     lines.push(`> MODE............ ${data.mode.toUpperCase()}`);
+
+    if (data.apiKeys?.length) {
+      lines.push(hLine(22, BOX.h));
+      const width = Math.max(16, ...data.apiKeys.map((k) => k.label.length + 1));
+      for (const k of data.apiKeys) {
+        lines.push(`> ${upper(k.label).padEnd(width, '.')} ${k.configured ? 'OK ✅' : 'OFF ❌'}`);
+      }
+    }
+
     lines.push(hLine(22, BOX.h));
     // Marqueur "> " volontairement fixe, non thémé — identité visuelle
     // constante du bot, quel que soit le thème actif.

@@ -14,17 +14,35 @@ Au premier lancement, le bot affiche un QR code ou un code d'appairage (selon `a
 
 ## Configuration — variables d'environnement (`.env`)
 
+Depuis la 1.67.0, **plus aucune clé API ni secret d'infrastructure ne vit dans `.env`** — ils sont tous dans `src/config/settings.json` (voir section suivante). Il ne reste dans `.env` que ce qui doit exister *avant* la première connexion WhatsApp (donc avant qu'aucune commande ne puisse le configurer) ou ce qui n'est pas un secret :
+
 | Variable | Requis | Description |
 |---|---|---|
-| `GROQ_API_KEY` | Oui, pour les fonctionnalités IA | Clé [console.groq.com](https://console.groq.com/) — utilisée par `!ia`, `!corriger`, `!resume`, `!ocr`, l'agent conversationnel. |
 | `PHONE_NUMBER` | Selon `authMethod` | Numéro au format international sans `+` (ex: `237638838029`) — requis seulement si `src/config/settings.json` a `"authMethod": "code"` (appairage par code plutôt que QR). |
-| `OPENWEATHER_API_KEY` | Non | Clé [openweathermap.org](https://openweathermap.org/api) — pour `!meteo`. Sans elle, la commande répond juste que la clé n'est pas configurée. |
-| `CHANNEL_JID` | Non | JID (format `xxxx@newsletter`) de la chaîne WhatsApp officielle du bot, pour le badge "Transféré depuis" sur certains messages. |
-| `TELEMETRY_URL` / `TELEMETRY_API_KEY` | Non | URL et clé du dashboard-server (projet séparé) pour le heartbeat de suivi d'instance. Sans eux, le bot fonctionne normalement, juste sans remontée de télémétrie. |
 | `LOG_TO_FILE` | Non | `true` pour écrire aussi les logs dans `data/logs/bot.log` (rotation automatique par taille). Par défaut, logs console uniquement. |
 | `ADMIN_JIDS` | Non, **legacy** | Ancien mécanisme de désignation des admins. **Ne configure plus ça pour une nouvelle installation** — le propriétaire du bot est désormais détecté automatiquement (le numéro sur lequel il est connecté), et les admins supplémentaires s'ajoutent avec `{prefix}addadmin` directement dans WhatsApp. Si cette variable est encore présente au premier démarrage, son contenu est importé une seule fois dans `data/admins.json`, puis ignoré ensuite. |
 
-Le préfixe des commandes (`/` par défaut), le nom du bot, le niveau de log et les modèles Groq se règlent dans `src/config/settings.json` (versionné, pas de secret dedans).
+## Configuration — `src/config/settings.json`
+
+Le préfixe des commandes, le nom du bot, le niveau de log et les modèles Groq se règlent ici. **Ce fichier contient aussi désormais les clés API et secrets d'infrastructure** — il n'est donc plus versionné une fois configuré (voir `.gitignore`) ; le modèle versionné avec des valeurs vides est `src/config/settings.example.json`, recopié automatiquement en `settings.json` s'il est absent au démarrage.
+
+### Clés API configurables depuis WhatsApp
+
+Ces trois clés se définissent (ou se suppriment) directement en message privé avec le bot, sans toucher à un fichier :
+
+| Commande | Clé configurée | Où l'obtenir |
+|---|---|---|
+| `{prefix}groqapi <clé>` | Groq — utilisée par `!ia`, `!corriger`, `!resume`, `!ocr`, `!debat`, `!define`, `!synonyme`, `!horoscope`, `!analyse-image`, `!vocal-en-texte`, l'agent conversationnel | [console.groq.com](https://console.groq.com/) |
+| `{prefix}removeapi <clé>` | Remove.bg — utilisée par `!removebg` | [remove.bg/api](https://www.remove.bg/api) |
+| `{prefix}meteoapi <clé>` | OpenWeatherMap — utilisée par `!meteo` | [openweathermap.org/api](https://openweathermap.org/api) |
+
+Chacune accepte aussi `{prefix}groqapi off` (ou `removeapi off` / `meteoapi off`) pour supprimer la clé enregistrée, et `{prefix}groqapi` seul (sans argument) pour voir si elle est configurée. Ces trois commandes sont réservées aux admins **et fonctionnent uniquement en message privé** avec le bot — jamais dans un groupe, pour qu'une clé tapée en clair ne s'affiche jamais aux yeux de tout le monde. Le statut de chaque clé (configurée ou non) apparaît aussi dans le message de démarrage envoyé au propriétaire.
+
+Si tu mets à jour une installation existante qui avait déjà `GROQ_API_KEY`/`REMOVE_BG_API_KEY`/`OPENWEATHER_API_KEY` (ou `CHANNEL_JID`/`TELEMETRY_URL`/`TELEMETRY_API_KEY`) dans son `.env`, la valeur est importée automatiquement dans `settings.json` au premier démarrage après la mise à jour — retire ensuite la ligne correspondante de ton `.env`.
+
+### Secrets d'infrastructure (non configurables depuis WhatsApp)
+
+`channelJid` (JID `xxxx@newsletter` de la chaîne WhatsApp officielle du bot, pour le badge "Transféré depuis"), `telemetryUrl` et `telemetryApiKey` (dashboard-server de suivi d'instance, projet séparé) s'éditent uniquement à la main dans `settings.json` — volontairement absents de toute commande WhatsApp.
 
 ## Premières commandes après connexion
 
@@ -35,7 +53,7 @@ Le préfixe des commandes (`/` par défaut), le nom du bot, le niveau de log et 
 
 ## Modération de groupe
 
-`{prefix}antilink`, `{prefix}antiflood`, `{prefix}antispam`, `{prefix}antipurge`, `{prefix}antiraid` — chacune s'active indépendamment par groupe avec `on`/`off`/`status`. Voir `CHANGELOG.md` pour le détail de ce que chacune couvre.
+`{prefix}antilink`, `{prefix}antilien-domaine`, `{prefix}antiflood`, `{prefix}antispam`, `{prefix}antipurge`, `{prefix}antiraid` — chacune s'active indépendamment par groupe avec `on`/`off`/`status`. `{prefix}mute`/`{prefix}unmute` et `{prefix}vote-kick` complètent la panoplie pour agir directement sur un membre. Voir `CHANGELOG.md` pour le détail de ce que chacune couvre.
 
 ## Protection du compte
 

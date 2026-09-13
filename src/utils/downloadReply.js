@@ -2,6 +2,7 @@ import { getPendingChoice, clearPendingChoice } from '../core/downloadSessions.j
 import { downloadTikTokAudio, downloadTikTokVideo, explainTikTokError } from './tiktok.js';
 import { downloadYoutubeAudio, downloadYoutubeVideo, explainYoutubeError } from './youtube.js';
 import { downloadFacebookAudio, downloadFacebookVideo } from './facebook.js';
+import { downloadInstagramAudio, downloadInstagramVideo, explainInstagramError } from './instagram.js';
 import { logger } from './logger.js';
 
 const AUDIO_PATTERN = /^(1|audio|mp3|musique)$/i;
@@ -78,6 +79,26 @@ async function handleFacebookChoice(sock, chatId, msg, choice, data) {
   }
 }
 
+async function handleInstagramChoice(sock, chatId, msg, choice, data) {
+  const fileName = sanitizeFileName(data.title);
+
+  if (choice === 'audio') {
+    const buffer = await downloadInstagramAudio(data.url);
+    await sock.sendMessage(
+      chatId,
+      { audio: buffer, mimetype: 'audio/mpeg', fileName: `${fileName}.mp3` },
+      { quoted: msg }
+    );
+  } else {
+    const buffer = await downloadInstagramVideo(data.url);
+    await sock.sendMessage(
+      chatId,
+      { video: buffer, mimetype: 'video/mp4', caption: data.title || '' },
+      { quoted: msg }
+    );
+  }
+}
+
 /**
  * Traite la réponse de l'utilisateur ("1"/"2"/"audio"/"vidéo") à une
  * session de téléchargement en attente (TikTok ou YouTube). Retourne
@@ -101,10 +122,16 @@ export async function handleDownloadReply(sock, chatId, sender, text, msg) {
       await handleYoutubeChoice(sock, chatId, msg, choice, data);
     } else if (data.type === 'facebook') {
       await handleFacebookChoice(sock, chatId, msg, choice, data);
+    } else if (data.type === 'instagram') {
+      await handleInstagramChoice(sock, chatId, msg, choice, data);
     }
   } catch (err) {
     logger.warn({ err }, `Erreur lors du téléchargement (${data.type})`);
-    const message = data.type === 'youtube' ? explainYoutubeError(err) : data.type === 'tiktok' ? explainTikTokError(err) : err.message;
+    const message =
+      data.type === 'youtube' ? explainYoutubeError(err)
+      : data.type === 'tiktok' ? explainTikTokError(err)
+      : data.type === 'instagram' ? explainInstagramError(err)
+      : err.message;
     await sock.sendMessage(chatId, { text: `> ❌ Échec du téléchargement : ${message}` }, { quoted: msg });
   }
 

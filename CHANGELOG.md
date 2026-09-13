@@ -1,5 +1,59 @@
 # Changelog
 
+## 1.67.0
+
+- **Toutes les clés API et secrets d'infrastructure quittent `.env` pour `src/config/settings.json`** — changement demandé explicitement, avec des implications de sécurité détaillées ci-dessous.
+  - **Clés configurables depuis WhatsApp** (nouvelles commandes, admins uniquement, **message privé uniquement** — voir pourquoi plus bas) :
+    - `!groqapi <clé>` / `!groqapi off` / `!groqapi` (statut) — clé Groq (`groqApiKey`)
+    - `!removeapi <clé>` / `!removeapi off` — clé remove.bg (`removeBgApiKey`)
+    - `!meteoapi <clé>` / `!meteoapi off` — clé OpenWeatherMap (`openWeatherApiKey`)
+    - Les trois partagent la même implémentation factorisée dans `utils/apiKeyCommand.js` (`createApiKeyCommand()`), et la même liste blanche `CONFIGURABLE_API_KEYS` dans `config/index.js` — nouvelles fonctions `setApiKey()`/`deleteApiKey()`, qui écrivent immédiatement dans `settings.json` (via `atomicWriteFileSync`, même mécanisme que les autres stores persistants du bot) ET mettent à jour l'objet `config` en mémoire, donc sans redémarrage du bot.
+    - `commands/meteo.js` lisait auparavant `process.env.OPENWEATHER_API_KEY` dans une constante figée au chargement du module ; il lit maintenant `config.openWeatherApiKey` en direct à chaque exécution (même convention que `groq.js`/`removebg.js`), sinon `!meteoapi` n'aurait eu aucun effet sans redémarrer le bot.
+  - **`telemetryUrl`, `telemetryApiKey` et `channelJid`** : déplacés eux aussi dans `settings.json`, mais **volontairement absents de `CONFIGURABLE_API_KEYS`** — `setApiKey()` lève une erreur si on tente de les modifier par ce biais. Ils ne se modifient qu'en éditant `settings.json` directement, comme demandé.
+  - **Migration automatique** : au premier démarrage après cette mise à jour, toute valeur encore présente dans `.env` pour ces 6 variables (`GROQ_API_KEY`, `REMOVE_BG_API_KEY`, `OPENWEATHER_API_KEY`, `CHANNEL_JID`, `TELEMETRY_URL`, `TELEMETRY_API_KEY`) est importée une seule fois dans `settings.json` (voir `migrateEnvKeyIfNeeded()` dans `config/index.js`, même principe que la migration `ADMIN_JIDS` déjà existante) — aucune configuration existante n'est perdue.
+  - **Statut de chaque clé dans le message de démarrage** (l'écran "Statut / Instance / Propriétaire / Commandes chargées / Mode" envoyé au propriétaire à la connexion) : nouvelle section "Clés API" ajoutée à `renderStartup()` dans les **5 thèmes** (`royal`, `mono`, `galaxy`, `neon`, `classique`), chacune dans son propre style visuel — ✅/❌ pour Groq, Remove.bg, OpenWeather, Télémétrie, Chaîne WhatsApp. Alimentée par la nouvelle fonction `getApiKeyStatuses()` dans `config/index.js`, câblée dans `utils/startupMessage.js`.
+  - **Sécurité — implications importantes à connaître :**
+    - `settings.json` n'est plus un fichier "sans secret" comme documenté jusqu'ici : une fois une clé configurée, il contient un vrai secret. **Il est retiré du suivi git dans `.gitignore`** (nouvelle entrée `src/config/settings.json`) — le modèle versionné avec des valeurs vides devient `src/config/settings.example.json` (nouveau fichier), recopié automatiquement en `settings.json` au démarrage s'il est absent (voir le nouveau bloc d'amorçage en tête de `config/index.js`), pour qu'un `git clone` frais reste fonctionnel malgré le `.gitignore`.
+    - **Si `src/config/settings.json` était déjà suivi par git dans ton dépôt avant cette mise à jour**, ajouter la ligne au `.gitignore` ne le retire PAS de l'historique existant : pense à faire `git rm --cached src/config/settings.json` après avoir vérifié qu'aucun secret n'y était déjà committé, et à faire tourner (régénérer) toute clé qui aurait pu être exposée dans un commit précédent.
+    - Les 3 commandes `!groqapi`/`!removeapi`/`!meteoapi` sont forcées en `privateOnly: true` : une clé tapée en clair dans un GROUPE serait visible de tous ses membres, admins ou non — ces commandes ne fonctionnent donc qu'en message privé avec le bot.
+  - `.env.example` réduit aux seules variables qui doivent rester en `.env` : `PHONE_NUMBER` (nécessaire avant même la première connexion WhatsApp, donc avant qu'aucune commande ne puisse le configurer), `LOG_TO_FILE` (pas un secret) et `ADMIN_JIDS` (legacy). README.md entièrement réécrit sur la partie configuration pour refléter cette nouvelle architecture.
+
+## 1.66.0
+
+- **14 nouvelles commandes** (95 → 109 fichiers dans `src/commands/`, objectif 100 dépassé) :
+  - `!ralenti` / `!accelere` (Média) — modifient la vitesse d'une vidéo (image + son synchronisés via `setpts`/`atempo`). Nouvelle fonction `changeVideoSpeed()` dans `utils/mediaConvert.js`, logique commune factorisée dans `utils/videoSpeed.js` (les deux commandes ne diffèrent que par leur facteur par défaut/bornes).
+  - `!pinterest` (Téléchargement) — télécharge un pin Pinterest, vidéo (yt-dlp, même schéma que `!facebook`) ou image (repli sur l'extraction de la balise `og:image` de la page, la majorité des pins étant des images).
+  - `!resume-doc` (Intelligence Artificielle) — **alias ajouté à `!resume` existant**, qui gérait déjà les documents .pdf/.docx cités ou envoyés (`utils/textInput.js`) : pas de nouveau code, juste le nom demandé rendu disponible.
+  - `!debat <sujet>` (Intelligence Artificielle) — développe les meilleurs arguments POUR et CONTRE via Groq (nouvelle fonction `generateDebate()`).
+  - `!vocal-en-texte` (Intelligence Artificielle) — transcrit une note vocale/audio en texte via l'API Whisper de Groq. Nouvelle fonction `transcribeAudio()` dans `utils/groq.js` (appel multipart dédié, contrairement aux autres fonctions Groq de ce fichier qui passent par `requestGroqJson`), nouveau réglage `groqWhisperModel` (`whisper-large-v3-turbo`) dans `settings.json`.
+  - `!raccourcir <lien>` (Utilitaires) — raccourcisseur d'URL via l'API publique TinyURL (aucune clé requise).
+  - `!define <mot>` / `!synonyme <mot>` (Utilitaires) — définitions et synonymes via Groq (nouvelles fonctions `defineWord()`/`findSynonyms()`) : aucune API dictionnaire française fiable et gratuite sans clé n'a été trouvée, l'IA déjà configurée est réutilisée à la place.
+  - `!crypto <symbole>` (Utilitaires) — cours d'une cryptomonnaie via l'API publique CoinGecko (recherche par symbole/nom, aucune clé requise).
+  - `!devise <montant> <de> <vers>` (Utilitaires) — conversion de devises via l'API publique open.er-api.com (~160 devises, **y compris le FCFA/XAF** — préférée à l'API de la BCE/Frankfurter qui ne couvre que les devises majeures).
+  - `!horoscope <signe>` (Utilitaires) — horoscope du jour généré par Groq, explicitement étiqueté "divertissement uniquement" dans le prompt ET dans la réponse envoyée.
+  - `!lien` / `!resetlien` (Gestion de groupe) — affichent/régénèrent le lien d'invitation du groupe (`sock.groupInviteCode`/`groupRevokeInvite`).
+  - `!clear <n>` (Gestion de groupe) — supprime les N derniers messages envoyés par le bot dans la conversation courante (défaut 10, max 100). Nécessite un nouveau mécanisme de suivi : `core/sentMessageLog.js`, alimenté directement depuis `core/outboundGateway.js` (qui voit déjà passer tous les envois sortants du bot, toutes commandes confondues) — historique en mémoire uniquement (perdu au redémarrage, sans conséquence pour cet usage).
+- Toutes les nouvelles fonctionnalités "API publique" (`!raccourcir`, `!crypto`, `!devise`, `!pinterest`) fonctionnent sans configuration ni clé. `!vocal-en-texte`/`!debat`/`!define`/`!synonyme`/`!horoscope` réutilisent la clé `GROQ_API_KEY` déjà configurée pour les autres fonctionnalités IA.
+
+## 1.65.0
+
+- **10 nouvelles commandes** (84 → 95 fichiers dans `src/commands/`, objectif 100) :
+  - `!gif` (Média) — convertit une courte vidéo (15s max, sans son) en GIF WhatsApp. Nouvelle fonction `videoToGifMp4()` dans `utils/mediaConvert.js`.
+  - `!qrcode` (Utilitaires) — génère un QR code PNG à partir d'un texte ou d'un lien. Nouvelle dépendance `qrcode`, nouveau `utils/qrcode.js`.
+  - `!traduireauto` (Intelligence Artificielle) — traduit automatiquement chaque message d'un groupe vers une langue cible (réponse citée), réutilise `translateText()` de `utils/groq.js`. Réglage persistant `autotranslate` ajouté à `core/groupSettings.js`. Ne bloque jamais le reste du pipeline (jamais de `return` dans `handlers/messageHandler.js`).
+  - `!removebg` (Média) — retire le fond d'une image via l'API remove.bg (`utils/removebg.js`, `fetch`/`FormData` natifs Node 20, aucune dépendance npm ajoutée). Nécessite `REMOVE_BG_API_KEY` dans `.env` (voir `.env.example`).
+  - `!instagram` (Téléchargement) — télécharge un reel/post Instagram en audio ou vidéo, calqué exactement sur `!facebook` (`utils/instagram.js` + branche `instagram` dans `utils/downloadReply.js`).
+  - `!antilien-domaine` (Gestion de groupe) — liste blanche de domaines autorisés, en complément de `!antilink` (qui bloque tous les liens sans distinction) : les deux protections sont indépendantes et cumulables sur un même groupe. Réglage `linkWhitelist` ajouté à `core/groupSettings.js`, nouveau `utils/linkWhitelist.js`.
+  - `!mute` / `!unmute` (Gestion de groupe) — rend un membre muet (ses messages, tous types confondus, sont supprimés automatiquement) sans l'expulser du groupe. WhatsApp n'ayant pas de mute natif par membre, c'est le bot qui l'applique : nouveau `core/muteStore.js` (persistant, `data/muted.json`) + `utils/muteGuard.js`, branché tout en amont du pipeline dans `handlers/messageHandler.js` (avant même l'antibug).
+  - `!vote-kick` (Modération) — expulsion par vote communautaire (3 voix par défaut, réglable via `voteKickThreshold`/`voteKickTimeoutSeconds` dans `settings.json`), sans nécessiter un admin. Session de vote en mémoire (`core/voteKickStore.js`, même principe que `core/downloadSessions.js`). Protège les admins (bot et groupe) contre un vote.
+  - `!rps` (Jeux) — pierre-feuille-ciseaux contre le bot, un seul coup, sans état à conserver.
+  - `!analyse-image` (Intelligence Artificielle) — décrit le contenu d'une image (ou répond à une question précise dessus) via le modèle de vision Groq. Nouvelle fonction générique `analyzeImage()` dans `utils/groq.js`, à côté de `ocrImage()` déjà existante (même modèle, prompt différent : description au lieu de transcription).
+- Toutes les nouvelles commandes de groupe suivent la convention existante : ciblage via `utils/groupTarget.js` (mention, réponse citée, ou numéro), protections admin identiques à `!kick`/`!promote`.
+
+## 1.64.6
+
+- **L'audio du `{prefix}menu` est désormais envoyé en véritable note vocale (`ptt: true`)**, avec la même méthode que `{prefix}mention` (1.64.3) : le fichier trouvé dans `assets/` est systématiquement repassé par `toVoiceNoteOgg()` (`utils/mediaConvert.js` — réencodage OGG/Opus 16 kHz mono, profil `voip`, durée calculée explicitement) avant l'envoi, au lieu d'être expédié tel quel avec `ptt: false`. Seul `commands/help.js` a été modifié.
+
 ## 1.64.5
 
 - **Le mode privé strict est désormais activé par défaut** sur une instance neuve (`core/state.js` : `lockdownMode: true` au lieu de `false`). Auparavant, une nouvelle instance répondait par défaut à tout le monde (mode public) tant que l'admin ne tapait pas `{prefix}private on` — c'est maintenant l'inverse : seul l'admin peut utiliser le bot tant qu'il n'ouvre pas explicitement l'accès via `{prefix}private off`. Sans effet sur une instance déjà en service : `state.json` garde la valeur qu'il contient déjà, seule une toute nouvelle instance (sans `state.json`) démarre désormais en privé.

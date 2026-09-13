@@ -98,6 +98,14 @@ export default {
 
     lines.push('', '✨ Commandes chargées', `  ${data.commandCount}`);
     lines.push('', '🌙 Mode', `  ${data.mode}`);
+
+    if (data.apiKeys?.length) {
+      lines.push('', '🔑 Clés API');
+      for (const k of data.apiKeys) {
+        lines.push(`  ${k.configured ? '✅' : '❌'} ${k.label}`);
+      }
+    }
+
     lines.push(DIVIDER);
     // Marqueur "> " volontairement fixe, non thémé — identité visuelle
     // constante du bot, quel que soit le thème actif.

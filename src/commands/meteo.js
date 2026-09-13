@@ -3,7 +3,9 @@ import { config } from '../config/index.js';
 import { getWeather, windDirection } from '../utils/weather.js';
 import { logger } from '../utils/logger.js';
 
-const API_KEY = process.env.OPENWEATHER_API_KEY;
+// Lue en direct sur `config` à chaque exécution (pas de const figée au
+// chargement du module) : voir setApiKey()/CONFIGURABLE_API_KEYS dans
+// config/index.js — !meteoapi doit prendre effet sans redémarrage du bot.
 
 // Emojis météo (mapping icônes OpenWeatherMap -> emojis)
 const WEATHER_ICONS = {
@@ -65,7 +67,7 @@ export default {
   adminOnly: false,
   privateOnly: false,
   execute: async (ctx) => {
-    if (!API_KEY) {
+    if (!config.openWeatherApiKey) {
       await ctx.error('❌ La clé API OpenWeatherMap n\'est pas configurée. Contacte le développeur.');
       return;
     }
@@ -84,7 +86,7 @@ export default {
     await ctx.processing();
 
     try {
-      const data = await getWeather(city, API_KEY);
+      const data = await getWeather(city, config.openWeatherApiKey);
       const text = renderMeteo(data);
       await ctx.sock.sendMessage(ctx.chatId, { text }, { quoted: ctx.msg });
       await ctx.success();

@@ -123,6 +123,14 @@ export default {
 
     lines.push('', `◆ ${bold('Commandes chargées')}`, `  ${data.commandCount}`);
     lines.push('', `◆ ${bold('Mode')}`, `  ${data.mode}`);
+
+    if (data.apiKeys?.length) {
+      lines.push('', `◆ ${bold('Clés API')}`);
+      for (const k of data.apiKeys) {
+        lines.push(`  ${k.configured ? '✅' : '❌'} ${k.label}`);
+      }
+    }
+
     lines.push(hLine(INNER, BOX.h), `> ${bold(data.signature)}`);
     return lines.join('\n');
   },

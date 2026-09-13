@@ -40,6 +40,8 @@ const DEFAULTS = {
   antistatut: { enabled: false },
   antiflood: { enabled: false, maxMentions: 5 },
   antiraid: { enabled: false },
+  autotranslate: { enabled: false, targetLang: null },
+  linkWhitelist: { enabled: false, domains: [] },
 };
 
 function ensure(chatId) {
@@ -142,6 +144,44 @@ export function setAntifloodConfig(chatId, maxMentions) {
 export function setAntiraid(chatId, enabled) {
   const g = ensure(chatId);
   g.antiraid = { enabled };
+  persist();
+}
+
+/**
+ * Active/désactive la traduction automatique du groupe vers `targetLang`.
+ * `targetLang` n'est mis à jour que s'il est fourni (activer sans langue
+ * en argument garde la dernière langue configurée) — voir commands/traduireauto.js.
+ */
+export function setAutotranslate(chatId, enabled, targetLang = null) {
+  const g = ensure(chatId);
+  g.autotranslate = {
+    ...(g.autotranslate || DEFAULTS.autotranslate),
+    enabled,
+    targetLang: targetLang ?? (g.autotranslate || DEFAULTS.autotranslate).targetLang,
+  };
+  persist();
+}
+
+export function setLinkWhitelist(chatId, enabled) {
+  const g = ensure(chatId);
+  g.linkWhitelist = { ...(g.linkWhitelist || DEFAULTS.linkWhitelist), enabled };
+  persist();
+}
+
+export function addWhitelistedDomain(chatId, domain) {
+  const g = ensure(chatId);
+  const current = g.linkWhitelist || DEFAULTS.linkWhitelist;
+  const domains = new Set(current.domains || []);
+  domains.add(domain.toLowerCase());
+  g.linkWhitelist = { ...current, domains: [...domains] };
+  persist();
+}
+
+export function removeWhitelistedDomain(chatId, domain) {
+  const g = ensure(chatId);
+  const current = g.linkWhitelist || DEFAULTS.linkWhitelist;
+  const domains = (current.domains || []).filter((d) => d !== domain.toLowerCase());
+  g.linkWhitelist = { ...current, domains };
   persist();
 }
 

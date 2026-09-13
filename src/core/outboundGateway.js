@@ -38,6 +38,7 @@
  */
 
 import { logger } from '../utils/logger.js';
+import { recordSentMessage } from './sentMessageLog.js';
 
 // Délai minimum/maximum entre deux envois consécutifs VERS LE MÊME chatId,
 // quel que soit leur type (texte, média, réaction, suppression).
@@ -121,7 +122,16 @@ export function wrapSocketWithOutboundGateway(sock) {
         }
       }
 
-      return originalSendMessage(jid, content, options);
+      return originalSendMessage(jid, content, options).then((sentMsg) => {
+        // !clear (commands/clear.js) a besoin de retrouver les derniers
+        // messages ENVOYÉS PAR LE BOT dans une conversation pour les
+        // supprimer sur demande — on ne journalise pas les envois passifs
+        // (réactions/suppressions), qui ne sont pas des "messages" à nettoyer.
+        if (!isPassiveSend(content) && sentMsg?.key) {
+          recordSentMessage(jid, sentMsg.key);
+        }
+        return sentMsg;
+      });
     });
 
     // La suite de la file de CE chatId doit avancer même si CET envoi

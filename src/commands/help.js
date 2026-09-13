@@ -7,6 +7,7 @@ import { isLockdownMode } from '../core/state.js';
 import { sendWithChannelCard } from '../utils/channelCard.js';
 import { getCurrentTheme } from '../themes/engine.js';
 import { logger } from '../utils/logger.js';
+import { toVoiceNoteOgg } from '../utils/mediaConvert.js';
 
 const pkg = JSON.parse(readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8'));
 
@@ -77,8 +78,12 @@ function findAudioFile() {
 }
 
 /**
- * Envoie un fichier audio (note vocale) dans le chat courant.
- * Fonction appelée uniquement pour le menu principal.
+ * Envoie l'audio du menu principal en véritable note vocale WhatsApp
+ * (ptt: true). Repasse systématiquement par `toVoiceNoteOgg` (même
+ * méthode que !mention, voir utils/mediaConvert.js) plutôt que d'envoyer
+ * le fichier brut de assets/ tel quel — un mp3/m4a envoyé avec `ptt: true`
+ * sans être réencodé en OGG/Opus ne s'affiche pas comme note vocale sur
+ * WhatsApp (juste un fichier audio avec un rond de lecture cassé).
  */
 async function sendMenuAudio(ctx) {
   try {
@@ -88,31 +93,24 @@ async function sendMenuAudio(ctx) {
       return;
     }
 
-    const audioBuffer = fs.readFileSync(audioPath);
-    const fileName = path.basename(audioPath);
-    // Déterminer le mimetype en fonction de l'extension
-    const ext = path.extname(audioPath).toLowerCase();
-    let mimetype = 'audio/mpeg'; // par défaut
-    if (ext === '.m4a') mimetype = 'audio/mp4';
-    else if (ext === '.ogg') mimetype = 'audio/ogg';
-    else if (ext === '.wav') mimetype = 'audio/wav';
-    else if (ext === '.aac') mimetype = 'audio/aac';
+    const rawBuffer = fs.readFileSync(audioPath);
+    const { buffer: pttBuffer, seconds } = await toVoiceNoteOgg(rawBuffer);
 
     await ctx.sock.sendMessage(
       ctx.chatId,
       {
-        audio: audioBuffer,
-        mimetype,
-        ptt: false, // note vocale (lecteur intégré WhatsApp)
-        fileName,
+        audio: pttBuffer,
+        mimetype: 'audio/ogg; codecs=opus',
+        ptt: true,
+        seconds,
       },
       { quoted: ctx.msg }
     );
 
-    logger.info(`Audio du menu principal envoyé : ${fileName}`);
+    logger.info(`Note vocale du menu principal envoyée (${seconds}s)`);
   } catch (err) {
     // Une erreur ici ne doit pas faire planter l'envoi du menu
-    logger.warn({ err }, "Impossible d'envoyer l'audio du menu principal");
+    logger.warn({ err }, "Impossible d'envoyer la note vocale du menu principal");
   }
 }
 

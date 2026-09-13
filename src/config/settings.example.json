@@ -11,12 +11,14 @@
   "groqWhisperModel": "whisper-large-v3-turbo",
   "voteKickThreshold": 3,
   "voteKickTimeoutSeconds": 120,
+
   "_comment_apiKeys": "Clés API configurables depuis WhatsApp (!groqapi, !removeapi, !meteoapi) — voir README.md. Ne JAMAIS committer ce fichier une fois ces valeurs renseignées (voir .gitignore).",
   "groqApiKey": "",
   "removeBgApiKey": "",
   "openWeatherApiKey": "",
+
   "_comment_infra": "Réglages d'infrastructure — éditer ce fichier directement, PAS configurable via WhatsApp.",
-  "telemetryUrl": "https://rodrickbot-dashboard.onrender.com",
-  "telemetryApiKey": "e8955f70c7bd883c2bd641d4c822bbcfc02dfca77f565fc9",
-  "channelJid": "120363427173649129@newsletter"
+  "telemetryUrl": "",
+  "telemetryApiKey": "",
+  "channelJid": ""
 }

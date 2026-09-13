@@ -1,6 +1,6 @@
 {
   "name": "RodrickBot",
-  "version": "1.64.5",
+  "version": "1.67.0",
   "description": "Bot WhatsApp extensible basé sur Baileys 6.7.19",
   "type": "module",
   "main": "src/index.js",
@@ -30,6 +30,7 @@
     "pdf-parse": "^1.1.1",
     "pino": "^9.4.0",
     "pino-pretty": "^11.2.2",
+    "qrcode": "^1.5.4",
     "qrcode-terminal": "^0.12.0",
     "sharp": "^0.33.5",
     "youtube-dl-exec": "^3.0.10"

@@ -230,6 +230,105 @@ export async function toVoiceNoteOgg(buffer) {
   }
 }
 
+// Durée max d'un GIF — au-delà le fichier devient lourd pour un simple
+// "GIF" WhatsApp (qui reste en réalité une vidéo mp4 en boucle, voir
+// commentaire de videoToGifMp4 ci-dessous).
+const GIF_MAX_SECONDS = 15;
+
+/**
+ * Convertit une vidéo (ou l'extrait de ses 15 premières secondes si plus
+ * longue) en "GIF" WhatsApp — comme tous les bots de l'écosystème
+ * Baileys, il ne s'agit PAS d'un vrai fichier .gif : WhatsApp affiche en
+ * boucle silencieuse une vidéo mp4 classique envoyée avec le flag
+ * `gifPlayback: true` (voir commands/gif.js). Un vrai .gif encodé via la
+ * palette ffmpeg serait nettement plus lourd pour un résultat visuel
+ * identique côté WhatsApp.
+ *
+ * `-an` retire la piste audio (un "GIF" est muet par définition), et le
+ * redimensionnement à 480px de large maximum garde le fichier léger tout
+ * en préservant les proportions (largeur/hauteur paires obligatoires pour
+ * libx264, comme dans stickerToVideo ci-dessus).
+ */
+export async function videoToGifMp4(buffer) {
+  const id = randomUUID();
+  const inputPath = join(tmpdir(), `${id}-in`);
+  const outputPath = join(tmpdir(), `${id}-out.mp4`);
+
+  await writeFile(inputPath, buffer);
+
+  try {
+    await new Promise((resolve, reject) => {
+      ffmpeg(inputPath)
+        .on('error', reject)
+        .on('end', resolve)
+        .inputOptions(['-t', String(GIF_MAX_SECONDS)])
+        .noAudio()
+        .videoCodec('libx264')
+        .addOutputOptions([
+          '-vf', "scale='min(480,iw)':-2,format=yuv420p",
+          '-movflags', '+faststart',
+        ])
+        .toFormat('mp4')
+        .save(outputPath);
+    });
+
+    return await readFile(outputPath);
+  } finally {
+    await Promise.allSettled([unlink(inputPath).catch(() => {}), unlink(outputPath).catch(() => {})]);
+  }
+}
+
+// atempo ne supporte qu'un facteur entre 0.5 et 2.0 par filtre — au-delà,
+// il faut le chaîner plusieurs fois (ex: x4 = deux filtres atempo=2.0).
+// setpts est l'inverse du facteur demandé (setpts=1/2*PTS accélère x2).
+function buildAtempoChain(factor) {
+  const filters = [];
+  let remaining = factor;
+  while (remaining > 2.0) {
+    filters.push('atempo=2.0');
+    remaining /= 2.0;
+  }
+  while (remaining < 0.5) {
+    filters.push('atempo=0.5');
+    remaining /= 0.5;
+  }
+  filters.push(`atempo=${remaining.toFixed(3)}`);
+  return filters.join(',');
+}
+
+/**
+ * Change la vitesse de lecture d'une vidéo (image ET son, gardés
+ * synchronisés) — utilisé par !ralenti (facteur < 1) et !accelere
+ * (facteur > 1). Facteur 2 = deux fois plus rapide, 0.5 = deux fois plus
+ * lent.
+ */
+export async function changeVideoSpeed(buffer, factor) {
+  const id = randomUUID();
+  const inputPath = join(tmpdir(), `${id}-in`);
+  const outputPath = join(tmpdir(), `${id}-out.mp4`);
+
+  await writeFile(inputPath, buffer);
+
+  try {
+    await new Promise((resolve, reject) => {
+      ffmpeg(inputPath)
+        .on('error', reject)
+        .on('end', resolve)
+        .videoFilters(`setpts=${(1 / factor).toFixed(6)}*PTS`)
+        .audioFilters(buildAtempoChain(factor))
+        .videoCodec('libx264')
+        .audioCodec('aac')
+        .addOutputOptions(['-movflags', '+faststart'])
+        .toFormat('mp4')
+        .save(outputPath);
+    });
+
+    return await readFile(outputPath);
+  } finally {
+    await Promise.allSettled([unlink(inputPath).catch(() => {}), unlink(outputPath).catch(() => {})]);
+  }
+}
+
 /** Convertit une durée "HH:MM:SS.ms" (format ffmpeg) en secondes. */
 function parseDurationToSeconds(duration) {
   const parts = String(duration || '0:0:0').split(':').map(Number);

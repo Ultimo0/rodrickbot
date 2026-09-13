@@ -13,6 +13,9 @@ import { getRemainingCooldownMs, markCommandUsed } from '../core/cooldownStore.j
 import { isAntibugEnabled, isAutoBlockEnabled, analyzeSuspiciousPayload } from '../core/antibugGuard.js';
 import { isRemotelyDisabled } from '../core/remoteControl.js';
 import { handleAntilink } from '../utils/antilink.js';
+import { handleLinkWhitelist } from '../utils/linkWhitelist.js';
+import { handleAutotranslate } from '../utils/autotranslate.js';
+import { handleMuteGuard } from '../utils/muteGuard.js';
 import { handleAntiflood } from '../utils/antiflood.js';
 import { handleAntiraidContent } from '../utils/antiraidContent.js';
 import { handleAntistatut } from '../utils/antistatut.js';
@@ -200,6 +203,20 @@ async function handleSingleMessage(sock, commands, msg) {
   if (msg.key.fromMe && !isSelfTest) return;
 
   const sender = isGroup(chatId) ? msg.key.participant : chatId;
+
+  // Mute (!mute/!unmute) : un membre rendu muet voit TOUS ses messages
+  // supprimés (pas seulement ceux avec un lien, contrairement à
+  // antilink/antilien-domaine plus bas) — placé le plus tôt possible dans
+  // le pipeline, avant même l'antibug et le comptage d'activité, pour
+  // qu'un membre muet n'ait aucun effet de bord sur le reste du bot tant
+  // qu'il n'a pas été démuté.
+  if (isGroup(chatId) && !isSelfTest) {
+    try {
+      if (await handleMuteGuard(sock, msg, chatId, sender)) return;
+    } catch (err) {
+      logger.warn({ err }, 'Mute: vérification impossible (non bloquant)');
+    }
+  }
 
   // Protection antibug : uniquement en message PRIVÉ (jamais en groupe — un
   // contenu volumineux dans un groupe peut être un partage/transfert tout à
@@ -421,8 +438,16 @@ async function handleSingleMessage(sock, commands, msg) {
 
   if (await handleAntiflood(sock, msg, chatId, sender, text)) return;
   if (await handleAntilink(sock, msg, chatId, sender, text)) return;
+  if (await handleLinkWhitelist(sock, msg, chatId, sender, text)) return;
   if (await handleAntiraidContent(sock, msg, chatId, sender, text)) return;
   if (await handleDownloadReply(sock, chatId, sender, text, msg)) return;
+
+  // Traduction automatique (!traduireauto) : jamais bloquante contrairement
+  // aux handlers ci-dessus — un message traduit continue normalement vers
+  // le parsing de commande (voir utils/autotranslate.js), donc pas de
+  // "return" ici et pas d'attente du résultat pour ne pas ralentir le
+  // reste du pipeline (l'appel Groq peut prendre plusieurs secondes).
+  handleAutotranslate(sock, msg, chatId, sender, text);
 
   let parsed = parseCommand(text, config.prefix);
 

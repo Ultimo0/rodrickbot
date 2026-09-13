@@ -108,6 +108,14 @@ export default {
 
     lines.push('', '▸ *Commandes chargées*', `  ${data.commandCount}`);
     lines.push('', '▸ *Mode*', `  ${data.mode}`);
+
+    if (data.apiKeys?.length) {
+      lines.push('', '▸ *Clés API*');
+      for (const k of data.apiKeys) {
+        lines.push(`  ${k.configured ? '✅' : '❌'} ${k.label}`);
+      }
+    }
+
     lines.push(hLine(22, BOX.h));
     // Le marqueur "> " est volontairement fixe, non thémé, quel que soit
     // le thème actif : c'est l'identité visuelle constante du bot.
