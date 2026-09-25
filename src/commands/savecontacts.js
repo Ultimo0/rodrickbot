@@ -1,4 +1,4 @@
-import { normalizeJid } from '../utils/groupTarget.js';
+import { isBotJid, normalizeJid } from '../utils/groupTarget.js';
 
 function toVCard(jid, groupName) {
   const number = jid.split('@')[0];
@@ -46,8 +46,6 @@ export default {
       return;
     }
 
-    const botJid = normalizeJid(ctx.sock.user?.id);
-
     // Parcourir les participants
     const usable = [];
     let hidden = 0;
@@ -71,8 +69,12 @@ export default {
         continue;
       }
 
-      // 3) Ne pas exporter le bot lui‑même
-      if (phoneJid === botJid) continue;
+      // 3) Ne pas exporter le bot lui‑même (isBotJid compare contre TOUTES
+      // ses identités connues, id ET lid — voir getBotSelfIds dans
+      // groupTarget.js). Note : dans la pratique le bot est presque
+      // toujours exclu plus tôt par le filtre admin ci-dessus quand il est
+      // admin du groupe ; ce check reste utile quand il ne l'est pas.
+      if (isBotJid(ctx.sock, phoneJid)) continue;
 
       usable.push(phoneJid);
     }

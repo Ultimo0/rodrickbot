@@ -4,7 +4,7 @@ import { createHash } from 'crypto';
 import { WAMessageStubType, jidNormalizedUser } from '@whiskeysockets/baileys';
 import { isAdmin } from '../config/index.js';
 import { getGroupSettings } from './groupSettings.js';
-import { normalizeJid } from '../utils/groupTarget.js';
+import { getBotSelfIds, normalizeJid } from '../utils/groupTarget.js';
 import { logger } from '../utils/logger.js';
 
 /**
@@ -42,6 +42,25 @@ const MEDIA_DIR = path.join(process.cwd(), 'saved_media', 'guardian');
 
 const ICON_STUB_TYPES = [WAMessageStubType?.GROUP_CHANGE_ICON].filter((v) => v != null);
 const INVITE_STUB_TYPES = [WAMessageStubType?.GROUP_CHANGE_INVITE_LINK].filter((v) => v != null);
+
+// Types de message système qui correspondent réellement à un changement de
+// métadonnées de groupe (donc pertinents pour "qui a fait ce changement").
+// Volontairement restreint : les arrivées/départs/utilisations de lien
+// d'invitation SONT AUSSI des messages système (mêmes conditions
+// messageStubType != null), mais ne doivent jamais écraser recentActors —
+// sinon un départ survenant juste avant qu'un vrai changement de réglages
+// soit traité fait attribuer ce changement à la mauvaise personne (bug
+// confirmé en prod : Guardian a attribué un changement fait par un membre
+// à quelqu'un d'autre, dont le seul lien avec l'événement était d'avoir
+// généré le message système précédent).
+const METADATA_ACTOR_STUB_TYPES = [
+  WAMessageStubType?.GROUP_CHANGE_SUBJECT,
+  WAMessageStubType?.GROUP_CHANGE_DESCRIPTION,
+  WAMessageStubType?.GROUP_CHANGE_RESTRICT,
+  WAMessageStubType?.GROUP_CHANGE_ANNOUNCE,
+  ...ICON_STUB_TYPES,
+  ...INVITE_STUB_TYPES,
+].filter((v) => v != null);
 
 // Auteur probable de la dernière modification "métadonnées" par groupe,
 // mémorisé quelques secondes le temps que 'groups.update' arrive.
@@ -126,16 +145,7 @@ export async function isBotGroupAdmin(sock, chatId) {
   try {
     const metadata = await sock.groupMetadata(chatId);
 
-    const rawSelfIds = [
-      sock.user?.id,
-      sock.user?.lid,
-      sock.authState?.creds?.me?.id,
-      sock.authState?.creds?.me?.lid,
-    ].filter(Boolean);
-
-    const selfIds = new Set(
-      rawSelfIds.flatMap((jid) => [normalizeJid(jid), safeJidNormalizedUser(jid)]).filter(Boolean)
-    );
+    const selfIds = getBotSelfIds(sock);
 
     const me = metadata.participants.find((p) => {
       const candidates = [p.id, p.jid, p.lid]
@@ -344,7 +354,11 @@ export function initGroupGuardian(sock) {
         if (msg.messageStubType == null) continue; // pas un message système
 
         const actor = msg.participant || msg.key.participant || null;
-        if (actor) rememberActor(chatId, actor);
+        // Ne mémoriser que pour un VRAI changement de métadonnées (voir
+        // METADATA_ACTOR_STUB_TYPES ci-dessus) — sinon une arrivée/un
+        // départ juste avant écrase l'auteur du changement suivant avec
+        // la mauvaise personne.
+        if (actor && METADATA_ACTOR_STUB_TYPES.includes(msg.messageStubType)) rememberActor(chatId, actor);
 
         const settings = getGroupSettings(chatId);
         if (!settings.guardian.enabled || !settings.guardian.snapshot) continue;

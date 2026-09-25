@@ -67,6 +67,34 @@ async function loadBanner() {
 }
 
 /**
+ * Expose le contextInfo "transféré depuis la chaîne" brut, pour les
+ * modules qui construisent eux-mêmes leur message (ex: interactiveMenu.js,
+ * qui doit l'injecter dans un `listMessage.contextInfo` et non dans un
+ * `sock.sendMessage` classique).
+ */
+export function getChannelForwardContext() {
+  return buildChannelForwardContext();
+}
+
+/**
+ * Envoie uniquement la bannière (logo de assets/) marquée "transféré
+ * depuis la chaîne", sans texte. Utile quand le contenu principal du menu
+ * part ensuite sous une forme qui ne supporte pas nativement une image
+ * d'en-tête (ex: `listMessage`, voir utils/interactiveMenu.js) : on envoie
+ * la photo en premier message, puis le menu lui-même juste après, plutôt
+ * que de perdre l'image. Ne fait rien (retourne false) si aucun logo
+ * n'est configuré dans assets/ — jamais d'erreur bloquante pour ça.
+ */
+export async function sendChannelBanner(ctx, caption) {
+  const banner = await loadBanner();
+  if (!banner) return false;
+
+  const contextInfo = buildChannelForwardContext();
+  await ctx.sock.sendMessage(ctx.chatId, { image: banner, caption, contextInfo }, { quoted: ctx.msg });
+  return true;
+}
+
+/**
  * Variante de sendWithChannelCard qui ne dépend pas d'un ctx de commande —
  * utile pour les messages envoyés par le bot lui-même en dehors du cycle
  * commande/réponse (ex: message de bienvenue/départ, qui n'a pas de

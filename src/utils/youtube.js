@@ -1,5 +1,5 @@
 import youtubedl from 'youtube-dl-exec';
-import ffmpegPath from 'ffmpeg-static';
+import { ffmpegPath } from './ffmpegPath.js';
 import { randomUUID } from 'crypto';
 import { tmpdir } from 'os';
 import { join } from 'path';

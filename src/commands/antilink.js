@@ -1,4 +1,5 @@
 import { getGroupSettings, setAntilink } from '../core/groupSettings.js';
+import { sendWithChannelCard } from '../utils/channelCard.js';
 
 export default {
   name: 'antilink',
@@ -17,13 +18,12 @@ export default {
 
     if (sub !== 'on' && sub !== 'off') {
       const current = getGroupSettings(ctx.chatId).antilink;
-      await ctx.reply({
-        text: `Antilink: ${current.enabled ? 'activé ✅' : 'désactivé ❌'}\n\nUsage: !antilink on|off`,
-      });
+      await sendWithChannelCard(ctx, `Antilink: ${current.enabled ? 'activé ✅' : 'désactivé ❌'}\n\nUsage: !antilink on|off`);
       return;
     }
 
     setAntilink(ctx.chatId, sub === 'on');
-    await ctx.success(sub === 'on' ? '✅ Antilink activé.' : '❌ Antilink désactivé.');
+    await ctx.success(); // réaction ✅ seule, le texte part via la carte (badge "Voir la chaîne")
+    await sendWithChannelCard(ctx, sub === 'on' ? '✅ Antilink activé.' : '❌ Antilink désactivé.');
   },
 };

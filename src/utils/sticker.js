@@ -1,6 +1,6 @@
 import sharp from 'sharp';
 import ffmpeg from 'fluent-ffmpeg';
-import ffmpegPath from 'ffmpeg-static';
+import { ffmpegPath } from './ffmpegPath.js';
 import webpmux from 'node-webpmux';
 import { randomUUID } from 'crypto';
 import { tmpdir } from 'os';

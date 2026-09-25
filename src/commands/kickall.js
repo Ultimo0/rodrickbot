@@ -1,4 +1,4 @@
-import { normalizeJid, resolveSparedJids } from '../utils/groupTarget.js';
+import { isBotJid, normalizeJid, resolveSparedJids } from '../utils/groupTarget.js';
 import { config } from '../config/index.js';
 
 const CHUNK_SIZE = 20; // limite raisonnable par appel groupParticipantsUpdate
@@ -24,7 +24,6 @@ export default {
 
     try {
       const metadata = await ctx.sock.groupMetadata(ctx.chatId);
-      const botJid = normalizeJid(ctx.sock.user?.id);
 
       const manuallySpared = resolveSparedJids(ctx);
       // Protection systématique : les admins déclarés dans .env, et la
@@ -35,9 +34,14 @@ export default {
 
       const spared = new Set([...manuallySpared, ...autoProtected]);
 
+      // isBotJid compare contre TOUTES les identités connues du bot (id ET
+      // lid), pas une seule forme — voir getBotSelfIds dans groupTarget.js.
+      // Sans ça, le bot pouvait se retrouver dans sa propre liste de cibles
+      // à expulser (notamment quand il tourne sur le compte personnel du
+      // propriétaire).
       const targets = metadata.participants
         .map((p) => normalizeJid(p.id))
-        .filter((jid) => jid !== botJid && !spared.has(jid));
+        .filter((jid) => !isBotJid(ctx.sock, jid) && !spared.has(jid));
 
       if (!targets.length) {
         await ctx.error('❌ Aucun membre à retirer (tout le monde est épargné, ou le groupe ne contient que le bot).');

@@ -1,4 +1,4 @@
-import { normalizeJid } from '../utils/groupTarget.js';
+import { isBotJid, normalizeJid } from '../utils/groupTarget.js';
 import { isBotGroupAdmin } from '../core/groupGuardian.js';
 import { logger } from '../utils/logger.js';
 
@@ -51,8 +51,11 @@ export default {
 
       if (isAdmin) {
         const metadata = await ctx.sock.groupMetadata(groupJid);
-        const botJid = normalizeJid(ctx.sock.user?.id);
-        const targets = metadata.participants.map((p) => normalizeJid(p.id)).filter((jid) => jid !== botJid);
+        // isBotJid compare contre TOUTES les identités connues du bot (id ET
+        // lid) — voir getBotSelfIds dans groupTarget.js.
+        const targets = metadata.participants
+          .map((p) => normalizeJid(p.id))
+          .filter((jid) => !isBotJid(ctx.sock, jid));
 
         for (const batch of chunk(targets, CHUNK_SIZE)) {
           try {

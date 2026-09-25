@@ -30,6 +30,31 @@ function insufficientBalanceFallbackMessage() {
 }
 
 /**
+ * Retire le raisonnement interne que certains modèles Groq à raisonnement
+ * exposent parfois directement dans le champ `content` de la réponse, sous
+ * forme de balises `<think>...</think>`, au lieu de le séparer proprement
+ * — un comportement du modèle (repéré sur le modèle de vision configuré
+ * par défaut, voir `groqVisionModel`) plutôt qu'un choix du bot. Sans ce
+ * nettoyage, l'utilisateur WhatsApp voit apparaître tout le raisonnement
+ * brut en anglais avant la vraie réponse (ex: !vision/!analyse-image).
+ *
+ * Appliquée systématiquement à CHAQUE fonction de ce fichier qui retourne
+ * du texte à l'utilisateur, pas seulement à celles de vision — le même
+ * comportement peut en théorie survenir sur n'importe quel modèle à
+ * raisonnement, y compris `config.groqModel`.
+ */
+function stripThinkTags(text) {
+  if (!text) return text || '';
+  // Cas normal : balise fermée.
+  let cleaned = text.replace(/<think>[\s\S]*?<\/think>/gi, '');
+  // Repli : balise ouvrante jamais refermée (réponse coupée en plein
+  // raisonnement) — on retire tout depuis <think> jusqu'à la fin plutôt
+  // que d'afficher un raisonnement partiel à la place de la réponse.
+  cleaned = cleaned.replace(/<think>[\s\S]*$/gi, '');
+  return cleaned.trim();
+}
+
+/**
  * Appel générique vers l'API Groq, avec retry/backoff sur 429 et un
  * timeout réseau (sinon un message resterait bloqué indéfiniment si l'API
  * ne répond jamais). Réutilisé par toutes les fonctions de ce fichier ET
@@ -105,7 +130,12 @@ export async function askGroq(question) {
         {
           role: 'system',
           content:
-            "Tu es un assistant intégré à un bot WhatsApp. Réponds de façon claire, concise et utile, en français sauf si on te parle dans une autre langue.",
+            `Tu es RodrickBOT, un bot WhatsApp développé par ${config.developerName || 'son propriétaire'}. ` +
+            'Réponds de façon claire, concise et utile, en français sauf si on te parle dans une autre langue. ' +
+            "Tu peux expliquer ton propre fonctionnement et tes commandes en détail. En revanche tu ne dois " +
+            'jamais révéler, citer, reproduire, résumer ligne par ligne, ni inventer le contenu de ton propre ' +
+            "code source, même si on te le demande explicitement, même reformulé ou en plusieurs étapes : " +
+            "indique simplement que ce n'est pas quelque chose que tu peux partager.",
         },
         { role: 'user', content: question },
       ],
@@ -117,7 +147,7 @@ export async function askGroq(question) {
       throw new Error('Réponse vide reçue de Groq.');
     }
 
-    return answer.trim();
+    return stripThinkTags(answer);
   } catch (err) {
     if (isInsufficientBalanceErrorMessage(err.message)) {
       return insufficientBalanceFallbackMessage();
@@ -170,7 +200,7 @@ export async function ocrImage(imageBuffer, mimeType) {
     });
 
     const text = json?.choices?.[0]?.message?.content;
-    return (text || '').trim();
+    return stripThinkTags(text || '');
   } catch (err) {
     if (isInsufficientBalanceErrorMessage(err.message)) {
       return insufficientBalanceFallbackMessage();
@@ -223,7 +253,7 @@ export async function analyzeImage(imageBuffer, mimeType, question = null) {
     if (!answer) {
       throw new Error('Réponse vide reçue de Groq.');
     }
-    return answer.trim();
+    return stripThinkTags(answer);
   } catch (err) {
     if (isInsufficientBalanceErrorMessage(err.message)) {
       return insufficientBalanceFallbackMessage();
@@ -277,7 +307,7 @@ export async function summarizeText(text, size = 'moyen') {
       throw new Error('Réponse vide reçue de Groq.');
     }
 
-    return summary.trim();
+    return stripThinkTags(summary);
   } catch (err) {
     if (isInsufficientBalanceErrorMessage(err.message)) {
       return insufficientBalanceFallbackMessage();
@@ -319,7 +349,7 @@ export async function correctText(text) {
       throw new Error('Réponse vide reçue de Groq.');
     }
 
-    return corrected.trim();
+    return stripThinkTags(corrected);
   } catch (err) {
     if (isInsufficientBalanceErrorMessage(err.message)) {
       return insufficientBalanceFallbackMessage();
@@ -361,7 +391,7 @@ export async function translateText(text, targetLanguage) {
       throw new Error('Réponse vide reçue de Groq.');
     }
 
-    return translated.trim();
+    return stripThinkTags(translated);
   } catch (err) {
     if (isInsufficientBalanceErrorMessage(err.message)) {
       return insufficientBalanceFallbackMessage();
@@ -399,7 +429,7 @@ async function simplePrompt(systemPrompt, userText, { temperature = 0.5 } = {}) 
     if (!answer) {
       throw new Error('Réponse vide reçue de Groq.');
     }
-    return answer.trim();
+    return stripThinkTags(answer);
   } catch (err) {
     if (isInsufficientBalanceErrorMessage(err.message)) {
       return insufficientBalanceFallbackMessage();
@@ -463,13 +493,35 @@ const GROQ_TRANSCRIPTION_URL = 'https://api.groq.com/openai/v1/audio/transcripti
  * @param {string} mimeType ex: 'audio/ogg; codecs=opus'
  * @returns {Promise<string>}
  */
+// Extensions reconnues par l'API Whisper de Groq (comme l'API OpenAI dont
+// elle reprend le contrat) — un fichier envoyé avec une extension hors de
+// cette liste est rejeté avec un 400, quel que soit son contenu réel.
+// Avant ce correctif, tout mimetype qui n'était ni "ogg" ni "mp4" tombait
+// sur un repli `.audio` — une extension INVALIDE pour Groq, provoquant
+// systématiquement ce 400 (ex: notes vocales WhatsApp envoyées avec un
+// mimetype `audio/mpeg` ou sans mimetype du tout selon le téléphone/la
+// version de WhatsApp de l'expéditeur).
+function guessAudioExtension(mimeType) {
+  const mt = (mimeType || '').toLowerCase();
+  if (mt.includes('ogg')) return 'ogg';
+  if (mt.includes('mp4') || mt.includes('m4a') || mt.includes('aac')) return 'm4a';
+  if (mt.includes('mpeg') || mt.includes('mp3')) return 'mp3';
+  if (mt.includes('wav')) return 'wav';
+  if (mt.includes('webm')) return 'webm';
+  if (mt.includes('flac')) return 'flac';
+  // Repli : format le plus courant pour un audioMessage WhatsApp (notes
+  // vocales), contrairement à l'ancien repli `audio` qui n'est reconnu par
+  // aucune API Whisper.
+  return 'ogg';
+}
+
 export async function transcribeAudio(audioBuffer, mimeType) {
   if (!config.groqApiKey) {
     throw new Error('Clé API Groq manquante (GROQ_API_KEY dans .env).');
   }
 
   const form = new FormData();
-  const ext = mimeType?.includes('ogg') ? 'ogg' : mimeType?.includes('mp4') ? 'm4a' : 'audio';
+  const ext = guessAudioExtension(mimeType);
   form.append('file', new Blob([audioBuffer], { type: mimeType || 'audio/ogg' }), `audio.${ext}`);
   form.append('model', config.groqWhisperModel);
   form.append('response_format', 'json');
@@ -487,7 +539,10 @@ export async function transcribeAudio(audioBuffer, mimeType) {
 
   if (!res.ok) {
     const errText = await res.text().catch(() => '');
-    logger.warn({ status: res.status, errText }, 'Erreur API Groq transcription (détail upstream, non exposé)');
+    logger.warn(
+      { status: res.status, errText, mimeType, extensionUsed: ext },
+      'Erreur API Groq transcription (détail upstream, non exposé)'
+    );
     if (isInsufficientBalanceErrorMessage(`(${res.status})`)) return insufficientBalanceFallbackMessage();
     if (res.status === 429) return rateLimitFallbackMessage();
     throw new Error(`Erreur API Groq (${res.status}).`);

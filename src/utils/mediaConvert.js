@@ -1,6 +1,6 @@
 import sharp from 'sharp';
 import ffmpeg from 'fluent-ffmpeg';
-import ffmpegPath from 'ffmpeg-static';
+import { ffmpegPath } from './ffmpegPath.js';
 import { randomUUID } from 'crypto';
 import { tmpdir } from 'os';
 import { join } from 'path';
@@ -267,15 +267,50 @@ export async function videoToGifMp4(buffer) {
         .addOutputOptions([
           '-vf', "scale='min(480,iw)':-2,format=yuv420p",
           '-movflags', '+faststart',
+          // Mêmes garde-fous mémoire que changeVideoSpeed ci-dessous (voir
+          // son commentaire pour le détail) — ultrafast/-threads 2 limitent
+          // le pic de RAM de l'encodeur, quitte à perdre un peu de temps
+          // d'encodage, ce qui est un bien meilleur compromis qu'un
+          // ffmpeg tué par manque de mémoire (SIGKILL) sur un hébergement
+          // à ressources limitées (Pterodactyl, VPS d'entrée de gamme...).
+          '-preset', 'ultrafast',
+          '-threads', '2',
         ])
         .toFormat('mp4')
         .save(outputPath);
     });
 
     return await readFile(outputPath);
+  } catch (err) {
+    throw explainFfmpegError(err);
   } finally {
     await Promise.allSettled([unlink(inputPath).catch(() => {}), unlink(outputPath).catch(() => {})]);
   }
+}
+
+// Au-delà, le couple decode+encode (setpts recalcule chaque frame, donc
+// aucune passe "copy" possible ici) devient trop gourmand en RAM sur un
+// hébergement à ressources limitées — voir explainFfmpegError ci-dessous
+// et le commentaire de changeVideoSpeed.
+const SPEED_MAX_INPUT_SECONDS = 5 * 60;
+
+/**
+ * Détecte un ffmpeg tué par manque de mémoire (SIGKILL envoyé par l'OOM
+ * killer du système, PAS une erreur ffmpeg "normale" avec un message
+ * explicite) et renvoie une erreur avec un message clair pour
+ * l'utilisateur WhatsApp, plutôt que de laisser remonter
+ * "ffmpeg was killed with signal SIGKILL" tel quel (incompréhensible).
+ * Utilisée par toutes les fonctions de ce fichier qui encodent de la
+ * vidéo (le poste de RAM le plus lourd, contrairement aux fonctions
+ * audio-only ci-dessus qui n'ont jamais posé ce problème en pratique).
+ */
+function explainFfmpegError(err) {
+  if (/SIGKILL/.test(err?.message || '')) {
+    return new Error(
+      "mémoire insuffisante sur le serveur pour traiter cette vidéo. Réessaie avec une vidéo plus courte, plus légère, ou en plus basse résolution."
+    );
+  }
+  return err;
 }
 
 // atempo ne supporte qu'un facteur entre 0.5 et 2.0 par filtre — au-delà,
@@ -301,6 +336,25 @@ function buildAtempoChain(factor) {
  * synchronisés) — utilisé par !ralenti (facteur < 1) et !accelere
  * (facteur > 1). Facteur 2 = deux fois plus rapide, 0.5 = deux fois plus
  * lent.
+ *
+ * Garde-fous mémoire (ajoutés après un crash SIGKILL constaté en
+ * production sur un hébergement à RAM limitée) :
+ *  - `-t SPEED_MAX_INPUT_SECONDS` en entrée : une vidéo source trop longue
+ *    est tronquée plutôt que de faire exploser la mémoire (setpts doit
+ *    retenir/réordonner des frames, il n'y a pas de mode "copy" possible
+ *    ici — chaque frame est décodée puis ré-encodée).
+ *  - `scale` défensif à 854px de large max (~480p) : la plupart des
+ *    vidéos WhatsApp reçues sont déjà à cette résolution ou en dessous,
+ *    mais une vidéo HD/4K transférée telle quelle ferait exploser le pic
+ *    de RAM de l'encodeur.
+ *  - `-preset ultrafast` : le preset x264 qui utilise le MOINS de RAM (au
+ *    prix d'un fichier de sortie un peu plus gros à qualité égale) —
+ *    les presets plus lents ("medium" par défaut) gardent plusieurs
+ *    images de référence en mémoire pour mieux compresser, ce qui est
+ *    justement ce qu'on veut éviter ici.
+ *  - `-threads 2` : limite le nombre de frames encodées en parallèle
+ *    (donc le nombre de buffers image simultanés en RAM), au prix d'un
+ *    encodage un peu plus lent.
  */
 export async function changeVideoSpeed(buffer, factor) {
   const id = randomUUID();
@@ -314,16 +368,19 @@ export async function changeVideoSpeed(buffer, factor) {
       ffmpeg(inputPath)
         .on('error', reject)
         .on('end', resolve)
-        .videoFilters(`setpts=${(1 / factor).toFixed(6)}*PTS`)
+        .inputOptions(['-t', String(SPEED_MAX_INPUT_SECONDS)])
+        .videoFilters(`scale='min(854,iw)':-2,setpts=${(1 / factor).toFixed(6)}*PTS`)
         .audioFilters(buildAtempoChain(factor))
         .videoCodec('libx264')
         .audioCodec('aac')
-        .addOutputOptions(['-movflags', '+faststart'])
+        .addOutputOptions(['-movflags', '+faststart', '-preset', 'ultrafast', '-threads', '2'])
         .toFormat('mp4')
         .save(outputPath);
     });
 
     return await readFile(outputPath);
+  } catch (err) {
+    throw explainFfmpegError(err);
   } finally {
     await Promise.allSettled([unlink(inputPath).catch(() => {}), unlink(outputPath).catch(() => {})]);
   }

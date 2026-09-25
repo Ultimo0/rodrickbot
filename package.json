@@ -1,7 +1,7 @@
 {
   "name": "RodrickBot",
-  "version": "1.67.0",
-  "description": "Bot WhatsApp extensible basé sur Baileys 6.7.19",
+  "version": "1.77.1",
+  "description": "Bot WhatsApp extensible basé sur Baileys 7.0.0-rc14",
   "type": "module",
   "main": "src/index.js",
   "engines": {
@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@hapi/boom": "^10.0.1",
-    "@whiskeysockets/baileys": "6.7.24",
+    "@whiskeysockets/baileys": "7.0.0-rc14",
     "adm-zip": "^0.6.0",
     "dotenv": "^16.4.5",
     "ffmpeg-static": "^5.2.0",
@@ -37,11 +37,6 @@
   },
   "devDependencies": {
     "javascript-obfuscator": "^4.1.1"
-  },
-  "overrides": {
-    "@whiskeysockets/baileys": {
-      "libsignal": "npm:libsignal-node@2.0.1"
-    }
   },
   "allowScripts": {
     "@whiskeysockets/baileys": true,

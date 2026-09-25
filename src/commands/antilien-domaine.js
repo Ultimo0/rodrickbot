@@ -5,6 +5,7 @@ import {
   removeWhitelistedDomain,
 } from '../core/groupSettings.js';
 import { extractDomain } from '../utils/linkWhitelist.js';
+import { sendWithChannelCard } from '../utils/channelCard.js';
 
 const USAGE =
   'Usage :\n' +
@@ -33,7 +34,8 @@ export default {
 
     if (sub === 'on' || sub === 'off') {
       setLinkWhitelist(ctx.chatId, sub === 'on');
-      await ctx.success(sub === 'on' ? '✅ Antilien-domaine activé.' : '❌ Antilien-domaine désactivé.');
+      await ctx.success(); // réaction ✅ seule, le texte part via la carte (badge "Voir la chaîne")
+      await sendWithChannelCard(ctx, sub === 'on' ? '✅ Antilien-domaine activé.' : '❌ Antilien-domaine désactivé.');
       return;
     }
 
@@ -45,7 +47,8 @@ export default {
       }
       const domain = extractDomain(raw) || raw.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
       addWhitelistedDomain(ctx.chatId, domain);
-      await ctx.success(`✅ Domaine autorisé : ${domain}`);
+      await ctx.success();
+      await sendWithChannelCard(ctx, `✅ Domaine autorisé : ${domain}`);
       return;
     }
 
@@ -57,22 +60,25 @@ export default {
       }
       const domain = extractDomain(raw) || raw.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
       removeWhitelistedDomain(ctx.chatId, domain);
-      await ctx.success(`🗑️ Domaine retiré : ${domain}`);
+      await ctx.success();
+      await sendWithChannelCard(ctx, `🗑️ Domaine retiré : ${domain}`);
       return;
     }
 
     if (sub === 'liste' || sub === 'list') {
       const domains = settings.domains || [];
-      await ctx.reply({
-        text: domains.length
+      await sendWithChannelCard(
+        ctx,
+        domains.length
           ? `📋 Domaines autorisés :\n${domains.map((d) => `• ${d}`).join('\n')}`
-          : 'Aucun domaine autorisé pour le moment.',
-      });
+          : 'Aucun domaine autorisé pour le moment.'
+      );
       return;
     }
 
-    await ctx.reply({
-      text: `Antilien-domaine: ${settings.enabled ? 'activé ✅' : 'désactivé ❌'} (${(settings.domains || []).length} domaine(s) autorisé(s))\n\n${USAGE}`,
-    });
+    await sendWithChannelCard(
+      ctx,
+      `Antilien-domaine: ${settings.enabled ? 'activé ✅' : 'désactivé ❌'} (${(settings.domains || []).length} domaine(s) autorisé(s))\n\n${USAGE}`
+    );
   },
 };

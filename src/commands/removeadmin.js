@@ -1,5 +1,5 @@
 import { resolveTargetJids, normalizeJid } from '../utils/groupTarget.js';
-import { removeAdmin, getOwnerJid } from '../core/adminStore.js';
+import { removeAdmin, isOwner } from '../core/adminStore.js';
 
 export default {
   name: 'removeadmin',
@@ -22,7 +22,7 @@ export default {
 
     const jid = normalizeJid(targets[0]);
 
-    if (jid === getOwnerJid()) {
+    if (isOwner(jid)) {
       await ctx.error('❌ Impossible de retirer le propriétaire du bot (numéro sur lequel il est connecté).');
       return;
     }

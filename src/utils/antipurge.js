@@ -1,7 +1,7 @@
 import { isAdmin } from '../config/index.js';
 import { getGroupSettings } from '../core/groupSettings.js';
 import { isBotGroupAdmin } from '../core/groupGuardian.js';
-import { normalizeJid } from './groupTarget.js';
+import { isBotJid, normalizeJid } from './groupTarget.js';
 import { logger } from './logger.js';
 
 /**
@@ -46,11 +46,14 @@ export async function handlePurgeGuard(sock, chatId, author, participants) {
   if (!settings.antipurge.enabled) return;
 
   const normalizedAuthor = normalizeJid(author);
-  const botJid = sock.user?.id ? normalizeJid(sock.user.id) : null;
 
   // Retrait effectué par le bot lui-même (!kick, !kickall, sanction
-  // automatique d'un autre système) : jamais une purge.
-  if (botJid && normalizedAuthor === botJid) return;
+  // automatique d'un autre système) : jamais une purge. isBotJid compare
+  // contre TOUTES les identités connues du bot (id ET lid) — voir
+  // getBotSelfIds dans groupTarget.js. Sans ça, une action légitime du bot
+  // (par exemple sur le compte perso du propriétaire) pouvait être prise
+  // pour une purge et déclencher une sanction contre le bot lui-même.
+  if (isBotJid(sock, normalizedAuthor)) return;
 
   // Auteur de confiance : jamais concerné.
   if (isAdmin(normalizedAuthor)) return;

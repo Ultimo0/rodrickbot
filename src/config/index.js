@@ -118,6 +118,17 @@ export const config = {
   // utils/logger.js. Désactivé par défaut : ne change rien au
   // comportement existant tant que ce n'est pas activé explicitement.
   logToFile: process.env.LOG_TO_FILE === 'true',
+
+  // EXPÉRIMENTAL — voir utils/interactiveMenu.js pour le détail complet.
+  // Envoie !menu sous forme de vraie liste WhatsApp cliquable (listMessage
+  // + nœud binaire <biz><list>) au lieu du texte classique. Ce n'est PAS
+  // un format officiellement supporté par Baileys : ça repose sur un nœud
+  // XML injecté manuellement, non garanti stable d'une mise à jour
+  // WhatsApp à l'autre, et le rendu (vraie liste vs texte brut en repli)
+  // peut varier selon le client. Désactivé par défaut. Si activé et que
+  // le rendu casse ou semble instable, repasse à false sans hésiter — le
+  // menu texte reste le comportement de référence, pas un dégradé.
+  experimentalInteractiveMenu: process.env.EXPERIMENTAL_INTERACTIVE_MENU === 'true',
 };
 
 export function isAdmin(jid) {

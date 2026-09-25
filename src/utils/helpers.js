@@ -19,6 +19,22 @@ export function extractText(msg) {
   );
 }
 
+/**
+ * Récupère l'URL cachée dans l'aperçu de lien enrichi (contextInfo.externalAdReply)
+ * d'un extendedTextMessage. Utile pour les partages natifs depuis d'autres apps
+ * (ex: bouton "Partager" d'un Reel Facebook) : WhatsApp affiche une carte riche
+ * (miniature vidéo, titre, domaine) mais le champ `.text` visible peut être vide
+ * ou ne pas contenir l'URL elle-même — seul externalAdReply.sourceUrl (ou
+ * mediaUrl) la porte. extractText() ne regarde pas cet endroit ; ce helper est
+ * dédié aux modules qui doivent détecter TOUS les liens (antilink,
+ * antilien-domaine), pas à l'extraction générale du texte tapé par
+ * l'utilisateur.
+ */
+export function extractLinkPreviewUrl(msg) {
+  const adReply = msg.message?.extendedTextMessage?.contextInfo?.externalAdReply;
+  return adReply?.sourceUrl || adReply?.mediaUrl || '';
+}
+
 /** true si le message vient d'un groupe */
 export function isGroup(jid) {
   return jid.endsWith('@g.us');

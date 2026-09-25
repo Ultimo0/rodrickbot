@@ -1,4 +1,4 @@
-import { normalizeJid } from '../utils/groupTarget.js';
+import { getBotSelfIds, normalizeJid } from '../utils/groupTarget.js';
 
 export default {
   name: 'tagadmin',
@@ -19,12 +19,17 @@ export default {
       const groupAdmins = metadata.participants.filter((p) => p.admin === 'admin' || p.admin === 'superadmin');
 
       // Le bot est explicitement RETIRÉ des mentions, même s'il a le rôle
-      // admin dans ce groupe, et même si son entrée dans `participants`
-      // utilise un format de JID différent (@lid vs @s.whatsapp.net) qui
-      // l'aurait fait passer entre les mailles du filtre ci-dessus.
-      const botJid = normalizeJid(ctx.sock.user?.id);
+      // admin dans ce groupe. On compare contre TOUTES ses identités connues
+      // (id ET lid), pas seulement normalizeJid(sock.user.id) seul : le bot
+      // tournant ici sur le compte personnel du propriétaire, son entrée
+      // dans `participants` peut être écrite sous la forme @lid alors que
+      // sock.user.id est en @s.whatsapp.net (ou l'inverse) — une comparaison
+      // à une seule forme le loupe silencieusement et il se retrouve tagué.
+      const botSelfIds = getBotSelfIds(ctx.sock);
       const adminJids = new Set(groupAdmins.map((a) => normalizeJid(a.id)));
-      adminJids.delete(botJid);
+      for (const jid of adminJids) {
+        if (botSelfIds.has(jid)) adminJids.delete(jid);
+      }
 
       if (!adminJids.size) {
         await ctx.error("Aucun admin trouvé dans ce groupe.");

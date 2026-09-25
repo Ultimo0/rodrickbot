@@ -116,6 +116,8 @@ function buildToolArgs(toolName, text, intent) {
       // sticker/ocr n'ont besoin que du contexte média (msg/sock/chatId),
       // injecté séparément par executeTool(name, args, context).
       return {};
+    case 'bot_info':
+      return { ...base, query: text };
     case 'ask_general':
     default:
       return base;
@@ -296,7 +298,11 @@ export async function runAgentTurn(sock, msg, chatId, sender, text, commands = n
         }
       }
 
-      result = await executeTool(intent.tool, toolArgs, { sock, msg, chatId, sender });
+      // `commands` est ajouté au contexte (en plus de sock/msg/chatId/sender)
+      // uniquement pour que bot_info puisse lire les métadonnées des
+      // commandes déjà chargées — aucun autre outil n'en a besoin, et
+      // aucun outil n'a par ailleurs accès aux fichiers sources eux-mêmes.
+      result = await executeTool(intent.tool, toolArgs, { sock, msg, chatId, sender, commands });
     } else {
       result = await askGroq(text);
     }

@@ -2,13 +2,17 @@ import { isAdmin } from '../config/index.js';
 import { getGroupSettings } from '../core/groupSettings.js';
 import { addWarn, WARN_LIMIT } from '../core/warnStore.js';
 import { isGroupAdmin } from './groupMetadataCache.js';
-import { isGroup } from './helpers.js';
+import { extractLinkPreviewUrl, isGroup } from './helpers.js';
 import { logger } from './logger.js';
 
 const LINK_REGEX = /(https?:\/\/|www\.)\S+|chat\.whatsapp\.com\/\S+/i;
 
 export async function handleAntilink(sock, msg, chatId, sender, text) {
-  if (!isGroup(chatId) || !text || !LINK_REGEX.test(text)) return false;
+  if (!isGroup(chatId)) return false;
+  // Combine le texte visible avec l'URL éventuellement cachée dans l'aperçu
+  // de lien enrichi (partage natif type Reel Facebook) : voir extractLinkPreviewUrl.
+  const scanText = `${text || ''} ${extractLinkPreviewUrl(msg)}`.trim();
+  if (!scanText || !LINK_REGEX.test(scanText)) return false;
 
   const settings = getGroupSettings(chatId);
   if (!settings.antilink.enabled) return false;

@@ -1,6 +1,7 @@
 import {
   makeWASocket,
   useMultiFileAuthState,
+  makeCacheableSignalKeyStore,
   fetchLatestBaileysVersion,
   DisconnectReason,
 } from '@whiskeysockets/baileys';
@@ -13,6 +14,7 @@ import { backupSessionIfValid, restoreSessionIfCorrupted } from './sessionBackup
 import { wrapSocketWithOutboundGateway } from './outboundGateway.js';
 import { setOwnerJid } from './adminStore.js';
 import { markConnectedNow } from './state.js';
+import { getSentContent } from './sentMessageStore.js';
 
 // WhatsApp traite les reconnexions rapides et répétées comme un
 // comportement de spam/automatisation et peut restreindre le compte
@@ -123,7 +125,13 @@ async function connectOnce(onReady) {
 
   const sock = makeWASocket({
     version,
-    auth: state,
+    auth: {
+      creds: state.creds,
+      // Recommandé par le guide de migration Baileys 7.0.0 : améliore la
+      // fiabilité/performance des sessions Signal en mettant en cache les
+      // clés en mémoire plutôt que de relire le disque à chaque opération.
+      keys: makeCacheableSignalKeyStore(state.keys, logger.child({ module: 'baileys' })),
+    },
     logger: logger.child({ module: 'baileys' }),
     printQRInTerminal: false,
     browser: ['Ubuntu', 'Chrome', '120.0.0'],
@@ -132,6 +140,27 @@ async function connectOnce(onReady) {
     defaultQueryTimeoutMs: QUERY_TIMEOUT_MS,
     retryRequestDelayMs: RETRY_REQUEST_DELAY_MS,
     maxMsgRetryCount: MAX_MSG_RETRY_COUNT,
+    // Obligatoire à partir de Baileys 7.0.0 pour un fonctionnement fiable
+    // des retries, du déchiffrement des votes de sondage et des messages
+    // cités (voir sentMessageStore.js, alimenté par outboundGateway.js).
+    // Ne couvre que les messages ENVOYÉS PAR LE BOT — un message reçu
+    // qu'on n'a pas nous-mêmes envoyé reste hors de portée de ce cache,
+    // ce qui correspond à l'usage réel que Baileys en fait.
+    // IMPORTANT (Baileys 7.x) : si ni syncFullHistory ni shouldSyncHistoryMessage
+    // ne sont précisés, Baileys applique en interne
+    // `shouldSyncHistoryMessage = () => !!syncFullHistory` — comme
+    // syncFullHistory est alors undefined (donc faux), ça désactive
+    // SILENCIEUSEMENT tout sync d'historique, y compris le "bootstrap" initial
+    // nécessaire à WhatsApp pour envoyer les données de routage des groupes et
+    // les correspondances @lid. Plusieurs bugs documentés sur Baileys 7.x
+    // décrivent exactement ce symptôme : les tout premiers messages après un
+    // appairage frais ne sont jamais routés (signalé sur ce bot : "je ne reçois
+    // pas les premiers messages quand je me connecte pour la première fois").
+    // On force explicitement ce sync plutôt que de dépendre d'une valeur par
+    // défaut qui a changé de comportement entre les versions.
+    syncFullHistory: true,
+    shouldSyncHistoryMessage: () => true,
+    getMessage: async (key) => getSentContent(key.id),
   });
 
   // Branché ici, avant toute utilisation de sock.sendMessage (y compris par
@@ -213,13 +242,18 @@ function handleConnectionUpdate(update, sock, onReady) {
     // Propriétaire du bot = JID sur lequel on vient de se connecter, lu en
     // direct sur le socket. Jamais stocké : redéfini à chaque connexion,
     // donc toujours exact même après un ré-appairage sur un autre numéro
-    // (voir core/adminStore.js).
-    setOwnerJid(sock.user?.id);
+    // (voir core/adminStore.js). On passe `sock` entier (pas juste
+    // sock.user?.id) pour que setOwnerJid puisse capturer aussi la forme
+    // @lid du propriétaire, pas seulement sa forme @s.whatsapp.net —
+    // WhatsApp peut rapporter l'auteur d'une action sous l'une ou l'autre
+    // forme selon le contexte (voir setOwnerJid dans adminStore.js).
+    setOwnerJid(sock);
 
     // Marque l'heure de CETTE connexion : sert à ignorer les messages de
     // rattrapage (envoyés pendant que le bot était hors ligne, redélivrés
     // par WhatsApp à la reconnexion) dans handlers/messageHandler.js.
     markConnectedNow();
+    logger.info(`connectedAt fixé à ${new Date().toISOString()} — tout message antérieur sera ignoré au rattrapage.`);
 
     // La session vient de servir à se connecter : c'est le meilleur moment
     // possible pour la sauvegarder, on est certain qu'elle est valide.

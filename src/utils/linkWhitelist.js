@@ -2,7 +2,7 @@ import { isAdmin } from '../config/index.js';
 import { getGroupSettings } from '../core/groupSettings.js';
 import { addWarn, WARN_LIMIT } from '../core/warnStore.js';
 import { isGroupAdmin } from './groupMetadataCache.js';
-import { isGroup } from './helpers.js';
+import { extractLinkPreviewUrl, isGroup } from './helpers.js';
 import { logger } from './logger.js';
 
 const LINK_REGEX = /(https?:\/\/|www\.)\S+|chat\.whatsapp\.com\/\S+/i;
@@ -32,12 +32,16 @@ export function extractDomain(text) {
  * réglage (`antilink` / `linkWhitelist`) dans core/groupSettings.js.
  */
 export async function handleLinkWhitelist(sock, msg, chatId, sender, text) {
-  if (!isGroup(chatId) || !text || !LINK_REGEX.test(text)) return false;
+  if (!isGroup(chatId)) return false;
+  // Voir antilink.js : même souci avec les partages natifs (Reel Facebook, etc.)
+  // dont l'URL vit dans l'aperçu enrichi plutôt que dans le texte visible.
+  const scanText = `${text || ''} ${extractLinkPreviewUrl(msg)}`.trim();
+  if (!scanText || !LINK_REGEX.test(scanText)) return false;
 
   const settings = getGroupSettings(chatId);
   if (!settings.linkWhitelist.enabled) return false;
 
-  const domain = extractDomain(text);
+  const domain = extractDomain(scanText);
   if (!domain) return false;
 
   const whitelist = settings.linkWhitelist.domains || [];

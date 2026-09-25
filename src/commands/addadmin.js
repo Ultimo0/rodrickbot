@@ -1,5 +1,5 @@
-import { resolveTargetJids, normalizeJid } from '../utils/groupTarget.js';
-import { addAdmin, getOwnerJid } from '../core/adminStore.js';
+import { resolveTargetJids, normalizeJid, resolveParticipantForms } from '../utils/groupTarget.js';
+import { addAdmin, isOwner } from '../core/adminStore.js';
 
 export default {
   name: 'addadmin',
@@ -21,12 +21,19 @@ export default {
 
     const jid = normalizeJid(targets[0]);
 
-    if (jid === getOwnerJid()) {
+    if (isOwner(jid)) {
       await ctx.reply({ text: 'ℹ️ Cette personne est déjà admin — elle est propriétaire du bot (numéro sur lequel il est connecté).' });
       return;
     }
 
-    const added = addAdmin(jid);
+    // Récupère aussi la forme LID/PN alternative de cette personne quand
+    // c'est possible (lookup dans groupMetadata si on est dans un groupe) —
+    // pour que l'exemption Guardian/isAdmin fonctionne même si WhatsApp
+    // rapporte plus tard son action sous l'autre forme. Même bug que celui
+    // corrigé pour le propriétaire en 1.76.0.
+    const forms = await resolveParticipantForms(ctx.sock, ctx.chatId, jid);
+
+    const added = addAdmin(forms);
     if (!added) {
       await ctx.reply({ text: 'ℹ️ Cette personne est déjà admin du bot.' });
       return;

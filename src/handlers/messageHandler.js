@@ -48,7 +48,7 @@ import { hasResetConfirmation as hasActivityResetConfirmation, handleResetConfir
 // Fenêtre volontairement courte : un rejeu après reconnexion arrive en
 // général dans les secondes/minutes qui suivent, pas des heures après.
 const DEDUP_WINDOW_MS = 5 * 60 * 1000;
-const processedMessageIds = new Map(); // clé "chatId:messageId" -> timestamp d'expiration
+const processedMessageIds = new Map(); // clé "messageId" -> timestamp d'expiration
 
 // Persistance sur disque : une Map purement en mémoire est vidée à CHAQUE
 // redémarrage complet du process (crash, redéploiement...) — précisément
@@ -94,9 +94,22 @@ registerShutdownHandler(flushDedupIfDirty);
 loadProcessedMessageIds();
 
 function isDuplicateMessage(chatId, messageId) {
-  if (!messageId) return false; // pas d'id exploitable : on ne peut pas dédupliquer, on laisse passer
+  if (!messageId) {
+    logger.warn(`Dédoublonnage: messageId absent pour le chat ${chatId}, laissé passer sans vérification.`);
+    return false;
+  }
 
-  const key = `${chatId}:${messageId}`;
+  // Clé = messageId SEUL, sans le chatId. WhatsApp redistribue en ce moment
+  // les mêmes conversations sous deux formes de JID en parallèle (@lid vs
+  // @s.whatsapp.net, voir "addressing_mode": "lid" dans les logs baileys) —
+  // un retry après échec de déchiffrement peut redélivrer un message déjà
+  // traité sous l'AUTRE forme de JID, avec le même messageId. Une clé
+  // "chatId:messageId" ratait alors ce doublon puisque chatId différait
+  // d'une livraison à l'autre. Les messageId WhatsApp sont uniques en
+  // pratique (chaîne aléatoire longue) : les utiliser seuls, sur une
+  // fenêtre de quelques minutes, ne présente pas de risque réel de
+  // collision entre deux conversations différentes.
+  const key = messageId;
   const now = Date.now();
 
   // Purge paresseuse des entrées expirées à chaque appel plutôt qu'un
@@ -130,10 +143,35 @@ const BACKLOG_GRACE_MS = 10 * 1000;
 
 function isStaleBacklogMessage(msg) {
   const connectedAt = getConnectedAt();
-  if (!connectedAt || !msg.messageTimestamp) return false; // pas d'info exploitable : on laisse passer
+  if (!connectedAt) {
+    logger.warn(`Rattrapage: connectedAt indisponible, message ${msg.key?.id} laissé passer sans vérification.`);
+    return false;
+  }
+
+  if (msg.messageTimestamp === undefined || msg.messageTimestamp === null) {
+    logger.warn(`Rattrapage: messageTimestamp absent sur ${msg.key?.id}, laissé passer sans vérification.`);
+    return false;
+  }
 
   const sentAt = Number(msg.messageTimestamp) * 1000;
-  return sentAt < connectedAt - BACKLOG_GRACE_MS;
+  if (!Number.isFinite(sentAt)) {
+    // Ne doit normalement jamais arriver (le champ existe mais ne se
+    // convertit pas en nombre exploitable) — logué en warn plutôt que
+    // silencieusement laissé passer comme avant, pour qu'un futur cas de
+    // "réexécution" au démarrage ne redevienne pas invisible.
+    logger.warn(`Rattrapage: messageTimestamp non numérique sur ${msg.key?.id} (${msg.messageTimestamp}), laissé passer sans vérification.`);
+    return false;
+  }
+
+  const ageMs = connectedAt - sentAt;
+  const stale = sentAt < connectedAt - BACKLOG_GRACE_MS;
+  // Volontairement en warn UNIQUEMENT quand on bloque (rare, important à
+  // voir) — pas à chaque message accepté, sinon ce log spammerait en info
+  // pour absolument tous les messages traités par le bot en permanence.
+  if (stale) {
+    logger.warn(`Rattrapage: message ${msg.key?.id} ignoré — envoyé ${Math.round(ageMs / 1000)}s avant la connexion.`);
+  }
+  return stale;
 }
 
 export function createMessageHandler(sock, commands) {
@@ -172,21 +210,27 @@ async function handleSingleMessage(sock, commands, msg) {
 
   const chatId = msg.key.remoteJid;
 
-  // Doit passer en tout premier, avant même le dédoublonnage : un message
-  // de rattrapage n'a jamais été vu par ce process, donc isDuplicateMessage
-  // ne l'aurait pas filtré — voir le commentaire au-dessus
-  // d'isStaleBacklogMessage() plus haut dans ce fichier.
-  if (isStaleBacklogMessage(msg)) {
-    logger.debug(`Message de rattrapage ignoré (envoyé avant la connexion): ${msg.key.id}`);
+  // L'ordre est important, et volontairement CHANGÉ par rapport à avant :
+  // le dédoublonnage par messageId doit passer EN PREMIER, avant le filtre
+  // de rattrapage. Preuve en prod (bot.log) : un message bloqué comme
+  // "rattrapage" au 1er passage n'était jamais enregistré comme "vu" ;
+  // quand Baileys le redélivre une 2e fois après un échec de déchiffrement
+  // (retryCount 2), le nouveau paquet arrive avec un messageTimestamp
+  // RAFRAÎCHI (proche de l'heure de cette redélivrance, pas l'horodatage
+  // d'origine) — il ne semble alors plus "vieux" du tout, passe le filtre
+  // de rattrapage comme s'il était neuf, et comme il n'avait jamais été
+  // enregistré, il n'était pas non plus reconnu comme doublon. Résultat :
+  // la commande se réexécutait. En vérifiant le doublon EN PREMIER (et en
+  // enregistrant l'ID dès la 1ère fois, qu'il soit finalement jugé "vieux"
+  // ou pas), toute redélivrance ultérieure du même message — même avec un
+  // timestamp trafiqué par le retry — est bloquée ici.
+  if (isDuplicateMessage(chatId, msg.key.id)) {
+    logger.warn(`Message dupliqué ignoré (rejeu Baileys probable): ${msg.key.id}`);
     return;
   }
 
-  // Voir le commentaire au-dessus de isDuplicateMessage() plus haut dans ce
-  // fichier — doit passer AVANT tout le reste (y compris le comptage
-  // d'activité) pour qu'un message rejoué soit un no-op complet, pas juste
-  // une commande non ré-exécutée.
-  if (isDuplicateMessage(chatId, msg.key.id)) {
-    logger.debug(`Message dupliqué ignoré (rejeu Baileys probable): ${msg.key.id}`);
+  if (isStaleBacklogMessage(msg)) {
+    // isStaleBacklogMessage() logue déjà elle-même en warn quand elle bloque.
     return;
   }
 

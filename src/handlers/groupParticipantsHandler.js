@@ -37,35 +37,97 @@ async function fetchProfilePicture(sock, jid) {
   }
 }
 
+/**
+ * Baileys peut transmettre les entrées de `participants` sous forme de
+ * simple chaîne OU d'objet contenant l'identifiant dans un champ `id`/`jid`
+ * selon la version et le type d'identifiant (lid vs jid classique) —
+ * confirmé en prod sur Baileys 7.0.0-rc14 : `TypeError: jid.split is not
+ * a function` sur un `action: 'add'`, welcome cassé en silence jusqu'à ce
+ * que le correctif précédent (try/catch isolés) permette de voir l'erreur
+ * précise. On normalise donc chaque entrée en chaîne UNE SEULE FOIS ici,
+ * avant de la transmettre à un guard (antipromote/antidemote/antipurge/
+ * antiraid utilisent tous normalizeJid()/jid.split() en interne — même
+ * bug potentiel) ou au message de bienvenue/départ — plutôt que corriger
+ * chaque consommateur séparément et risquer d'en oublier un.
+ */
+function toJidString(participant) {
+  if (typeof participant === 'string') return participant;
+  if (participant && typeof participant === 'object') {
+    return participant.id || participant.jid || null;
+  }
+  return null;
+}
+
+function normalizeParticipants(raw, chatId) {
+  const result = [];
+  let droppedCount = 0;
+  for (const participant of raw || []) {
+    const jid = toJidString(participant);
+    if (jid) {
+      result.push(jid);
+    } else {
+      droppedCount += 1;
+    }
+  }
+  if (droppedCount > 0) {
+    logger.warn(
+      { chatId, droppedCount, sample: raw?.[0] },
+      'Certaines entrées de participants (group-participants.update) sont dans un format inattendu et ont été ignorées'
+    );
+  }
+  return result;
+}
+
 export function createGroupParticipantsHandler(sock) {
-  return async ({ id: chatId, participants, action, author }) => {
-    try {
-      // Géré à part : ce n'est pas welcome/bye, et on veut réagir même si
-      // welcome/bye sont désactivés pour ce groupe.
-      if (action === 'promote') {
+  return async ({ id: chatId, participants: rawParticipants, action, author }) => {
+    const participants = normalizeParticipants(rawParticipants, chatId);
+
+    // Chaque étape est isolée dans son propre try/catch : avant le
+    // correctif précédent, tout (antipromote/antidemote/antipurge/antiraid
+    // ET welcome/bye) partageait un seul try/catch englobant — une
+    // exception dans n'importe laquelle des étapes précédentes empêchait
+    // silencieusement l'envoi du message de bienvenue/départ, avec pour
+    // seule trace un warn générique impossible à rattacher à sa cause.
+    // Ici, un échec sur une étape est logué avec un label précis et
+    // n'affecte jamais les étapes suivantes.
+
+    if (action === 'promote') {
+      try {
         await handlePromoteGuard(sock, chatId, author, participants);
-        return;
+      } catch (err) {
+        logger.warn({ err, chatId }, 'Erreur dans handlePromoteGuard (antipromote)');
       }
+      return;
+    }
 
-      if (action === 'demote') {
+    if (action === 'demote') {
+      try {
         await handleDemoteGuard(sock, chatId, author, participants);
-        return;
+      } catch (err) {
+        logger.warn({ err, chatId }, 'Erreur dans handleDemoteGuard (antidemote)');
       }
+      return;
+    }
 
-      // Antipurge : ne bloque pas le message bye ci-dessous (les deux
-      // fonctionnalités sont indépendantes) — on ne "return" pas ici.
-      if (action === 'remove') {
+    if (action === 'remove') {
+      try {
         await handlePurgeGuard(sock, chatId, author, participants);
+      } catch (err) {
+        logger.warn({ err, chatId }, 'Erreur dans handlePurgeGuard (antipurge)');
       }
+    }
 
-      // Antiraid (volet affluence) : indépendant de welcome/bye également —
-      // doit se déclencher même si le message de bienvenue est désactivé.
-      if (action === 'add') {
+    if (action === 'add') {
+      try {
         await handleJoinRaidGuard(sock, chatId, participants);
+      } catch (err) {
+        logger.warn({ err, chatId }, 'Erreur dans handleJoinRaidGuard (antiraid)');
       }
+    }
 
-      if (action !== 'add' && action !== 'remove') return;
+    if (action !== 'add' && action !== 'remove') return;
 
+    try {
       const settings = getGroupSettings(chatId);
       const groupConfig = action === 'add' ? settings.welcome : settings.bye;
       if (!groupConfig.enabled) return;
@@ -73,22 +135,20 @@ export function createGroupParticipantsHandler(sock) {
       const metadata = await sock.groupMetadata(chatId);
       const theme = getCurrentTheme();
 
+      if (!theme) {
+        logger.warn({ chatId }, 'Aucun thème chargé (getCurrentTheme() a renvoyé undefined) — message welcome/bye annulé');
+        return;
+      }
+
       for (const jid of participants) {
         const number = jid.split('@')[0].split(':')[0];
 
-        // Message personnalisé par un admin (placeholders {user}/{group},
-        // éventuellement plusieurs variantes séparées par "|") : ne passe
-        // jamais par le thème, comportement inchangé. Sinon, le thème actif
-        // construit lui-même le message par défaut (déjà varié lui aussi).
         const text = groupConfig.message
           ? applyPlaceholders(pickMessageVariant(groupConfig.message), { number, groupName: metadata.subject })
           : action === 'add'
             ? theme.renderWelcome({ number, groupName: metadata.subject })
             : theme.renderBye({ number, groupName: metadata.subject });
 
-        // Photo de profil UNIQUEMENT pour l'arrivée (renvoyer la photo de
-        // quelqu'un qui vient de partir n'a pas de sens) — best-effort,
-        // retombe sur texte simple si indisponible.
         const profilePic = action === 'add' ? await fetchProfilePicture(sock, jid) : null;
 
         if (profilePic) {
@@ -98,7 +158,7 @@ export function createGroupParticipantsHandler(sock) {
         }
       }
     } catch (err) {
-      logger.warn({ err }, 'Erreur lors du traitement de group-participants.update');
+      logger.warn({ err, chatId, action }, 'Erreur lors de l\'envoi du message de bienvenue/départ');
     }
   };
 }

@@ -18,6 +18,7 @@ import { initPollCleanupService } from './core/poll/PollCleanupService.js';
 import { initRemindScheduler } from './core/remind/RemindScheduler.js';
 import { initMessageScheduler } from './core/messageScheduler.js';
 import { initYtDlpAutoUpdater } from './core/ytdlpAutoUpdater.js';
+import { initAutoLikeStatus } from './core/autoLikeStatus.js';
 
 async function main() {
   logger.info(`Démarrage de ${config.botName}...`);
@@ -57,6 +58,7 @@ async function main() {
     initRemindScheduler(sock); // balayage périodique des rappels arrivés à échéance (voir RemindScheduler.js — pas de setTimeout par rappel, volontairement)
     initMessageScheduler(sock); // recharge et replanifie les messages récurrents (!schedule)
     initYtDlpAutoUpdater(); // rafraîchit le binaire yt-dlp toutes les 24h, sans redémarrage nécessaire
+    initAutoLikeStatus(sock); // réaction automatique aux statuts WhatsApp (!autolike), désactivé par défaut
 
     sock.ev.on('messages.upsert', createMessageHandler(sock, commands));
     sock.ev.on('group-participants.update', createGroupParticipantsHandler(sock));

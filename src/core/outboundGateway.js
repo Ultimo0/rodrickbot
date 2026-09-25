@@ -39,6 +39,7 @@
 
 import { logger } from '../utils/logger.js';
 import { recordSentMessage } from './sentMessageLog.js';
+import { recordSentContent } from './sentMessageStore.js';
 
 // Délai minimum/maximum entre deux envois consécutifs VERS LE MÊME chatId,
 // quel que soit leur type (texte, média, réaction, suppression).
@@ -123,6 +124,15 @@ export function wrapSocketWithOutboundGateway(sock) {
       }
 
       return originalSendMessage(jid, content, options).then((sentMsg) => {
+        // Alimente le cache de contenu pour getMessage (voir
+        // sentMessageStore.js) — nécessaire à Baileys 7.0.0 pour les retries
+        // et le déchiffrement de votes de sondage. Fait pour TOUS les
+        // envois, y compris passifs (réactions), pas seulement ceux
+        // journalisés pour !clear ci-dessous.
+        if (sentMsg?.key?.id) {
+          recordSentContent(sentMsg.key.id, content);
+        }
+
         // !clear (commands/clear.js) a besoin de retrouver les derniers
         // messages ENVOYÉS PAR LE BOT dans une conversation pour les
         // supprimer sur demande — on ne journalise pas les envois passifs

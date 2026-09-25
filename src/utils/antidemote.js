@@ -1,7 +1,7 @@
 import { isAdmin } from '../config/index.js';
 import { getGroupSettings } from '../core/groupSettings.js';
 import { addWarn, resetWarns, WARN_LIMIT } from '../core/promotionGuardStore.js';
-import { normalizeJid } from './groupTarget.js';
+import { isBotJid, normalizeJid } from './groupTarget.js';
 import { logger } from './logger.js';
 
 /**
@@ -27,11 +27,13 @@ export async function handleDemoteGuard(sock, chatId, author, participants) {
   if (!settings.antidemote.enabled) return;
 
   const normalizedAuthor = normalizeJid(author);
-  const botJid = sock.user?.id ? normalizeJid(sock.user.id) : null;
 
   // La rétrogradation vient du bot lui-même (ex: !removeadmin ou toute
-  // autre action légitime) : rien à faire.
-  if (botJid && normalizedAuthor === botJid) return;
+  // autre action légitime) : rien à faire. isBotJid compare contre TOUTES
+  // les identités connues du bot (id ET lid) — voir getBotSelfIds dans
+  // groupTarget.js pour pourquoi une comparaison à une seule forme peut
+  // rater le bot silencieusement.
+  if (isBotJid(sock, normalizedAuthor)) return;
 
   // Auteur de confiance (admin du bot) : autorisé, même à rétrograder un
   // autre admin du bot si besoin (ex: conflit interne à régler entre eux).

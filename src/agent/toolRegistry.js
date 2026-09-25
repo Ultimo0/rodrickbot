@@ -21,6 +21,7 @@ import { summarizeTool } from './tools/summarizeTool.js';
 import { correctTool } from './tools/correctTool.js';
 import { debugTool } from './tools/debugTool.js';
 import { proRewriteTool } from './tools/proRewriteTool.js';
+import { botInfoTool } from './tools/botInfoTool.js';
 
 const tools = new Map();
 
@@ -42,6 +43,7 @@ registerTool(summarizeTool);
 registerTool(correctTool);
 registerTool(debugTool);
 registerTool(proRewriteTool);
+registerTool(botInfoTool);
 registerTool({
   name: 'ask_general',
   description: 'Pose une question générale à l’IA Groq.',

@@ -3,7 +3,7 @@ import path from 'path';
 import { getCurrentTheme } from '../themes/engine.js';
 import { config } from '../config/index.js';
 import { getCachedMetadata } from '../utils/groupMetadataCache.js';
-import { normalizeJid } from '../utils/groupTarget.js';
+import { isBotJid, normalizeJid } from '../utils/groupTarget.js';
 import { getInactiveMembers } from '../core/activityStore.js';
 
 const pkg = JSON.parse(readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8'));
@@ -44,8 +44,14 @@ export default {
 
     try {
       const metadata = await getCachedMetadata(ctx.sock, ctx.chatId);
-      const botJid = normalizeJid(ctx.sock.user?.id);
-      const currentJids = metadata.participants.map((p) => normalizeJid(p.id)).filter((jid) => jid !== botJid);
+      // isBotJid compare contre TOUTES les identités connues du bot (id ET
+      // lid) — voir getBotSelfIds dans groupTarget.js. Une comparaison à une
+      // seule forme peut rater le bot silencieusement (notamment quand il
+      // tourne sur le compte personnel du propriétaire) et le lister comme
+      // "membre inactif".
+      const currentJids = metadata.participants
+        .map((p) => normalizeJid(p.id))
+        .filter((jid) => !isBotJid(ctx.sock, jid));
 
       const { inactive, unknown } = getInactiveMembers(ctx.chatId, currentJids, minDays);
 

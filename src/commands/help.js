@@ -4,10 +4,11 @@ import path from 'path';
 import { config } from '../config/index.js';
 import { groupByCategory, formatUptime } from '../utils/helpers.js';
 import { isLockdownMode } from '../core/state.js';
-import { sendWithChannelCard } from '../utils/channelCard.js';
+import { sendWithChannelCard, sendChannelBanner, getChannelForwardContext } from '../utils/channelCard.js';
 import { getCurrentTheme } from '../themes/engine.js';
 import { logger } from '../utils/logger.js';
 import { toVoiceNoteOgg } from '../utils/mediaConvert.js';
+import { sendInteractiveListMenu } from '../utils/interactiveMenu.js';
 
 const pkg = JSON.parse(readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8'));
 
@@ -152,8 +153,56 @@ async function sendMainMenu(ctx, visibleCommands) {
     footer: footerData(),
   });
 
-  // Envoi du menu (texte avec image éventuelle)
-  await sendWithChannelCard(ctx, text, { asImage: true });
+  // EXPÉRIMENTAL (voir utils/interactiveMenu.js) : tente d'abord la vraie
+  // liste WhatsApp cliquable si le flag est activé. En cas d'échec
+  // TECHNIQUE (throw), repli silencieux sur le menu texte habituel — le
+  // succès de l'envoi ne garantit toutefois pas que WhatsApp l'a rendu
+  // comme une liste chez le destinataire, voir les limites documentées
+  // dans interactiveMenu.js.
+  //
+  // Photo + menu + audio dans les DEUX formes : `listMessage` n'a pas de
+  // champ image natif (contrairement au menu texte, qui peut porter le
+  // texte en légende de la bannière) — la photo part donc en message à
+  // part, juste avant la liste, plutôt que d'être perdue.
+  let interactiveSent = false;
+  if (config.experimentalInteractiveMenu && categories.length > 0) {
+    try {
+      await sendChannelBanner(ctx);
+      await sendInteractiveListMenu(ctx, {
+        title: config.botName,
+        description: text,
+        buttonText: 'Voir les catégories',
+        footerText: `${config.prefix}menu <catégorie> pour un accès direct`,
+        contextInfo: getChannelForwardContext(),
+        sections: [
+          {
+            title: 'Catégories',
+            rows: categories.map((entry) => ({
+              title: `${entry.icon} ${entry.label}`,
+              description: `${entry.count} commande(s)`,
+              rowId: `${config.prefix}menu ${entry.key}`,
+            })),
+          },
+        ],
+      });
+      interactiveSent = true;
+    } catch (err) {
+      logger.warn({ err }, '[menu] Échec envoi liste interactive expérimentale, repli sur le menu texte');
+      // Repli sur le menu texte ci-dessous (sendWithChannelCard, asImage:true)
+      // — cas limite à connaître : si sendChannelBanner() a réussi juste
+      // au-dessus mais que c'est sendInteractiveListMenu() qui a échoué
+      // ensuite, la photo part alors deux fois (une seule fois si
+      // sendChannelBanner() a échoué en premier). Rare en pratique
+      // (échec réseau entre les deux envois) et sans conséquence grave —
+      // pas traité pour garder ce chemin de repli simple.
+    }
+  }
+
+  // Menu texte classique — comportement par défaut, et repli si
+  // l'interactif est désactivé ou a échoué.
+  if (!interactiveSent) {
+    await sendWithChannelCard(ctx, text, { asImage: true });
+  }
 
   // Envoi de l'audio (uniquement pour le menu principal)
   await sendMenuAudio(ctx);
@@ -175,6 +224,33 @@ async function sendCategoryMenu(ctx, entry, visibleCommands) {
     prefix: config.prefix,
     footer: footerData(),
   });
+
+  // EXPÉRIMENTAL — même principe que sendMainMenu, voir plus haut et
+  // utils/interactiveMenu.js. Chaque ligne = une commande, cliquer dessus
+  // équivaut à taper directement "{prefix}<commande>".
+  if (config.experimentalInteractiveMenu && cmds.length > 0) {
+    try {
+      await sendInteractiveListMenu(ctx, {
+        title: `${entry.icon} ${entry.label}`,
+        description: text,
+        buttonText: 'Voir les commandes',
+        footerText: `${config.prefix}menu ${entry.key} <commande> pour le détail`,
+        sections: [
+          {
+            title: entry.label,
+            rows: cmds.map((cmd) => ({
+              title: `${config.prefix}${cmd.name}`,
+              description: withPrefix(cmd.description),
+              rowId: `${config.prefix}${cmd.name}`,
+            })),
+          },
+        ],
+      });
+      return;
+    } catch (err) {
+      logger.warn({ err }, '[menu] Échec envoi sous-liste interactive expérimentale, repli sur le menu texte');
+    }
+  }
 
   await sendWithChannelCard(ctx, text);
 }

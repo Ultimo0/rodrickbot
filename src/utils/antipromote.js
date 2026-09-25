@@ -1,7 +1,7 @@
 import { isAdmin } from '../config/index.js';
 import { getGroupSettings } from '../core/groupSettings.js';
 import { addWarn, resetWarns, WARN_LIMIT } from '../core/promotionGuardStore.js';
-import { normalizeJid } from './groupTarget.js';
+import { isBotJid, normalizeJid } from './groupTarget.js';
 import { logger } from './logger.js';
 
 /**
@@ -32,11 +32,12 @@ export async function handlePromoteGuard(sock, chatId, author, participants) {
   if (!settings.antipromote.enabled) return;
 
   const normalizedAuthor = normalizeJid(author);
-  const botJid = sock.user?.id ? normalizeJid(sock.user.id) : null;
 
   // La promotion vient du bot lui-même (ex: commande !promote, déjà
-  // réservée à ADMIN_JIDS) : rien à faire.
-  if (botJid && normalizedAuthor === botJid) return;
+  // réservée à ADMIN_JIDS) : rien à faire. isBotJid compare contre TOUTES
+  // les identités connues du bot (id ET lid) — voir getBotSelfIds dans
+  // groupTarget.js.
+  if (isBotJid(sock, normalizedAuthor)) return;
 
   // Auteur de confiance (ADMIN_JIDS == "propriétaire du bot") : autorisé.
   if (isAdmin(normalizedAuthor)) return;
